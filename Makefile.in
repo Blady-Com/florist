@@ -8,7 +8,7 @@
 VERSION=Florist-2017 (20170515)
 FLORIST_VERSION=$(VERSION)
 GNATPREPFLAGS = -c -r
-GCCFLAGS = -O2
+GCCFLAGS = -g
 TARGET=@host_alias@
 
 ifneq ($(TARGET),)
@@ -167,6 +167,10 @@ clean: regen
 # remove all generated files, including configuration history
 distclean: clean
 	rm -f $(CONFIG_HISTORY) $(CONF_GENERATED)
+
+# make reference documentation
+rm-doc:
+	gnatdoc -Pflorist $(PROJECT_FLAGS)
 
 # install floristlib
 # make all files read-only to prevent recompilation
