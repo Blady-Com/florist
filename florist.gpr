@@ -1,0 +1,47 @@
+library project Florist is
+
+   for Library_Name use "florist";
+   for Languages use ("C", "Ada");
+
+   type Boolean is ("False", "True");
+   Threads : Boolean := external ("THREADS", "True");
+
+   Common_Source_Dirs := ("libsrc", "gensrc", "confsrc");
+   Threads_Source_Dirs := ("libsrc/threads", "gensrc/threads");
+   case Threads is
+      when "False" =>
+          for Source_Dirs use Common_Source_Dirs;
+      when "True" =>
+          for Source_Dirs use Common_Source_Dirs & Threads_Source_Dirs;
+   end case;
+
+   for Object_Dir   use "obj";
+   for Library_Dir  use "lib";
+
+   Version := "1";
+   for Library_version use "libflorist.so." & Version;
+
+   type Library_Type_Type is ("relocatable", "static");
+   Library_Type : Library_Type_Type := external ("LIBRARY_TYPE", "static");
+   for Library_Kind use Library_Type;
+
+   type Build_Type is ("Debug", "Production");
+   Build : Build_Type := External ("Build", "Production");
+
+   package Compiler is
+      GNAT_Flags := ("-O2", "-gnatpg");
+
+      for Switches ("posix-signals.adb") use GNAT_Flags;
+      for Switches ("posix-implementation.adb") use GNAT_Flags;
+      for Switches ("posix-supplement_to_ada_io.adb") use GNAT_Flags;
+      for Switches ("posix-unsafe_process_primitives.adb") use GNAT_Flags;
+
+      case Build is
+         when "Debug" =>
+            for Default_Switches ("Ada") use ("-O2", "-gnatwae", "-gnatyg");
+         when "Production" =>
+            for Default_Switches ("Ada") use ("-O2", "-gnatp");
+      end case;
+   end Compiler;
+
+end Florist;

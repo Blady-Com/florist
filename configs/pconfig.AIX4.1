@@ -1,0 +1,31 @@
+/* ??? On AiX, pthread.h must be included first */
+#ifdef _POSIX_C_SIGNALS_C
+#ifndef _LONG_LONG
+#define _LONG_LONG
+#include <pthread.h>
+#endif
+#endif
+#define _POSIX_C_SOURCE 199506L
+#define _POSIX_SOURCE
+#define _XOPEN_EXTENDED_SOURCE
+#define _SC_PAGE_SIZE                   48
+#define _SC_PAGESIZE                    _SC_PAGE_SIZE
+#define _REENTRANT
+#define pthread_sigmask sigthreadmask
+typedef unsigned char sa_family_t;
+#define aio_sigevent aio_event
+/* ??? There is an additional structure on AIX (struct liocb) to handle these
+   fields. For now, fake them.
+ */
+#define aio_fildes aio_whence
+#define aio_lio_opcode  aio_flag
+/* typedefs for BSD unsigned things
+   ??? These are defined in <sys/types.h> when _ALL_SOURCE is defined, but
+   that cause troubles in other parts of Florist
+ */
+typedef unsigned char   u_char;
+typedef unsigned short  u_short;
+typedef unsigned int    u_int;
+typedef unsigned long   u_long;
+typedef long long int64_t;
+typedef unsigned long long uint64_t;

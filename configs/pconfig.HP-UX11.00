@@ -1,0 +1,14 @@
+#define _XOPEN_SOURCE_EXTENDED
+#define _INCLUDE_HPUX_SOURCE
+#define _REENTRANT
+/* Need those defines, but sys/semaphore.h will only define them if
+   _KERNEL_BUILD is set */
+#define NSDCHUNKS 16
+#define SSDCHUNK 16
+
+#ifdef __ia64__
+#define XTI_TINFO_FTYPE int
+#define XTI_OPTHDR_FTYPE int
+#define XTI_LINGER_FTYPE int
+#define XTI_KPALIVE_FTYPE int
+#endif /* __ia64__ */
