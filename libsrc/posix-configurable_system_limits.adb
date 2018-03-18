@@ -371,4 +371,9 @@ package body POSIX.Configurable_System_Limits is
    function Socket_IO_Vector_Maximum
      return POSIX.Limits.Socket_IO_Vector_Maxima renames SIOVM;
 
+   function XIOVM is new Limit
+     (PL.XTI_IO_Vector_Maxima, SC_T_IOV_MAX);
+   function XTI_IO_Vector_Maximum
+     return POSIX.Limits.XTI_IO_Vector_Maxima renames XIOVM;
+
 end  POSIX.Configurable_System_Limits;

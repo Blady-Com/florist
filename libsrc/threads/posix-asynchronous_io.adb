@@ -36,8 +36,7 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with Ada.Streams,
-     System,
+with System,
      POSIX.Implementation,
      Unchecked_Conversion,
      Unchecked_Deallocation;
@@ -157,10 +156,11 @@ package body POSIX.Asynchronous_IO is
    --  Get_Length  --
    ------------------
 
-   function Get_Length (AD : AIO_Descriptor) return IO_Count is
+   function Get_Length (AD : AIO_Descriptor)
+     return Ada.Streams.Stream_Element_Count is
    begin
       Check (AD /= null, Invalid_Argument);
-      return IO_Count (AD.C.aio_nbytes);
+      return Ada.Streams.Stream_Element_Count (AD.C.aio_nbytes);
    end Get_Length;
 
    ------------------

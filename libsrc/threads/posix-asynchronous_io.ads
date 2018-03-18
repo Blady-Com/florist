@@ -34,7 +34,8 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with POSIX.C,
+with Ada.Streams,
+     POSIX.C,
      POSIX.IO,
      POSIX.Signals;
 package POSIX.Asynchronous_IO is
@@ -49,7 +50,7 @@ package POSIX.Asynchronous_IO is
       Write);
    type IO_Array_Pointer is access Ada.Streams.Stream_Element_Array;
       for IO_Array_Pointer'Size use Standard'Address_Size;
-      --  force this to be a "thin" pointer, like C pointers
+      --  force this to be a "thin" pointer, like C pointers (added)
 
    function Get_File (AD : AIO_Descriptor)
      return POSIX.IO.File_Descriptor;
@@ -64,7 +65,8 @@ package POSIX.Asynchronous_IO is
    procedure Set_Buffer
      (AD     : AIO_Descriptor;
       Buffer : IO_Array_Pointer);
-   function Get_Length (AD : AIO_Descriptor) return POSIX.IO_Count;
+   function Get_Length (AD : AIO_Descriptor)
+     return Ada.Streams.Stream_Element_Count;
    procedure Set_Length
      (AD     : AIO_Descriptor;
       Length : POSIX.IO_Count);

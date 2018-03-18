@@ -47,7 +47,7 @@ package POSIX.File_Status is
       return Status;
    function Get_File_Status (File : POSIX.IO.File_Descriptor)
       return Status;
-   --  Get_Link_Status is not in the IEEE standard
+   --  Get_Link_Status is not in the IEEE standard (added)
    function Get_Link_Status (Pathname : POSIX.Pathname)
       return Status;
 
@@ -82,7 +82,7 @@ package POSIX.File_Status is
       return Boolean;
    function Is_FIFO (File_Status : Status)
       return Boolean;
-   --  Is_Symbolic_Link is not in the IEEE standard
+   --  Is_Symbolic_Link is not in the IEEE standard (added)
    function Is_Symbolic_Link (File_Status : Status)
       return Boolean;
    function Is_Regular_File (File_Status : Status)

@@ -2402,6 +2402,15 @@ void gmaxn(char const name[], int lower_bound) {
   ifprintf(fp,"      %d .. Natural'Last;\n",lower_bound);
 }
 
+/* gmaxln
+   ------
+   generate _Maxima subtype of Natural with named lower bound
+ */
+void gmaxln(char const name[]) {
+  ifprintf(fp,"   subtype %s_Maxima is Natural range\n",name);
+  ifprintf(fp,"      Portable_%s_Maximum .. Natural'Last;\n",name);
+}
+
 /* gmaxnn
    -----
    generate _Maxima subtype of Natural with tight bound
@@ -2416,16 +2425,25 @@ void gmaxnn(char const name[], int bound) {
    generate _Maxima subtype of IO_Count
  */
 void gmaxi(char const name[], int lower_bound) {
-  ifprintf(fp,"   subtype %s_Maxima is IO_Count range\n",name);
+  ifprintf(fp,"   subtype %s_Maxima is POSIX.IO_Count range\n",name);
   ifprintf(fp,"      %d .. IO_Count'Last;\n",lower_bound);
 }
 
-/* gmaxi
-   -----
+/* gmaxli
+   ------
+   generate _Maxima subtype of IO_Count with named lower bound
+ */
+void gmaxli(char const name[]) {
+  ifprintf(fp,"   subtype %s_Maxima is POSIX.IO_Count range\n",name);
+  ifprintf(fp,"      Portable_%s_Maximum .. IO_Count'Last;\n", name);
+}
+
+/* gmaxii
+   ------
    generate _Maxima subtype of IO_Count with tight range
  */
 void gmaxii(char const name[], int bound) {
-  ifprintf(fp,"   subtype %s_Maxima is IO_Count range\n",name);
+  ifprintf(fp,"   subtype %s_Maxima is POSIX.IO_Count range\n",name);
   ifprintf(fp,"      %d .. %d;\n", bound, bound);
 }
 
@@ -2436,7 +2454,17 @@ void gmaxii(char const name[], int bound) {
  */
 void gpmaxi(char const name[], int value) {
   ifprintf(fp,"   Portable_%s_Maximum :\n",name);
-  ifprintf(fp,"      constant IO_Count := %d;\n",value);
+  ifprintf(fp,"      constant POSIX.IO_Count := %d;\n",value);
+}
+
+/* gpmaxin
+   -------
+   generate portable maximum constant of type IO_Count
+   with specified name
+ */
+void gpmaxin(char const name[], char const oname[]) {
+  ifprintf(fp,"   Portable_%s_Maximum :\n",name);
+  ifprintf(fp,"      constant POSIX.IO_Count := Portable_%s_Maximum;\n",oname);
 }
 
 /* gpmaxn
@@ -2447,6 +2475,16 @@ void gpmaxi(char const name[], int value) {
 void gpmaxn(char const name[], int value) {
   ifprintf(fp,"   Portable_%s_Maximum :\n",name);
   ifprintf(fp,"      constant Natural := %d;\n",value);
+}
+
+/* gpmaxnn
+   -------
+   generate portable maximum constant of type Natural
+   with specified name
+ */
+void gpmaxnn(char const name[], char const oname[]) {
+  ifprintf(fp,"   Portable_%s_Maximum :\n",name);
+  ifprintf(fp,"      constant Natural := Portable_%s_Maximum;\n",oname);
 }
 
 /* gpmaxr
@@ -2847,15 +2885,15 @@ void create_limits() {
   ifprintf(fp,"   --  limits from POSIX.5c [D2]\n\n");
 
 #ifdef _POSIX_FD_SETSIZE
-  gpmaxn("File_Descriptor_Set", _POSIX_FD_SETSIZE);
+  gpmaxn("FD_Set", _POSIX_FD_SETSIZE);
 #else
-  gpmaxr("File_Descriptor_Set", "Open_Files");
+  gpmaxnn("FD_Set", "Open_Files");
 #endif
 
 #ifdef _POSIX_HIWAT
   gpmaxi("Socket_Buffer", _POSIX_HIWAT);
 #else
-  gpmaxrioc("Socket_Buffer", "Pipe_Limit");
+  gpmaxin("Socket_Buffer", "Pipe_Length");
 #endif
 
 #ifdef _POSIX_UIO_MAXIOV
@@ -3030,55 +3068,15 @@ void create_limits() {
   fprintf(fp,"\n");
   fprintf(fp,"   --  limits from POSIX.5c [D2]\n\n");
 
-#ifdef FD_SETSIZE
-  gmaxnn("File_Descriptor_Set", FD_SETSIZE);
-#else
-#ifdef _POSIX_FD_SETSIZE
-  gmaxn("File_Descriptor_Set", _POSIX_FD_SETSIZE);
-#else
-#ifdef _POSIX_PIPE_BUF
-  gmaxn("File_Descriptor_Set", _POSIX_PIPE_BUF);
-#else
-  gmaxn("File_Descriptor_Set", 8);
-#endif
-#endif
-#endif
+  gmaxln("FD_Set");
 
-#ifdef SOCK_MAXBUF
-  gmaxii("Socket_Buffer", SOCK_MAXBUF);
-#else
-#ifdef _POSIX_PIPE_BUF
-  gmaxi("Socket_Buffer", _POSIX_PIPE_BUF);
-#else
-  gmaxi("Socket_Buffer", 8);
-#endif
-#endif
+  gmaxli("Socket_Buffer");
 
-#ifdef UIO_MAXIOV
-  gmaxnn ("Socket_IO_Vector", UIO_MAXIOV);
-#else
-#ifdef _POSIX_UIO_MAXIOV
-  gmaxn ("Socket_IO_Vector", _POSIX_UIO_MAXIOV);
-#else
-  gmaxn ("Socket_IO_Vector", 16);
-#endif
-#endif
+  gmaxln ("Socket_IO_Vector");
 
-#ifdef _POSIX_QLIMIT
-  gmaxn ("Socket_Connection", _POSIX_QLIMIT);
-#else
-  gmaxn ("Socket_Connection", 1);
-#endif
+  gmaxln ("Socket_Connection");
 
-#ifdef T_IOV_MAX
-  gmaxnn ("XTI_IO_Vector", T_IOV_MAX);
-#else
-#ifdef _POSIX_UIO_MAXIOV
-  gmaxn("XTI_IO_Vector", _POSIX_UIO_MAXIOV);
-#else
-  gmaxn("XTI_IO_Vector", 16);
-#endif
-#endif
+  gmaxln("XTI_IO_Vector");
 
   ifprintf(fp,"end POSIX.Limits;\n");
   fclose (fp);

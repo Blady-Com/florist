@@ -115,7 +115,8 @@ package POSIX.IO is
       Last           : out POSIX.IO_Count;
       Masked_Signals : POSIX.Signal_Masking
                      := POSIX.RTS_Signals);
-   procedure NONSTANDARD_Read
+   pragma Obsolescent;
+   procedure NONSTANDARD_Read  --  Added
      (File           : File_Descriptor;
       Buffer         : out IO_Buffer;
       Last           : out Natural;
@@ -133,7 +134,8 @@ package POSIX.IO is
       Last           : out POSIX.IO_Count;
       Masked_Signals : POSIX.Signal_Masking
                      := POSIX.RTS_Signals);
-   procedure NONSTANDARD_Write
+   pragma Obsolescent;
+   procedure NONSTANDARD_Write  --  Added
      (File           : File_Descriptor;
       Buffer         : IO_Buffer;
       Last           : out Natural;

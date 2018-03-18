@@ -45,6 +45,7 @@ package POSIX.Configurable_System_Limits is
      return POSIX.Options.File_Synchronization_Support;
    function Job_Control_Supported                          -- obsolescent
      return POSIX.Job_Control_Support;                     -- obsolescent
+   pragma Obsolescent;
    function Job_Control_Is_Supported
      return POSIX.Options.Job_Control_Support
      renames Job_Control_Supported;
@@ -76,6 +77,7 @@ package POSIX.Configurable_System_Limits is
      return POSIX.Options.Realtime_Signals_Support;
    function Saved_IDs_Supported                        --  obsolescent
     return POSIX.Saved_IDs_Support;                    --  obsolescent
+   pragma Obsolescent;
    function Saved_IDs_Are_Supported
      return POSIX.Options.Saved_IDs_Support
      renames Saved_IDs_Supported;
@@ -123,6 +125,7 @@ package POSIX.Configurable_System_Limits is
      return POSIX.Limits.Semaphores_Value_Maxima;
    function Stream_Maximum                            -- obsolescent
      return POSIX.Stream_Maxima;                      -- obsolescent
+   pragma Obsolescent;
    function Streams_Maximum
      return POSIX.Limits.Streams_Maxima
      renames Stream_Maximum;
@@ -161,5 +164,7 @@ package POSIX.Configurable_System_Limits is
      return POSIX.Limits.Socket_IO_Vector_Maxima;
    function XTI_DNI_Is_Supported
      return POSIX.Options.XTI_DNI_Support;
+   function XTI_IO_Vector_Maximum
+     return POSIX.Limits.XTI_IO_Vector_Maxima;
 
 end POSIX.Configurable_System_Limits;

@@ -42,12 +42,16 @@ package POSIX.Configurable_File_Limits is
 
    function Link_Is_Limited (Pathname : POSIX.Pathname)  --  obsolescent
       return Boolean;                                    --  obsolescent
+   pragma Obsolescent;
    function Link_Is_Limited (File : POSIX.IO.File_Descriptor)
       return Boolean;                                    --  obsolescent
+   pragma Obsolescent;
    function Link_Limit (Pathname : POSIX.Pathname)       --  obsolescent
       return POSIX.Link_Limit_Maxima;                    --  obsolescent
+   pragma Obsolescent;
    function Link_Limit (File : POSIX.IO.File_Descriptor) --  obsolescent
       return POSIX.Link_Limit_Maxima;                    --  obsolescent
+   pragma Obsolescent;
    function Links_Are_Limited (Pathname : POSIX.Pathname)
       return Boolean
       renames Link_Is_Limited;
@@ -67,8 +71,10 @@ package POSIX.Configurable_File_Limits is
       return Boolean;
    function Input_Line_Limit (Pathname : POSIX.Pathname) --  obsolescent
       return POSIX.Input_Line_Limit_Maxima;              --  obsolescent
+   pragma Obsolescent;
    function Input_Line_Limit (File : POSIX.IO.File_Descriptor)
       return POSIX.Input_Line_Limit_Maxima;              --  obsolescent
+   pragma Obsolescent;
    function Input_Line_Maximum (Pathname : POSIX.Pathname)
       return POSIX.Limits.Input_Line_Maxima
       renames Input_Line_Limit;
@@ -82,8 +88,10 @@ package POSIX.Configurable_File_Limits is
       return Boolean;
    function Input_Queue_Limit (Pathname : POSIX.Pathname) --  obsolescent
       return POSIX.Input_Queue_Limit_Maxima;              --  obsolescent
+   pragma Obsolescent;
    function Input_Queue_Limit (File : POSIX.IO.File_Descriptor)
       return POSIX.Input_Queue_Limit_Maxima;              --  obsolescent
+   pragma Obsolescent;
    function Input_Queue_Maximum (Pathname : POSIX.Pathname)
       return POSIX.Limits.Input_Queue_Maxima
       renames Input_Queue_Limit;
@@ -97,8 +105,10 @@ package POSIX.Configurable_File_Limits is
       return Boolean;
    function Filename_Limit (Pathname : POSIX.Pathname)   --  obsolescent
       return POSIX.Filename_Limit_Maxima;                --  obsolescent
+   pragma Obsolescent;
    function Filename_Limit (File : POSIX.IO.File_Descriptor)
       return POSIX.Filename_Limit_Maxima;                --  obsolescent
+   pragma Obsolescent;
    function Filename_Maximum (Pathname : POSIX.Pathname)
       return POSIX.Limits.Filename_Maxima
       renames Filename_Limit;
@@ -111,8 +121,10 @@ package POSIX.Configurable_File_Limits is
       return Boolean;
    function Pathname_Limit (Pathname : POSIX.Pathname)   --  obsolescent
       return POSIX.Pathname_Limit_Maxima;                --  obsolescent
+   pragma Obsolescent;
    function Pathname_Limit (File : POSIX.IO.File_Descriptor)
       return POSIX.Pathname_Limit_Maxima;                --  obsolescent
+   pragma Obsolescent;
    function Pathname_Maximum (Pathname : POSIX.Pathname)
       return POSIX.Limits.Pathname_Maxima
       renames Pathname_Limit;
@@ -126,8 +138,10 @@ package POSIX.Configurable_File_Limits is
       return Boolean;
    function Pipe_Length_Limit (Pathname : POSIX.Pathname) --  obsolescent
       return POSIX.Pipe_Limit_Maxima;                     --  obsolescent
+   pragma Obsolescent;
    function Pipe_Length_Limit (File : POSIX.IO.File_Descriptor)
       return POSIX.Pipe_Limit_Maxima;
+   pragma Obsolescent;
    function Pipe_Length_Maximum (Pathname : POSIX.Pathname)
       return POSIX.Limits.Pipe_Length_Maxima
       renames Pipe_Length_Limit;

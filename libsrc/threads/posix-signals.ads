@@ -153,6 +153,7 @@ package POSIX.Signals is
 
    procedure Ignore_Signal (Sig : Signal);
    procedure Unignore_Signal (Sig : Signal);
+   procedure Restore_Default_Action (Sig : Signal) renames Unignore_Signal;
    function Is_Ignored (Sig : Signal) return Boolean;
    procedure Install_Empty_Handler (Sig : Signal);
 

@@ -64,7 +64,8 @@ package POSIX.Files is
    function Is_Directory (Pathname : POSIX.Pathname) return Boolean;
    function Is_FIFO (Pathname : POSIX.Pathname) return Boolean;
    --  Is_Symbolic_Link is not in the IEEE standard
-   function Is_Symbolic_Link (Pathname : POSIX.Pathname) return Boolean;
+   function Is_Symbolic_Link (Pathname : POSIX.Pathname)  --  Added
+      return Boolean;
    --  .... Change POSIX.5?
    --  Why is this not called Is_Regular_File?  Add renaming decl?
    function Is_File (Pathname : POSIX.Pathname) return Boolean;
