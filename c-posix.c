@@ -58,6 +58,7 @@
 #include <stdarg.h>
 #include <string.h>
 #include <stdlib.h>
+#include <ctype.h>
 #include "confsrc/config.h"
 
 #ifdef __hpux__
@@ -5166,9 +5167,10 @@ void create_c() {
  */
 
 #if defined(__APPLE__)
-# define BADSIG 0
+/* The sigismember() function returns 1 if the signal is a member of the set, 0 otherwise. */
+# define RET_BADSIG 0
 #else
-# define BADSIG (-1)
+# define RET_BADSIG (-1)
 #endif
 {sigset_t set;
   int sig;
@@ -5179,7 +5181,7 @@ void create_c() {
   for (sig = 0; sig < 1024; sig++) {
     result = sigismember (&set, sig);
     if (result == 1) last_good = sig;
-    else if ((result == BADSIG) && (first_bad = -1)) first_bad = sig;
+    else if ((result == RET_BADSIG) && (first_bad == -1)) first_bad = sig;
   }
   if (last_good == 1023)
     printf("c-posix: WARNING: signal range estimate probably too small\n");
@@ -5187,17 +5189,6 @@ void create_c() {
     printf("c-posix: WARNING: signal range estimate may be invalid\n");
     last_good = first_bad - 1;
   }
-
-#if defined(__APPLE__)
-
-  /* On Darwin, the above mechanism fails to make a reasonable guess
-     as to the number of available signals. In the test loop
-     sigismember returns true for every value of sig, including zero,
-     and no first_bad is ever set. For now, hard code a reasonable
-     value. */
-
-   last_good = 31;
-#endif
 
 #ifdef SIGRTMAX
 #ifdef SIGRTMIN
@@ -5283,12 +5274,12 @@ void create_c() {
      or a nontrivial macro for SIG_IGN or SIG_DFL
    */
 #ifdef SIG_DFL
-  GCST("SIG_DFL", (int) SIG_DFL);
+  GCST("SIG_DFL", (long) SIG_DFL);
 #else
   GDFLT("SIG_DFL", 0);
 #endif
 #ifdef SIG_IGN
-  GCST("SIG_IGN", (int) SIG_IGN);
+  GCST("SIG_IGN", (long) SIG_IGN);
 #else
   GDFLT("SIG_IGN", 0);
 #endif
