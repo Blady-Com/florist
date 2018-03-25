@@ -123,9 +123,9 @@ int ifprintf (FILE *stream, const char * format, ...) {
   ifprintf(fp,"   %s : constant := %d;\n", name, value);
 
 int  max_GCST2;
-#define GCST2(name, name2, value) \
+#define GCST2(name, name2, value, type) \
   ifprintf(fp,"   %s,\n", name);\
-  ifprintf(fp,"   %s : constant := %d;\n", name2, value); \
+  ifprintf(fp,"   %s : constant %s := %d;\n", name2, type, value); \
   if (value > max_GCST2) max_GCST2 = value;
 
 #define GDFLT(name, value) \
@@ -136,9 +136,9 @@ int  max_GCST2;
   NON_SUPPORT_MESSAGE(name)\
   ifprintf(fp,"   %s : constant := %u;\n", name, value);
 
-#define GDFLT2(name, name2) \
+#define GDFLT2(name, name2, type) \
   NON_SUPPORT_MESSAGE(name)\
-  GCST2(name, name2, -1);
+  GCST2(name, name2, -1, type);
 
 /* We use -1 for value above because this may be a missing
    errno value, for which 0 may mean no error.
@@ -1710,14 +1710,14 @@ void print_type_declaration(char const name[], FILE *fp) {
       type->typename,
       type->typesize*bits_per_byte-1,
       type->typesize*bits_per_byte-1);
-    ifprintf(fp,"   for %s'Size use %d;\n",
+    ifprintf(fp,"   for %s'Size use %d;  --  Added\n",
       extended_name, type->typesize*bits_per_byte);
     break;
   case UNSIGNED_INTEGER_TYPE:
     ifprintf(fp,"   type %s is mod 2**%d;\n",
       type->typename,
       type->typesize*bits_per_byte);
-    ifprintf(fp,"   for %s'Size use %d;\n",
+    ifprintf(fp,"   for %s'Size use %d;  --  Added\n",
       extended_name, type->typesize*bits_per_byte);
     break;
   case STRUCT_TYPE:
@@ -1752,7 +1752,7 @@ void print_type_declaration(char const name[], FILE *fp) {
     ifprintf(fp,"   pragma Warnings (Off);\n");
     ifprintf(fp,"   --  There may be holes in the record, due to\n");
     ifprintf(fp,"   --  components not defined by POSIX standard.\n");
-    ifprintf(fp,"   for %s'Size use %d;\n",
+    ifprintf(fp,"   for %s'Size use %d;  --  Added\n",
       extended_name, type->typesize*bits_per_byte);
     ifprintf(fp,"   pragma Warnings (On);\n");
     gptrtp(type->typename, extended_name);
@@ -1791,7 +1791,7 @@ void print_type_declaration(char const name[], FILE *fp) {
     ifprintf(fp,"   pragma Warnings (Off);\n");
     ifprintf(fp,"   --  There may be holes in the record, due to\n");
     ifprintf(fp,"   --  components not defined by POSIX standard.\n");
-    ifprintf(fp,"   for %s'Size use %d;\n",
+    ifprintf(fp,"   for %s'Size use %d;  --  Added\n",
       extended_name, type->typesize*bits_per_byte);
     ifprintf(fp,"   pragma Warnings (On);\n");
     break;
@@ -1806,7 +1806,7 @@ void print_type_declaration(char const name[], FILE *fp) {
     ifprintf(fp,"   type %s is\n", extended_name);
     ifprintf(fp,"     array (1 .. %d) of int;\n", wordsize(type->typesize));
     ifprintf(fp,"   for %s'Alignment use ALIGNMENT;\n", type->typename);
-    ifprintf(fp,"   for %s'Size use %d;\n",
+    ifprintf(fp,"   for %s'Size use %d;  --  Added\n",
       extended_name, type->typesize*bits_per_byte);
     gptrtp(type->typename,extended_name);
     break;
@@ -1982,7 +1982,7 @@ void gheader(const char pkgname[], int header_kind) {
   fprintf(fp,"--                                      ");
   fprintf(fp,"                                    --\n");
   fprintf(fp,"----------------------------------------");
-  fprintf(fp,"--------------------------------------\n");
+  fprintf(fp,"--------------------------------------\n\n");
 }
 
 /* print_ada_type
@@ -2542,6 +2542,7 @@ void create_options() {
   }
   gheader("POSIX.Options", IEEE_Header);
   ifprintf(fp,"package POSIX.Options is\n");
+  ifprintf(fp,"   pragma Warnings (Off, \"*obsolescent*\");\n");
 
 #ifdef _POSIX_ASYNCHRONOUS_IO
   gbrg("Asynchronous_IO_Support", "True", "True");
@@ -2787,6 +2788,7 @@ void create_limits() {
   }
   gheader("POSIX.Limits", IEEE_Header);
   ifprintf(fp,"package POSIX.Limits is\n");
+  ifprintf(fp,"   pragma Warnings (Off, \"*obsolescent*\");\n");
   ghdrcmnt("Portable System Limits");
 
   ifprintf(fp,"   --  .... Change P1003.5b?\n");
@@ -3137,7 +3139,7 @@ void create_posix() {
 #else
   GDFLT("POSIX_Version", 0);
 #endif
-  ifprintf(fp,"   POSIX_Ada_Version : constant := 1995_00;\n\n");
+  ifprintf(fp,"   POSIX_Ada_Version : constant := 1998_12;\n\n");
 
   ifprintf(fp,"   --  Optional Facilities (obsolescent, 0)\n");
   ifprintf(fp,"   --  See package POSIX.Limits for preferred interfaces.\n\n");
@@ -3147,12 +3149,14 @@ void create_posix() {
 #else
   gbrg("Job_Control_Support", "False", "True");
 #endif
+  ifprintf(fp,"   pragma Obsolescent;\n");
 
 #ifdef _POSIX_SAVED_IDS
   gbrg("Saved_IDs_Support", "True", "True");
 #else
   gbrg("Saved_IDs_Support", "False", "False");
 #endif
+  ifprintf(fp,"   pragma Obsolescent;\n");
 
 #ifdef _POSIX_CHOWN_RESTRICTED
 #if (_POSIX_CHOWN_RESTRICTED == -1)
@@ -3163,6 +3167,7 @@ void create_posix() {
 #else
   gbrg("Change_Owner_Restriction", "False", "True");
 #endif
+  ifprintf(fp,"   pragma Obsolescent;\n");
 
 #ifdef _POSIX_NO_TRUNC
 #if (_POSIX_NO_TRUNC == -1)
@@ -3173,18 +3178,20 @@ void create_posix() {
 #else
   gbrg("Filename_Truncation", "False", "True");
 #endif
+  ifprintf(fp,"   pragma Obsolescent;\n\n");
+
   ifprintf(fp,"   --  Bytes and I/O Counts\n\n");
 
   ifprintf(fp,"   Byte_Size : constant :=  %d;\n\n",bits_per_byte);
 
-  ifprintf(fp,"   type IO_Count is range -2**%d .. (2**%d) - 1;\n\n",
+  ifprintf(fp,"   type IO_Count is range -2**%d .. (2**%d) - 1;\n",
     sizeof(ssize_t)*bits_per_byte-1,
     sizeof(ssize_t)*bits_per_byte-1);
-  ifprintf(fp,"   for IO_Count'Size use %d;\n", sizeof(ssize_t)*bits_per_byte);
+  ifprintf(fp,"   for IO_Count'Size use %d;  -- Added\n", sizeof(ssize_t)*bits_per_byte);
 
   gmaxi("IO_Count", 32767);
 
-  ifprintf(fp,"   --  System Limits (obsolescent)\n");
+  ifprintf(fp,"\n   --  System Limits (obsolescent)\n");
   ifprintf(fp,"   --  See package POSIX.Limits for preferred interfaces.\n\n");
 
 /* Run-Time Increasable Values
@@ -3198,6 +3205,7 @@ void create_posix() {
   NON_SUPPORT_MESSAGE("_POSIX_NGROUPS_MAX");
   gpmaxn("Groups", 0);
 #endif
+  ifprintf(fp,"   pragma Obsolescent;\n");
 #ifdef NGROUPS_MAX
   /* run-time increasable value */
   gmaxn("Groups",NGROUPS_MAX);
@@ -3208,6 +3216,7 @@ void create_posix() {
   gmaxn("Groups", 0);
 #endif
 #endif
+  ifprintf(fp,"   pragma Obsolescent;\n");
 
 /*
    Runtime Invariant Values
@@ -3222,6 +3231,7 @@ void create_posix() {
   NON_SUPPORT_MESSAGE("_POSIX_ARG_MAX");
   gpmaxn("Argument_List",4096);
 #endif
+  ifprintf(fp,"   pragma Obsolescent;\n");
 #ifdef ARG_MAX
   gmaxnn("Argument_List", ARG_MAX);
 #else
@@ -3231,6 +3241,7 @@ void create_posix() {
   gmaxn("Argument_List",4096);
 #endif
 #endif
+  ifprintf(fp,"   pragma Obsolescent;\n");
 
 #ifdef _POSIX_CHILD_MAX
   gpmaxn("Child_Processes",_POSIX_CHILD_MAX);
@@ -3238,6 +3249,7 @@ void create_posix() {
   NON_SUPPORT_MESSAGE("_POSIX_CHILD_MAX");
   gpmaxn("Child_Processes",6);
 #endif
+  ifprintf(fp,"   pragma Obsolescent;\n");
 #ifdef CHILD_MAX
   gmaxnn("Child_Processes", CHILD_MAX);
 #else
@@ -3247,6 +3259,7 @@ void create_posix() {
   gmaxn("Child_Processes",6);
 #endif
 #endif
+  ifprintf(fp,"   pragma Obsolescent;\n");
 
 #ifdef _POSIX_OPEN_MAX
   gpmaxn("Open_Files",_POSIX_OPEN_MAX);
@@ -3254,6 +3267,7 @@ void create_posix() {
   NON_SUPPORT_MESSAGE("_POSIX_OPEN_MAX");
   gpmaxn("Open_Files", 16);
 #endif
+  ifprintf(fp,"   pragma Obsolescent;\n");
 #ifdef OPEN_MAX
   gmaxnn("Open_Files", OPEN_MAX);
 #else
@@ -3263,6 +3277,7 @@ void create_posix() {
   gmaxn("Open_Files", 16);
 #endif
 #endif
+  ifprintf(fp,"   pragma Obsolescent;\n");
 
 #ifdef _POSIX_STREAM_MAX
   gpmaxn("Stream",_POSIX_STREAM_MAX);
@@ -3270,6 +3285,7 @@ void create_posix() {
   NON_SUPPORT_MESSAGE("_POSIX_STREAM_MAX");
   gpmaxn("Stream",8);
 #endif
+  ifprintf(fp,"   pragma Obsolescent;\n");
 #ifdef STREAM_MAX
   gmaxnn("Stream", STREAM_MAX);
 #else
@@ -3279,6 +3295,7 @@ void create_posix() {
   gmaxn("Stream",8);
 #endif
 #endif
+  ifprintf(fp,"   pragma Obsolescent;\n");
 
 #ifdef _POSIX_TZNAME_MAX
   gpmaxn("Time_Zone_String",_POSIX_TZNAME_MAX);
@@ -3286,6 +3303,7 @@ void create_posix() {
   NON_SUPPORT_MESSAGE("_POSIX_TZNAME_MAX");
   gpmaxn("Time_Zone_String", 3);
 #endif
+  ifprintf(fp,"   pragma Obsolescent;\n");
 #ifdef TZNAME_MAX
   gmaxnn("Time_Zone_String", TZNAME_MAX);
 #else
@@ -3295,6 +3313,7 @@ void create_posix() {
   gmaxn("Time_Zone_String", 3);
 #endif
 #endif
+  ifprintf(fp,"   pragma Obsolescent;\n");
 
 /*
    Pathname Variable Values
@@ -3304,7 +3323,7 @@ void create_posix() {
 
  */
 
-   ifprintf(fp,"   --  Pathname Variable Values (obsolescent)\n");
+   ifprintf(fp,"\n   --  Pathname Variable Values (obsolescent)\n");
    ifprintf(fp,"   --  See package POSIX.Limits for preferred"
      " interfaces.\n\n");
 
@@ -3314,6 +3333,7 @@ void create_posix() {
   NON_SUPPORT_MESSAGE("_POSIX_LINK_MAX");
   gpmaxn("Link_Limit",8);
 #endif
+  ifprintf(fp,"   pragma Obsolescent;\n");
 #ifdef LINK_MAX
   gmaxnn("Link_Limit", LINK_MAX);
 #else
@@ -3323,6 +3343,7 @@ void create_posix() {
   gmaxn("Link_Limit",8);
 #endif
 #endif
+  ifprintf(fp,"   pragma Obsolescent;\n");
 
 #ifdef _POSIX_MAX_INPUT
   gpmaxi("Input_Line_Limit",_POSIX_MAX_INPUT);
@@ -3330,6 +3351,7 @@ void create_posix() {
   NON_SUPPORT_MESSAGE("_POSIX_MAX_INPUT");
   gpmaxi("Input_Line_Limit", 255);
 #endif
+  ifprintf(fp,"   pragma Obsolescent;\n");
 #ifdef MAX_INPUT
   gmaxii("Input_Line_Limit",MAX_INPUT);
 #else
@@ -3339,6 +3361,7 @@ void create_posix() {
   gmaxi("Input_Line_Limit", 255);
 #endif
 #endif
+  ifprintf(fp,"   pragma Obsolescent;\n");
 
 #ifdef _POSIX_MAX_CANON
   gpmaxi("Input_Queue_Limit",_POSIX_MAX_CANON);
@@ -3346,6 +3369,7 @@ void create_posix() {
   NON_SUPPORT_MESSAGE("_POSIX_MAX_CANON");
   gpmaxi("Input_Queue_Limit", 255);
 #endif
+  ifprintf(fp,"   pragma Obsolescent;\n");
 #ifdef MAX_CANON
   gmaxii("Input_Queue_Limit", MAX_CANON);
 #else
@@ -3355,6 +3379,7 @@ void create_posix() {
   gmaxi("Input_Queue_Limit", 255);
 #endif
 #endif
+  ifprintf(fp,"   pragma Obsolescent;\n");
 
 #ifdef _POSIX_NAME_MAX
   gpmaxn("Filename_Limit",_POSIX_NAME_MAX);
@@ -3362,6 +3387,7 @@ void create_posix() {
   NON_SUPPORT_MESSAGE("_POSIX_NAME_MAX");
   gpmaxn("Filename_Limit", 14);
 #endif
+  ifprintf(fp,"   pragma Obsolescent;\n");
 #ifdef NAME_MAX
   gmaxnn("Filename_Limit", NAME_MAX);
 #else
@@ -3371,6 +3397,7 @@ void create_posix() {
   gmaxn("Filename_Limit", 14);
 #endif
 #endif
+  ifprintf(fp,"   pragma Obsolescent;\n");
 
 #ifdef _POSIX_PATH_MAX
   gpmaxn("Pathname_Limit",_POSIX_PATH_MAX);
@@ -3378,6 +3405,7 @@ void create_posix() {
   NON_SUPPORT_MESSAGE("_POSIX_PATH_MAX");
   gpmaxn("Pathname_Limit", 255);
 #endif
+  ifprintf(fp,"   pragma Obsolescent;\n");
 #ifdef PATH_MAX
   gmaxnn("Pathname_Limit", PATH_MAX);
 #else
@@ -3387,12 +3415,14 @@ void create_posix() {
   gmaxn("Pathname_Limit", 255);
 #endif
 #endif
+  ifprintf(fp,"   pragma Obsolescent;\n");
 
 #ifdef _POSIX_PIPE_BUF
   gpmaxi("Pipe_Limit",_POSIX_PIPE_BUF);
 #else
   gpmaxi("Pipe_Limit", 512);
 #endif
+  ifprintf(fp,"   pragma Obsolescent;\n");
 #ifdef PIPE_BUF
   gmaxii("Pipe_Limit", PIPE_BUF);
 #else
@@ -3402,8 +3432,9 @@ void create_posix() {
   gmaxi("Pipe_Limit", 512);
 #endif
 #endif
+  ifprintf(fp,"   pragma Obsolescent;\n");
 
-  ifprintf(fp,"   --  Blocking Behavior Values\n");
+  ifprintf(fp,"\n   --  Blocking Behavior Values\n");
 
   ifprintf(fp,"   type Blocking_Behavior is (Tasks, Program, Special);\n");
 
@@ -3423,12 +3454,12 @@ void create_posix() {
   ifprintf(fp,"   subtype Realtime_Blocking_Behavior is Blocking_Behavior\n");
   ifprintf(fp,"      range Tasks .. Program;\n");
 
-  ifprintf(fp,"   --  Signal Masking\n");
+  ifprintf(fp,"\n   --  Signal Masking\n");
 
   ifprintf(fp,"   type Signal_Masking is ");
   ifprintf(fp,"(No_Signals, RTS_Signals, All_Signals);\n");
 
-  ifprintf(fp,"   --  Characters and Strings\n");
+  ifprintf(fp,"\n   --  Characters and Strings\n");
 
   ifprintf(fp,"   type POSIX_Character is new Standard.Character;\n");
 
@@ -3436,6 +3467,7 @@ void create_posix() {
     " type Character\n");
   ifprintf(fp,"   --  is the same as the GCC type char in C,\n");
   ifprintf(fp,"   --  which in turn must be the same as POSIX_Character.\n\n");
+  ifprintf(fp,"   --  Added\n");
   ifprintf(fp,"   NUL : constant POSIX_Character := POSIX_Character (ASCII.NUL);\n");
   ifprintf(fp,"   SOH : constant POSIX_Character := POSIX_Character (ASCII.SOH);\n");
   ifprintf(fp,"   STX : constant POSIX_Character := POSIX_Character (ASCII.STX);\n");
@@ -3469,8 +3501,8 @@ void create_posix() {
   ifprintf(fp,"   RS  : constant POSIX_Character := POSIX_Character (ASCII.RS);\n");
   ifprintf(fp,"   US  : constant POSIX_Character := POSIX_Character (ASCII.US);\n\n");
 
-  ifprintf(fp,"   type POSIX_String is array (Positive range <>) ");
-  ifprintf(fp,"of aliased POSIX_Character;\n");
+  ifprintf(fp,"   type POSIX_String is array (Positive range <>)\n");
+  ifprintf(fp,"      of aliased POSIX_Character;  --  Aliased added\n");
 
   ifprintf(fp,"   function To_POSIX_String (Str : String) ");
   ifprintf(fp,"return POSIX_String;\n");
@@ -3503,7 +3535,7 @@ void create_posix() {
   ifprintf(fp,"   function Is_Portable_Pathname (Str : POSIX_String)");
   ifprintf(fp," return Boolean;\n");
 
-  ifprintf(fp,"   --  String Lists\n");
+  ifprintf(fp,"\n   --  String Lists\n");
 
   ifprintf(fp,"   type POSIX_String_List is limited private;\n");
 
@@ -3527,7 +3559,7 @@ void create_posix() {
   ifprintf(fp,"     (List  : POSIX_String_List;\n");
   ifprintf(fp,"      Index : Positive) return POSIX_String;\n");
 
-  ifprintf(fp,"   --  option sets\n");
+  ifprintf(fp,"\n   --  Option sets\n");
 
   ifprintf(fp,"   type Option_Set is private;\n");
   ifprintf(fp,"   function Empty_Set return Option_Set;\n");
@@ -3548,7 +3580,7 @@ void create_posix() {
     }
   }
 
-  ifprintf(fp,"   --  Exceptions and error codes\n");
+  ifprintf(fp,"\n   --  Exceptions and error codes\n");
 
   ifprintf(fp,"   POSIX_Error : exception;\n");
 
@@ -3562,359 +3594,516 @@ void create_posix() {
   ifprintf(fp,"   --  Error code constants with negative values ");
   ifprintf(fp,"correspond to\n");
   ifprintf(fp,"   --  error codes that are not supported by the ");
-  ifprintf(fp,"current system.\n");
-  ifprintf(fp,"   --  error codes\n");
+  ifprintf(fp,"current system.\n\n");
+  ifprintf(fp,"   --  Error codes\n");
 
   max_GCST2 = 0;
 
 #ifdef E2BIG
-  GCST2("E2BIG", "Argument_List_Too_Long", E2BIG);
+  GCST2("E2BIG", "Argument_List_Too_Long", E2BIG, "Error_Code");
 #else
-  GDFLT2("E2BIG", "Argument_List_Too_Long");
-#endif
-#ifdef EACCES
-  GCST2("EACCES", "Permission_Denied", EACCES);
-#else
-  GDFLT2("EACCES", "Permission_Denied");
-#endif
-#ifdef EADDRINUSE
-  GCST2("EADDRINUSE", "Address_In_Use", EADDRINUSE);
-#else
-  GDFLT2("EADDRINUSE", "Address_In_Use");
-#endif
-#ifdef EADDRNOTAVAIL
-  GCST2("EADDRNOTAVAIL", "Address_Not_Available", EADDRNOTAVAIL);
-#else
-  GDFLT2("EADDRNOTAVAIL", "Address_Not_Available");
-#endif
-#ifdef EAFNOSUPPORT
-  GCST2("EAFNOSUPPORT", "Inappropriate_Family", EAFNOSUPPORT);
-#else
-  GDFLT2("EAFNOSUPPORT", "Inappropriate_Family");
-#endif
-#ifdef EAGAIN
-  GCST2("EAGAIN", "Resource_Temporarily_Unavailable", EAGAIN);
-#else
-  GDFLT2("EAGAIN", "Resource_Temporarily_Unavailable");
-#endif
-#ifdef EALREADY
-  GCST2("EALREADY", "Already_Awaiting_Connection", EALREADY);
-#else
-  GDFLT2("EALREADY", "Already_Awaiting_Connection");
-#endif
-#ifdef EBADF
-  GCST2("EBADF", "Bad_File_Descriptor", EBADF);
-#else
-  GDFLT2("EBADF", "Bad_File_Descriptor");
-#endif
-#ifdef EBADMSG
-  GCST2("EBADMSG", "Bad_Message", EBADMSG);
-#else
-  GDFLT2("EBADMSG", "Bad_Message");
-#endif
-#ifdef EBUSY
-  GCST2("EBUSY", "Resource_Busy", EBUSY);
-#else
-  GDFLT2("EBUSY", "Resource_Busy");
-#endif
-#ifdef ECANCELED
-  GCST2("ECANCELED", "Operation_Canceled", ECANCELED);
-#else
-  GDFLT2("ECANCELED", "Operation_Canceled");
-#endif
-#ifdef ECHILD
-  GCST2("ECHILD", "No_Child_Process", ECHILD);
-#else
-  GDFLT2("ECHILD", "No_Child_Process");
-#endif
-#ifdef ECONNABORTED
-  GCST2("ECONNABORTED", "Connection_Aborted", ECONNABORTED);
-#else
-  GDFLT2("ECONNABORTED", "Connection_Aborted");
-#endif
-#ifdef ECONNREFUSED
-  GCST2("ECONNREFUSED", "Connection_Refused", ECONNREFUSED);
-#else
-  GDFLT2("ECONNREFUSED", "Connection_Refused");
-#endif
-#ifdef ECONNRESET
-  GCST2("ECONNRESET", "Connection_Reset", ECONNRESET);
-#else
-  GDFLT2("ECONNRESET", "Connection_Reset");
-#endif
-#ifdef EDEADLK
-  GCST2("EDEADLK", "Resource_Deadlock_Avoided", EDEADLK);
-#else
-  GDFLT2("EDEADLK", "Resource_Deadlock_Avoided");
-#endif
-#ifdef EDOM
-  GCST2("EDOM", "Domain_Error", EDOM);
-#else
-  GDFLT2("EDOM", "Domain_Error");
-#endif
-#ifdef EEXIST
-  GCST2("EEXIST", "File_Exists", EEXIST);
-#else
-  GDFLT2("EEXIST", "File_Exists");
+  GDFLT2("E2BIG", "Argument_List_Too_Long", "Error_Code");
 #endif
 #ifdef EFAULT
-  GCST2("EFAULT", "Bad_Address", EFAULT);
+  GCST2("EFAULT", "Bad_Address", EFAULT, "Error_Code");
 #else
-  GDFLT2("EFAULT", "Bad_Address");
+  GDFLT2("EFAULT", "Bad_Address", "Error_Code");
 #endif
-#ifdef EFBIG
-  GCST2("EFBIG", "File_Too_Large", EFBIG);
+#ifdef EBADF
+  GCST2("EBADF", "Bad_File_Descriptor", EBADF, "Error_Code");
 #else
-  GDFLT2("EFBIG", "File_Too_Large");
+  GDFLT2("EBADF", "Bad_File_Descriptor", "Error_Code");
 #endif
-#ifdef EHOSTDOWN
-  GCST2("EHOSTDOWN", "Host_Down", EHOSTDOWN);
+#ifdef EBADMSG
+  GCST2("EBADMSG", "Bad_Message", EBADMSG, "Error_Code");
 #else
-  GDFLT2("EHOSTDOWN", "Host_Down");
-#endif
-#ifdef EHOSTUNREACH
-  GCST2("EHOSTUNREACH", "Host_Unreachable", EHOSTUNREACH);
-#else
-  GDFLT2("EHOSTUNREACH", "Host_Unreachable");
-#endif
-#ifdef EINPROGRESS
-  GCST2("EINPROGRESS", "Operation_In_Progress", EINPROGRESS);
-#else
-  GDFLT2("EINPROGRESS", "Operation_In_Progress");
-#endif
-#ifdef EINTR
-  GCST2("EINTR", "Interrupted_Operation", EINTR);
-#else
-  GDFLT2("EINTR", "Interrupted_Operation");
-#endif
-#ifdef EINVAL
-  GCST2("EINVAL", "Invalid_Argument", EINVAL);
-#else
-  GDFLT2("EINVAL", "Invalid_Argument");
-#endif
-#ifdef EIO
-  GCST2("EIO", "Input_Output_Error", EIO);
-#else
-  GDFLT2("EIO", "Input_Output_Error");
-#endif
-#ifdef EISCONN
-  GCST2("EISCONN", "Is_Already_Connected", EISCONN);
-#else
-  GDFLT2("EISCONN", "Is_Already_Connected");
-#endif
-#ifdef EISDIR
-  GCST2("EISDIR", "Is_A_Directory", EISDIR);
-#else
-  GDFLT2("EISDIR", "Is_A_Directory");
-#endif
-#ifdef EMFILE
-  GCST2("EMFILE", "Too_Many_Open_Files", EMFILE);
-#else
-  GDFLT2("EMFILE", "Too_Many_Open_Files");
-#endif
-#ifdef EMLINK
-  GCST2("EMLINK", "Too_Many_Links", EMLINK);
-#else
-  GDFLT2("EMLINK", "Too_Many_Links");
-#endif
-#ifdef EMSGSIZE
-  GCST2("EMSGSIZE", "Message_Too_Long", EMSGSIZE);
-#else
-  GDFLT2("EMSGSIZE", "Message_Too_Long");
-#endif
-#ifdef ENAMETOOLONG
-  GCST2("ENAMETOOLONG", "Filename_Too_Long", ENAMETOOLONG);
-#else
-  GDFLT2("ENAMETOOLONG", "Filename_Too_Long");
-#endif
-#ifdef ENETDOWN
-  GCST2("ENETDOWN", "Network_Down", ENETDOWN);
-#else
-  GDFLT2("ENETDOWN", "Network_Down");
-#endif
-#ifdef ENETRESET
-  GCST2("ENETRESET", "Network_Reset", ENETRESET);
-#else
-  GDFLT2("ENETRESET", "Network_Reset");
-#endif
-#ifdef ENETUNREACH
-  GCST2("ENETUNREACH", "Network_Unreachable", ENETUNREACH);
-#else
-  GDFLT2("ENETUNREACH", "Network_Unreachable");
-#endif
-#ifdef ENFILE
-  GCST2("ENFILE", "Too_Many_Open_Files_In_System", ENFILE);
-#else
-  GDFLT2("ENFILE", "Too_Many_Open_Files_In_System");
-#endif
-#ifdef ENOBUFS
-  GCST2("ENOBUFS", "No_Buffer_Space", ENOBUFS);
-#else
-  GDFLT2("ENOBUFS", "No_Buffer_Space");
-#endif
-#ifdef ENODEV
-  GCST2("ENODEV", "No_Such_Operation_On_Device", ENODEV);
-#else
-  GDFLT2("ENODEV", "No_Such_Operation_On_Device");
-#endif
-#ifdef ENOENT
-  GCST2("ENOENT", "No_Such_File_Or_Directory", ENOENT);
-#else
-  GDFLT2("ENOENT", "No_Such_File_Or_Directory");
-#endif
-#ifdef ENOPROTOOPT
-  GCST2("ENOPROTOOPT", "Unknown_Protocol_Option", ENOPROTOOPT);
-#else
-  GDFLT2("ENOPROTOOPT", "Unknown_Protocol_Option");
-#endif
-#ifdef ENOEXEC
-  GCST2("ENOEXEC", "Exec_Format_Error", ENOEXEC);
-#else
-  GDFLT2("ENOEXEC", "Exec_Format_Error");
-#endif
-#ifdef ENOLCK
-  GCST2("ENOLCK", "No_Locks_Available", ENOLCK);
-#else
-  GDFLT2("ENOLCK", "No_Locks_Available");
-#endif
-#ifdef ENOMEM
-  GCST2("ENOMEM", "Not_Enough_Space", ENOMEM);
-#else
-  GDFLT2("ENOMEM", "Not_Enough_Space");
-#endif
-#ifdef ENOSPC
-  GCST2("ENOSPC", "No_Space_Left_On_Device", ENOSPC);
-#else
-  GDFLT2("ENOSPC", "No_Space_Left_On_Device");
-#endif
-#ifdef ENOTCONN
-  GCST2("ENOTCONN", "Not_Connected", ENOTCONN);
-#else
-  GDFLT2("ENOTCONN", "Not_Connected");
-#endif
-#ifdef ENOTSOCK
-  GCST2("ENOTSOCK", "Not_A_Socket", ENOTSOCK);
-#else
-  GDFLT2("ENOTSOCK", "Not_A_Socket");
-#endif
-#ifdef ENOTSUP
-  GCST2("ENOTSUP", "Operation_Not_Supported", ENOTSUP);
-#else
-  NON_SUPPORT_MESSAGE("ENOTSUP");
-  GCST2("ENOTSUP", "Operation_Not_Supported", ENOSYS);
-#endif
-#ifdef ENOTDIR
-  GCST2("ENOTDIR", "Not_A_Directory", ENOTDIR);
-#else
-  GDFLT2("ENOTDIR", "Not_A_Directory");
-#endif
-#ifdef ENOTEMPTY
-  GCST2("ENOTEMPTY", "Directory_Not_Empty", ENOTEMPTY);
-#else
-  GDFLT2("ENOTEMPTY", "Directory_Not_Empty");
-#endif
-#ifdef ENOSYS
-  GCST2("ENOSYS", "Operation_Not_Implemented", ENOSYS);
-#else
-  GDFLT2("ENOSYS", "Operation_Not_Supported");
-#endif
-#ifdef ENOTTY
-  GCST2("ENOTTY", "Inappropriate_IO_Control_Operation", ENOTTY);
-#else
-  GDFLT2("ENOTTY", "Inappropriate_IO_Control_Operation");
-#endif
-#ifdef ENXIO
-  GCST2("ENXIO", "No_Such_Device_Or_Address", ENXIO);
-#else
-  GDFLT2("ENXIO", "No_Such_Device_Or_Address");
-#endif
-#ifdef EOPNOTSUPP
-  GCST2("EOPNOTSUPP", "Option_Not_Supported", EOPNOTSUPP);
-#else
-  GDFLT2("EOPNOTSUPP", "Option_Not_Supported");
-#endif
-#ifdef EPERM
-  GCST2("EPERM", "Operation_Not_Permitted", EPERM);
-#else
-  GDFLT2("EPERM", "Operation_Not_Permitted");
+  GDFLT2("EBADMSG", "Bad_Message", "Error_Code");
 #endif
 #ifdef EPIPE
-  GCST2("EPIPE", "Broken_Pipe", EPIPE);
+  GCST2("EPIPE", "Broken_Pipe", EPIPE, "Error_Code");
 #else
-  GDFLT2("EPIPE", "Broken_Pipe");
+  GDFLT2("EPIPE", "Broken_Pipe", "Error_Code");
 #endif
-#ifdef EPROTONOSUPPORT
-  GCST2("EPROTONOSUPPORT", "Protocol_Not_Supported", EPROTONOSUPPORT);
+#ifdef ENOTEMPTY
+  GCST2("ENOTEMPTY", "Directory_Not_Empty", ENOTEMPTY, "Error_Code");
 #else
-  GDFLT2("EPROTONOSUPPORT", "Protocol_Not_Supported");
+  GDFLT2("ENOTEMPTY", "Directory_Not_Empty", "Error_Code");
 #endif
-#ifdef EPROTOTYPE
-  GCST2("EPROTOTYPE", "Wrong_Protocol_Type", EPROTOTYPE);
+#ifdef ENOEXEC
+  GCST2("ENOEXEC", "Exec_Format_Error", ENOEXEC, "Error_Code");
 #else
-  GDFLT2("EPROTOTYPE", "Wrong_Protocol_Type");
+  GDFLT2("ENOEXEC", "Exec_Format_Error", "Error_Code");
 #endif
-/* .... what is ERANGE? .... */
-#ifdef ERANGE
-  GCST2("ERANGE", "TBD2", ERANGE);
+#ifdef EEXIST
+  GCST2("EEXIST", "File_Exists", EEXIST, "Error_Code");
 #else
-  GDFLT2("ERANGE", "TBD2");
+  GDFLT2("EEXIST", "File_Exists", "Error_Code");
 #endif
-#ifdef EROFS
-  GCST2("EROFS", "Read_Only_File_System", EROFS);
+#ifdef EFBIG
+  GCST2("EFBIG", "File_Too_Large", EFBIG, "Error_Code");
 #else
-  GDFLT2("EROFS", "Read_Only_File_System");
+  GDFLT2("EFBIG", "File_Too_Large", "Error_Code");
 #endif
-#ifdef ESOCKTNOSUPPORT
-  GCST2("ESOCKTNOSUPPORT", "Socket_Not_Supported", ESOCKTNOSUPPORT);
+#ifdef ENAMETOOLONG
+  GCST2("ENAMETOOLONG", "Filename_Too_Long", ENAMETOOLONG, "Error_Code");
 #else
-  GDFLT2("ESOCKTNOSUPPORT", "Socket_Not_Supported");
-#endif
-#ifdef ESPIPE
-  GCST2("ESPIPE", "Invalid_Seek", ESPIPE);
-#else
-  GDFLT2("ESPIPE", "Invalid_Seek");
-#endif
-#ifdef ESRCH
-  GCST2("ESRCH", "No_Such_Process", ESRCH);
-#else
-  GDFLT2("ESRCH", "No_Such_Process");
-#endif
-#ifdef ETIMEDOUT
-  GCST2("ETIMEDOUT", "Timed_Out", ETIMEDOUT);
-#else
-  GDFLT2("ETIMEDOUT", "Timed_Out");
-#endif
-#ifdef EWOULDBLOCK
-  GCST2("EWOULDBLOCK", "Would_Block", EWOULDBLOCK);
-#else
-  GDFLT2("EWOULDBLOCK", "Would_Block");
+  GDFLT2("ENAMETOOLONG", "Filename_Too_Long", "Error_Code");
 #endif
 #ifdef EXDEV
-  GCST2("EXDEV", "Improper_Link", EXDEV);
+  GCST2("EXDEV", "Improper_Link", EXDEV, "Error_Code");
 #else
-  GDFLT2("EXDEV", "Improper_Link");
+  GDFLT2("EXDEV", "Improper_Link", "Error_Code");
 #endif
-#ifdef HOST_NOT_FOUND
-  GCST("Host_Not_Found", HOST_NOT_FOUND);
+#ifdef ENOTTY
+  GCST2("ENOTTY", "Inappropriate_IO_Control_Operation", ENOTTY, "Error_Code");
 #else
-  GDFLT("Host_Not_Found", -1);
+  GDFLT2("ENOTTY", "Inappropriate_IO_Control_Operation", "Error_Code");
 #endif
-#ifdef NO_DATA
-  GCST2("NO_DATA", "No_Address_Available", NO_DATA);
+#ifdef EIO
+  GCST2("EIO", "Input_Output_Error", EIO, "Error_Code");
 #else
-  GDFLT2("NO_DATA", "No_Address_Available");
+  GDFLT2("EIO", "Input_Output_Error", "Error_Code");
 #endif
-#ifdef NO_RECOVERY
-  GCST2("NO_RECOVERY", "Unrecoverable_Error", NO_RECOVERY);
+#ifdef EINTR
+  GCST2("EINTR", "Interrupted_Operation", EINTR, "Error_Code");
 #else
-  GDFLT2("NO_RECOVERY", "Unrecoverable_Error");
+  GDFLT2("EINTR", "Interrupted_Operation", "Error_Code");
+#endif
+#ifdef EINVAL
+  GCST2("EINVAL", "Invalid_Argument", EINVAL, "Error_Code");
+#else
+  GDFLT2("EINVAL", "Invalid_Argument", "Error_Code");
+#endif
+#ifdef ESPIPE
+  GCST2("ESPIPE", "Invalid_Seek", ESPIPE, "Error_Code");
+#else
+  GDFLT2("ESPIPE", "Invalid_Seek", "Error_Code");
+#endif
+#ifdef EISDIR
+  GCST2("EISDIR", "Is_A_Directory", EISDIR, "Error_Code");
+#else
+  GDFLT2("EISDIR", "Is_A_Directory", "Error_Code");
+#endif
+#ifdef EMSGSIZE
+  GCST2("EMSGSIZE", "Message_Too_Long", EMSGSIZE, "Error_Code");
+#else
+  GDFLT2("EMSGSIZE", "Message_Too_Long", "Error_Code");
+#endif
+#ifdef ECHILD
+  GCST2("ECHILD", "No_Child_Process", ECHILD, "Error_Code");
+#else
+  GDFLT2("ECHILD", "No_Child_Process", "Error_Code");
+#endif
+#ifdef ENOLCK
+  GCST2("ENOLCK", "No_Locks_Available", ENOLCK, "Error_Code");
+#else
+  GDFLT2("ENOLCK", "No_Locks_Available", "Error_Code");
+#endif
+#ifdef ENOSPC
+  GCST2("ENOSPC", "No_Space_Left_On_Device", ENOSPC, "Error_Code");
+#else
+  GDFLT2("ENOSPC", "No_Space_Left_On_Device", "Error_Code");
+#endif
+#ifdef ENODEV
+  GCST2("ENODEV", "No_Such_Operation_On_Device", ENODEV, "Error_Code");
+#else
+  GDFLT2("ENODEV", "No_Such_Operation_On_Device", "Error_Code");
+#endif
+#ifdef ENXIO
+  GCST2("ENXIO", "No_Such_Device_Or_Address", ENXIO, "Error_Code");
+#else
+  GDFLT2("ENXIO", "No_Such_Device_Or_Address", "Error_Code");
+#endif
+#ifdef ENOENT
+  GCST2("ENOENT", "No_Such_File_Or_Directory", ENOENT, "Error_Code");
+#else
+  GDFLT2("ENOENT", "No_Such_File_Or_Directory", "Error_Code");
+#endif
+#ifdef ESRCH
+  GCST2("ESRCH", "No_Such_Process", ESRCH, "Error_Code");
+#else
+  GDFLT2("ESRCH", "No_Such_Process", "Error_Code");
+#endif
+#ifdef ENOTDIR
+  GCST2("ENOTDIR", "Not_A_Directory", ENOTDIR, "Error_Code");
+#else
+  GDFLT2("ENOTDIR", "Not_A_Directory", "Error_Code");
+#endif
+#ifdef ENOMEM
+  GCST2("ENOMEM", "Not_Enough_Space", ENOMEM, "Error_Code");
+#else
+  GDFLT2("ENOMEM", "Not_Enough_Space", "Error_Code");
+#endif
+#ifdef ECANCELED
+  GCST2("ECANCELED", "Operation_Canceled", ECANCELED, "Error_Code");
+#else
+  GDFLT2("ECANCELED", "Operation_Canceled", "Error_Code");
+#endif
+#ifdef EINPROGRESS
+  GCST2("EINPROGRESS", "Operation_In_Progress", EINPROGRESS, "Error_Code");
+#else
+  GDFLT2("EINPROGRESS", "Operation_In_Progress", "Error_Code");
+#endif
+#ifdef ENOSYS
+  GCST2("ENOSYS", "Operation_Not_Implemented", ENOSYS, "Error_Code");
+#else
+  GDFLT2("ENOSYS", "Operation_Not_Implemented", "Error_Code");
+#endif
+#ifdef EPERM
+  GCST2("EPERM", "Operation_Not_Permitted", EPERM, "Error_Code");
+#else
+  GDFLT2("EPERM", "Operation_Not_Permitted", "Error_Code");
+#endif
+#ifdef ENOTSUP
+  GCST2("ENOTSUP", "Operation_Not_Supported", ENOTSUP, "Error_Code");
+#else
+  NON_SUPPORT_MESSAGE("ENOTSUP");
+  GCST2("ENOTSUP", "Operation_Not_Supported", ENOSYS, "Error_Code");
+#endif
+#ifdef EACCES
+  GCST2("EACCES", "Permission_Denied", EACCES, "Error_Code");
+#else
+  GDFLT2("EACCES", "Permission_Denied", "Error_Code");
+#endif
+#ifdef EROFS
+  GCST2("EROFS", "Read_Only_File_System", EROFS, "Error_Code");
+#else
+  GDFLT2("EROFS", "Read_Only_File_System", "Error_Code");
+#endif
+#ifdef EBUSY
+  GCST2("EBUSY", "Resource_Busy", EBUSY, "Error_Code");
+#else
+  GDFLT2("EBUSY", "Resource_Busy", "Error_Code");
+#endif
+#ifdef EDEADLK
+  GCST2("EDEADLK", "Resource_Deadlock_Avoided", EDEADLK, "Error_Code");
+#else
+  GDFLT2("EDEADLK", "Resource_Deadlock_Avoided", "Error_Code");
+#endif
+#ifdef EAGAIN
+  GCST2("EAGAIN", "Resource_Temporarily_Unavailable", EAGAIN, "Error_Code");
+#else
+  GDFLT2("EAGAIN", "Resource_Temporarily_Unavailable", "Error_Code");
+#endif
+#ifdef ETIMEDOUT
+  GCST2("ETIMEDOUT", "Timed_Out", ETIMEDOUT, "Error_Code");
+#else
+  GDFLT2("ETIMEDOUT", "Timed_Out", "Error_Code");
+#endif
+#ifdef EMLINK
+  GCST2("EMLINK", "Too_Many_Links", EMLINK, "Error_Code");
+#else
+  GDFLT2("EMLINK", "Too_Many_Links", "Error_Code");
+#endif
+#ifdef EMFILE
+  GCST2("EMFILE", "Too_Many_Open_Files", EMFILE, "Error_Code");
+#else
+  GDFLT2("EMFILE", "Too_Many_Open_Files", "Error_Code");
+#endif
+#ifdef ENFILE
+  GCST2("ENFILE", "Too_Many_Open_Files_In_System", ENFILE, "Error_Code");
+#else
+  GDFLT2("ENFILE", "Too_Many_Open_Files_In_System", "Error_Code");
+#endif
+#ifdef EADDRINUSE
+  GCST2("EADDRINUSE", "Address_In_Use", EADDRINUSE, "Error_Code");
+#else
+  GDFLT2("EADDRINUSE", "Address_In_Use", "Error_Code");
+#endif
+#ifdef EADDRNOTAVAIL
+  GCST2("EADDRNOTAVAIL", "Address_Not_Available", EADDRNOTAVAIL, "Error_Code");
+#else
+  GDFLT2("EADDRNOTAVAIL", "Address_Not_Available", "Error_Code");
+#endif
+#ifdef EALREADY
+  GCST2("EALREADY", "Already_Awaiting_Connection", EALREADY, "Error_Code");
+#else
+  GDFLT2("EALREADY", "Already_Awaiting_Connection", "Error_Code");
+#endif
+#ifdef ECONNABORTED
+  GCST2("ECONNABORTED", "Connection_Aborted", ECONNABORTED, "Error_Code");
+#else
+  GDFLT2("ECONNABORTED", "Connection_Aborted", "Error_Code");
+#endif
+#ifdef ECONNREFUSED
+  GCST2("ECONNREFUSED", "Connection_Refused", ECONNREFUSED, "Error_Code");
+#else
+  GDFLT2("ECONNREFUSED", "Connection_Refused", "Error_Code");
+#endif
+#ifdef ECONNRESET
+  GCST2("ECONNRESET", "Connection_Reset", ECONNRESET, "Error_Code");
+#else
+  GDFLT2("ECONNRESET", "Connection_Reset", "Error_Code");
+#endif
+#ifdef EDOM
+  GCST2("EDOM", "Domain_Error", EDOM, "Error_Code");
+#else
+  GDFLT2("EDOM", "Domain_Error", "Error_Code");
+#endif
+#ifdef EHOSTDOWN
+  GCST2("EHOSTDOWN", "Host_Down", EHOSTDOWN, "Error_Code");
+#else
+  GDFLT2("EHOSTDOWN", "Host_Down", "Error_Code");
+#endif
+#ifdef EHOSTUNREACH
+  GCST2("EHOSTUNREACH", "Host_Unreachable", EHOSTUNREACH, "Error_Code");
+#else
+  GDFLT2("EHOSTUNREACH", "Host_Unreachable", "Error_Code");
+#endif
+#ifdef EAFNOSUPPORT
+  GCST2("EAFNOSUPPORT", "Incorrect_Address_Type", EAFNOSUPPORT, "Error_Code");
+#else
+  GDFLT2("EAFNOSUPPORT", "Incorrect_Address_Type", "Error_Code");
+#endif
+#ifdef EISCONN
+  GCST2("EISCONN", "Is_Already_Connected", EISCONN, "Error_Code");
+#else
+  GDFLT2("EISCONN", "Is_Already_Connected", "Error_Code");
+#endif
+#ifdef ENETDOWN
+  GCST2("ENETDOWN", "Network_Down", ENETDOWN, "Error_Code");
+#else
+  GDFLT2("ENETDOWN", "Network_Down", "Error_Code");
+#endif
+#ifdef ENETRESET
+  GCST2("ENETRESET", "Network_Reset", ENETRESET, "Error_Code");
+#else
+  GDFLT2("ENETRESET", "Network_Reset", "Error_Code");
+#endif
+#ifdef ENETUNREACH
+  GCST2("ENETUNREACH", "Network_Unreachable", ENETUNREACH, "Error_Code");
+#else
+  GDFLT2("ENETUNREACH", "Network_Unreachable", "Error_Code");
+#endif
+#ifdef ENOBUFS
+  GCST2("ENOBUFS", "No_Buffer_Space", ENOBUFS, "Error_Code");
+#else
+  GDFLT2("ENOBUFS", "No_Buffer_Space", "Error_Code");
+#endif
+#ifdef ENOTSOCK
+  GCST2("ENOTSOCK", "Not_A_Socket", ENOTSOCK, "Error_Code");
+#else
+  GDFLT2("ENOTSOCK", "Not_A_Socket", "Error_Code");
+#endif
+#ifdef ENOTCONN
+  GCST2("ENOTCONN", "Not_Connected", ENOTCONN, "Error_Code");
+#else
+  GDFLT2("ENOTCONN", "Not_Connected", "Error_Code");
+#endif
+#ifdef EOPNOTSUPP
+  GCST2("EOPNOTSUPP", "Option_Not_Supported", EOPNOTSUPP, "Error_Code");
+#else
+  GDFLT2("EOPNOTSUPP", "Option_Not_Supported", "Error_Code");
+#endif
+#ifdef EPROTONOSUPPORT
+  GCST2("EPROTONOSUPPORT", "Protocol_Not_Supported", EPROTONOSUPPORT, "Error_Code");
+#else
+  GDFLT2("EPROTONOSUPPORT", "Protocol_Not_Supported", "Error_Code");
+#endif
+#ifdef ESOCKTNOSUPPORT
+  GCST2("ESOCKTNOSUPPORT", "Socket_Not_Supported", ESOCKTNOSUPPORT, "Error_Code");
+#else
+  GDFLT2("ESOCKTNOSUPPORT", "Socket_Not_Supported", "Error_Code");
+#endif
+#ifdef EWOULDBLOCK
+  GCST2("EWOULDBLOCK", "Would_Block", EWOULDBLOCK, "Error_Code");
+#else
+  GDFLT2("EWOULDBLOCK", "Would_Block", "Error_Code");
+#endif
+#ifdef EPROTOTYPE
+  GCST2("EPROTOTYPE", "Wrong_Protocol_Type", EPROTOTYPE, "Error_Code");
+#else
+  GDFLT2("EPROTOTYPE", "Wrong_Protocol_Type", "Error_Code");
+#endif
+  ifprintf(fp,"   --  Added C-language specific\n");
+#ifdef ENOPROTOOPT
+  GCST2("ENOPROTOOPT", "Unknown_Protocol_Option", ENOPROTOOPT, "Error_Code");
+#else
+  GDFLT2("ENOPROTOOPT", "Unknown_Protocol_Option", "Error_Code");
+#endif
+  ifprintf(fp,"   --  Added Constraint_Error equivalent\n");
+#ifdef ERANGE
+  GCST2("ERANGE", "Constraint_Error_Code", ERANGE, "Error_Code");
+#else
+  GDFLT2("ERANGE", "Constraint_Error_Code", "Error_Code");
 #endif
 
   max_posix_error = max_GCST2;
 
-  EAI_Error_First = 10000;      /* Start with a bias of 10000 */
+  XTI_Error_First = XTI_ERROR_FIRST;
   while (1) {
-     if (EAI_Error_First > max_posix_error) {
+     if (XTI_Error_First > max_posix_error) {
+        break;
+     } else {
+        XTI_Error_First = XTI_Error_First * 10;
+     } /* end if */
+  } /* end while */
+
+  max_GCST2 = XTI_Error_First;
+
+  ifprintf(fp,"\n   subtype XTI_Error_Code is Error_Code\n");
+  ifprintf(fp,"      range %d .. %d;\n\n", -1, XTI_ERROR_LAST-XTI_ERROR_FIRST+XTI_Error_First);
+
+#ifdef TBUFOVFLW
+  GCST2("TBUFOVFLW", "Buffer_Not_Large_Enough", TBUFOVFLW+XTI_Error_First, "XTI_Error_Code");
+#else
+  GDFLT2("TBUFOVFLW", "Buffer_Not_Large_Enough", "XTI_Error_Code");
+#endif
+#ifdef TPROVMISMATCH
+  GCST2("TPROVMISMATCH", "Communications_Provider_Mismatch",
+         TPROVMISMATCH+XTI_Error_First, "XTI_Error_Code");
+#else
+  GDFLT2("TPROVMISMATCH", "Communications_Provider_Mismatch", "XTI_Error_Code");
+#endif
+#ifdef TNOADDR
+  GCST2("TNOADDR", "Could_Not_Allocate_Address", TNOADDR+XTI_Error_First, "XTI_Error_Code");
+#else
+  GDFLT2("TNOADDR", "Could_Not_Allocate_Address", "XTI_Error_Code");
+#endif
+#ifdef TQFULL
+  GCST2("TQFULL", "Endpoint_Queue_Full", TQFULL+XTI_Error_First, "XTI_Error_Code");
+#else
+  GDFLT2("TQFULL", "Endpoint_Queue_Full", "XTI_Error_Code");
+#endif
+#ifdef TBADQLEN
+  GCST2("TBADQLEN", "Endpoint_Queue_Length_Is_Zero", TBADQLEN+XTI_Error_First, "XTI_Error_Code");
+#else
+  GDFLT2("TBADQLEN", "Endpoint_Queue_Length_Is_Zero", "XTI_Error_Code");
+#endif
+#ifdef TLOOK
+  GCST2("TLOOK", "Event_Requires_Attention", TLOOK+XTI_Error_First, "XTI_Error_Code");
+#else
+  GDFLT2("TLOOK", "Event_Requires_Attention", "XTI_Error_Code");
+#endif
+#ifdef TFLOW
+  GCST2("TFLOW", "Flow_Control_Error", TFLOW+XTI_Error_First, "XTI_Error_Code");
+#else
+  GDFLT2("TFLOW", "Flow_Control_Error", "XTI_Error_Code");
+#endif
+#ifdef TBADDATA
+  GCST2("TBADDATA", "Illegal_Data_Range", TBADDATA+XTI_Error_First, "XTI_Error_Code");
+#else
+  GDFLT2("TBADDATA", "Illegal_Data_Range", "XTI_Error_Code");
+#endif
+#ifdef TBADADDR
+  GCST2("TBADADDR", "Incorrect_Address_Format", TBADADDR+XTI_Error_First, "XTI_Error_Code");
+#else
+  GDFLT2("TBADADDR", "Incorrect_Address_Format", "XTI_Error_Code");
+#endif
+#ifdef TBADOPT
+  GCST2("TBADOPT", "Incorrect_Or_Illegal_Option", TBADOPT+XTI_Error_First, "XTI_Error_Code");
+#else
+  GDFLT2("TBADOPT", "Incorrect_Or_Illegal_Option", "XTI_Error_Code");
+#endif
+#ifdef TRESQLEN
+  GCST2("TRESQLEN", "Incorrect_Surrogate_Queue_Length",
+         TRESQLEN+XTI_Error_First, "XTI_Error_Code");
+#else
+  GDFLT2("TRESQLEN", "Incorrect_Surrogate_Queue_Length", "XTI_Error_Code");
+#endif
+#ifdef TACCES
+  GCST2("TACCES", "Insufficient_Permission", TACCES+XTI_Error_First, "XTI_Error_Code");
+#else
+  GDFLT2("TACCES", "Insufficient_Permission", "XTI_Error_Code");
+#endif
+#ifdef TBADNAME
+  GCST2("TBADNAME", "Invalid_Communications_Provider",
+         TBADNAME+XTI_Error_First, "XTI_Error_Code");
+#else
+  GDFLT2("TBADNAME", "Invalid_Communications_Provider", "XTI_Error_Code");
+#endif
+#ifdef TBADF
+  GCST2("TBADF", "Invalid_File_Descriptor", TBADF+XTI_Error_First, "XTI_Error_Code");
+#else
+  GDFLT2("TBADF", "Invalid_File_Descriptor", "XTI_Error_Code");
+#endif
+#ifdef TBADFLAG
+  GCST2("TBADFLAG", "Invalid_Flag", TBADFLAG+XTI_Error_First, "XTI_Error_Code");
+#else
+  GDFLT2("TBADFLAG", "Invalid_Flag", "XTI_Error_Code");
+#endif
+#ifdef TBADSEQ
+  GCST2("TBADSEQ", "Invalid_Sequence_Number", TBADSEQ+XTI_Error_First, "XTI_Error_Code");
+#else
+  GDFLT2("TBADSEQ", "Invalid_Sequence_Number", "XTI_Error_Code");
+#endif
+#ifdef TNODATA
+  GCST2("TNODATA", "No_Data_Available", TNODATA+XTI_Error_First, "XTI_Error_Code");
+#else
+  GDFLT2("TNODATA", "No_Data_Available", "XTI_Error_Code");
+#endif
+#ifdef TNODIS
+  GCST2("TNODIS", "No_Disconnect_Indication_On_Endpoint",
+         TNODIS+XTI_Error_First, "XTI_Error_Code");
+#else
+  GDFLT2("TNODIS", "No_Disconnect_Indication_On_Endpoint", "XTI_Error_Code");
+#endif
+#ifdef TNOREL
+  GCST2("TNOREL", "No_Orderly_Release_Indication_On_Endpoint",
+         TNOREL+XTI_Error_First, "XTI_Error_Code");
+#else
+  GDFLT2("TNOREL", "No_Orderly_Release_Indication_On_Endpoint", "XTI_Error_Code");
+#endif
+#ifdef TNOUDERR
+  GCST2("TNOUDERR", "No_Unit_Data_Error_On_Endpoint",
+         TNOUDERR+XTI_Error_First, "XTI_Error_Code");
+#else
+  GDFLT2("TNOUDERR", "No_Unit_Data_Error_On_Endpoint", "XTI_Error_Code");
+#endif
+#ifdef TOUTSTATE
+  GCST2("TOUTSTATE", "Operation_Not_Valid_For_State",
+         TOUTSTATE+XTI_Error_First, "XTI_Error_Code");
+#else
+  GDFLT2("TOUTSTATE", "Operation_Not_Valid_For_State", "XTI_Error_Code");
+#endif
+#ifdef TINDOUT
+  GCST2("TINDOUT", "Outstanding_Connection_Indications",
+         TINDOUT+XTI_Error_First, "XTI_Error_Code");
+#else
+  GDFLT2("TINDOUT", "Outstanding_Connection_Indications", "XTI_Error_Code");
+#endif
+#ifdef TPROTO
+  GCST2("TPROTO", "Protocol_Error", TPROTO+XTI_Error_First, "XTI_Error_Code");
+#else
+  GDFLT2("TPROTO", "Protocol_Error", "XTI_Error_Code");
+#endif
+#ifdef TSTATECHNG
+  GCST2("TSTATECHNG", "State_Change_In_Progress",
+         TSTATECHNG+XTI_Error_First, "XTI_Error_Code");
+#else
+  GDFLT2("TSTATECHNG", "State_Change_In_Progress", "XTI_Error_Code");
+#endif
+#ifdef TRESADDR
+  GCST2("TRESADDR", "Surrogate_File_Descriptor_Mismatch",
+         TRESADDR+XTI_Error_First, "XTI_Error_Code");
+#else
+  GDFLT2("TRESADDR", "Surrogate_File_Descriptor_Mismatch", "XTI_Error_Code");
+#endif
+#ifdef TNOSTRUCTYPE
+  GCST2("TNOSTRUCTYPE", "XTI_Operation_Not_Supported",
+         TNOSTRUCTYPE+XTI_Error_First, "XTI_Error_Code");
+#else
+  GDFLT2("TNOSTRUCTYPE", "XTI_Operation_Not_Supported", "XTI_Error_Code");
+#endif
+#ifdef TADDRBUSY
+  GCST2("TADDRBUSY", "XTI_Address_In_Use", TADDRBUSY+XTI_Error_First, "XTI_Error_Code");
+#else
+  GDFLT2("TADDRBUSY", "XTI_Address_In_Use", "XTI_Error_Code");
+#endif
+#ifdef TNOTSUPPORT
+  GCST2("TNOTSUPPORT", "Function_Not_Supported", TNOTSUPPORT+XTI_Error_First, "XTI_Error_Code");
+#else
+  GDFLT2("TNOTSUPPORT", "Function_Not_Supported", "XTI_Error_Code");
+#endif
+
+  XTI_Error_Last = max_GCST2;
+  if (XTI_Error_Last > XTI_ERROR_LAST) {
+    quit("XTI_ERROR_LAST isn't enough large.\n","");
+  }
+
+  EAI_Error_First = EAI_ERROR_FIRST;
+  while (1) {
+     if (EAI_Error_First > XTI_Error_Last) {
         break;
      } else {
         EAI_Error_First = EAI_Error_First * 10;
@@ -3923,241 +4112,76 @@ void create_posix() {
 
   max_GCST2 = EAI_Error_First;
 
-#ifdef EAI_ADDRFAMILY
-  GCST2("EAI_ADDRFAMILY", "Unknown_Address_Type",
-         EAI_ADDRFAMILY+EAI_Error_First);
-#else
-  GDFLT2("EAI_ADDRFAMILY", "Unknown_Address_Type");
-#endif
-#ifdef EAI_AGAIN
-  GCST2("EAI_AGAIN", "Try_Again",
-         EAI_AGAIN+EAI_Error_First);
-#else
-  GDFLT2("EAI_AGAIN", "Try_Again");
-#endif
+  ifprintf(fp,"\n   subtype Addrinfo_Error_Code is Error_Code\n");
+  ifprintf(fp,"      range %d .. %d;\n\n", -1, EAI_ERROR_LAST-EAI_ERROR_FIRST+EAI_Error_First);
+
 #ifdef EAI_BADFLAGS
   GCST2("EAI_BADFLAGS", "Invalid_Flags",
-         EAI_BADFLAGS+EAI_Error_First);
+         EAI_BADFLAGS+EAI_Error_First, "Addrinfo_Error_Code");
 #else
-  GDFLT2("EAI_BADFLAGS", "Invalid_Flags");
-#endif
-#ifdef EAI_FAIL
-  GCST2("EAI_FAIL", "Name_Failed",
-         EAI_FAIL+EAI_Error_First);
-#else
-  GDFLT2("EAI_FAIL", "Name_Failed");
-#endif
-#ifdef EAI_FAMILY
-  GCST2("EAI_FAMILY", "Unknown_Protocol_Family",
-         EAI_FAMILY+EAI_Error_First);
-#else
-  GDFLT2("EAI_FAMILY", "Unknown_Protocol_Family");
+  GDFLT2("EAI_BADFLAGS", "Invalid_Flags", "Addrinfo_Error_Code");
 #endif
 #ifdef EAI_MEMORY
   GCST2("EAI_MEMORY", "Memory_Allocation_Failed",
-         EAI_MEMORY+EAI_Error_First);
+         EAI_MEMORY+EAI_Error_First, "Addrinfo_Error_Code");
 #else
-  GDFLT2("EAI_MEMORY", "Memory_Allocation_Failed");
+  GDFLT2("EAI_MEMORY", "Memory_Allocation_Failed", "Addrinfo_Error_Code");
 #endif
-#ifdef EAI_NODATA
-  GCST2("EAI_NODATA", "No_Address_For_Name",
-         EAI_NODATA+EAI_Error_First);
+#ifdef EAI_FAIL
+  GCST2("EAI_FAIL", "Name_Failed",
+         EAI_FAIL+EAI_Error_First, "Addrinfo_Error_Code");
 #else
-  GDFLT2("EAI_NODATA", "No_Address_For_Name");
+  GDFLT2("EAI_FAIL", "Name_Failed", "Addrinfo_Error_Code");
 #endif
 #ifdef EAI_NONAME
   GCST2("EAI_NONAME", "Name_Not_Known",
-         EAI_NONAME+EAI_Error_First);
+         EAI_NONAME+EAI_Error_First, "Addrinfo_Error_Code");
 #else
-  GDFLT2("EAI_NONAME", "Name_Not_Known");
+  GDFLT2("EAI_NONAME", "Name_Not_Known", "Addrinfo_Error_Code");
+#endif
+#ifdef EAI_NODATA
+  GCST2("EAI_NODATA", "No_Address_For_Name",
+         EAI_NODATA+EAI_Error_First, "Addrinfo_Error_Code");
+#else
+  GDFLT2("EAI_NODATA", "No_Address_For_Name", "Addrinfo_Error_Code");
 #endif
 #ifdef EAI_SERVICE
   GCST2("EAI_SERVICE", "Service_Not_Supported",
-         EAI_SERVICE+EAI_Error_First);
+         EAI_SERVICE+EAI_Error_First, "Addrinfo_Error_Code");
 #else
-  GDFLT2("EAI_SERVICE", "Service_Not_Supported");
+  GDFLT2("EAI_SERVICE", "Service_Not_Supported", "Addrinfo_Error_Code");
+#endif
+#ifdef EAI_AGAIN
+  GCST2("EAI_AGAIN", "Try_Again",
+         EAI_AGAIN+EAI_Error_First, "Addrinfo_Error_Code");
+#else
+  GDFLT2("EAI_AGAIN", "Try_Again", "Addrinfo_Error_Code");
+#endif
+#ifdef EAI_ADDRFAMILY
+  GCST2("EAI_ADDRFAMILY", "Unknown_Address_Type",
+         EAI_ADDRFAMILY+EAI_Error_First, "Addrinfo_Error_Code");
+#else
+  GDFLT2("EAI_ADDRFAMILY", "Unknown_Address_Type", "Addrinfo_Error_Code");
+#endif
+#ifdef EAI_FAMILY
+  GCST2("EAI_FAMILY", "Unknown_Protocol_Family",
+         EAI_FAMILY+EAI_Error_First, "Addrinfo_Error_Code");
+#else
+  GDFLT2("EAI_FAMILY", "Unknown_Protocol_Family", "Addrinfo_Error_Code");
 #endif
 #ifdef EAI_SOCKTYPE
   GCST2("EAI_SOCKTYPE", "Unknown_Socket_Type",
-         EAI_SOCKTYPE+EAI_Error_First);
+         EAI_SOCKTYPE+EAI_Error_First, "Addrinfo_Error_Code");
 #else
-  GDFLT2("EAI_SOCKTYPE", "Unknown_Socket_Type");
+  GDFLT2("EAI_SOCKTYPE", "Unknown_Socket_Type", "Addrinfo_Error_Code");
 #endif
 
   EAI_Error_Last = max_GCST2;
-  XTI_Error_First = 100000;      /* Start with a bias of 100000 */
-  while (1) {
+  if (EAI_Error_Last > EAI_ERROR_LAST) {
+    quit("EAI_ERROR_LAST isn't enough large.\n","");
+  }
 
-     if (XTI_Error_First > max_posix_error) {
-        break;
-     } else {
-        XTI_Error_First = XTI_Error_First * 10;
-     } /* end if */
-  } /* end while */
-
-  ifprintf(fp,"   subtype Addrinfo_Error_Code is Error_Code\n");
-  ifprintf(fp,"      range %d .. %d;\n", EAI_Error_First, EAI_Error_Last);
-
-  max_GCST2 = XTI_Error_First;
-
-#ifdef TACCES
-  GCST2("TACCES", "Insufficient_Permission", TACCES+XTI_Error_First);
-#else
-  GDFLT2("TACCES", "Insufficient_Permission");
-#endif
-#ifdef TADDRBUSY
-  GCST2("TADDRBUSY", "XTI_Address_In_Use", TADDRBUSY+XTI_Error_First);
-#else
-  GDFLT2("TADDRBUSY", "XTI_Address_In_Use");
-#endif
-#ifdef TBADADDR
-  GCST2("TBADADDR", "Incorrect_Address_Format", TBADADDR+XTI_Error_First);
-#else
-  GDFLT2("TBADADDR", "Incorrect_Address_Format");
-#endif
-#ifdef TBADDATA
-  GCST2("TBADDATA", "Illegal_Data_Range", TBADDATA+XTI_Error_First);
-#else
-  GDFLT2("TBADDATA", "Illegal_Data_Range");
-#endif
-#ifdef TBADF
-  GCST2("TBADF", "Invalid_File_Descriptor", TBADF+XTI_Error_First);
-#else
-  GDFLT2("TBADF", "Invalid_File_Descriptor");
-#endif
-#ifdef TBADFLAG
-  GCST2("TBADFLAG", "Invalid_Flag", TBADFLAG+XTI_Error_First);
-#else
-  GDFLT2("TBADFLAG", "Invalid_Flag");
-#endif
-#ifdef TBADNAME
-  GCST2("TBADNAME", "Invalid_Communications_Provider",
-         TBADNAME+XTI_Error_First);
-#else
-  GDFLT2("TBADNAME", "Invalid_Communications_Provider");
-#endif
-#ifdef TBADOPT
-  GCST2("TBADOPT", "Incorrect_Or_Illegal_Option", TBADOPT+XTI_Error_First);
-#else
-  GDFLT2("TBADOPT", "Incorrect_Or_Illegal_Option");
-#endif
-#ifdef TBADQLEN
-  GCST2("TBADQLEN", "Endpoint_Queue_Length_Is_Zero", TBADQLEN+XTI_Error_First);
-#else
-  GDFLT2("TBADQLEN", "Endpoint_Queue_Length_Is_Zero");
-#endif
-#ifdef TBADSEQ
-  GCST2("TBADSEQ", "Invalid_Sequence_Number", TBADSEQ+XTI_Error_First);
-#else
-  GDFLT2("TBADSEQ", "Invalid_Sequence_Number");
-#endif
-#ifdef TBUFOVFLW
-  GCST2("TBUFOVFLW", "Buffer_Not_Large_Enough", TBUFOVFLW+XTI_Error_First);
-#else
-  GDFLT2("TBUFOVFLW", "Buffer_Not_Large_Enough");
-#endif
-#ifdef TFLOW
-  GCST2("TFLOW", "Flow_Control_Error", TFLOW+XTI_Error_First);
-#else
-  GDFLT2("TFLOW", "Flow_Control_Error");
-#endif
-#ifdef TINDOUT
-  GCST2("TINDOUT", "Outstanding_Connection_Indications",
-         TINDOUT+XTI_Error_First);
-#else
-  GDFLT2("TINDOUT", "Outstanding_Connection_Indications");
-#endif
-#ifdef TLOOK
-  GCST2("TLOOK", "Event_Requires_Attention", TLOOK+XTI_Error_First);
-#else
-  GDFLT2("TLOOK", "Event_Requires_Attention");
-#endif
-#ifdef TNOADDR
-  GCST2("TNOADDR", "Could_Not_Allocate_Address", TNOADDR+XTI_Error_First);
-#else
-  GDFLT2("TNOADDR", "Could_Not_Allocate_Address");
-#endif
-#ifdef TNODATA
-  GCST2("TNODATA", "No_Data_Available", TNODATA+XTI_Error_First);
-#else
-  GDFLT2("TNODATA", "No_Data_Available");
-#endif
-#ifdef TNODIS
-  GCST2("TNODIS", "No_Disconnect_Indication_On_Endpoint",
-         TNODIS+XTI_Error_First);
-#else
-  GDFLT2("TNODIS", "No_Disconnect_Indication_On_Endpoint");
-#endif
-#ifdef TPROVMISMATCH
-  GCST2("TPROVMISMATCH", "Communications_Provider_Mismatch",
-         TPROVMISMATCH+XTI_Error_First);
-#else
-  GDFLT2("TPROVMISMATCH", "Communications_Provider_Mismatch");
-#endif
-#ifdef TNOREL
-  GCST2("TNOREL", "No_Orderly_Release_Indication_On_Endpoint",
-         TNOREL+XTI_Error_First);
-#else
-  GDFLT2("TNOREL", "No_Orderly_Release_Indication_On_Endpoint");
-#endif
-#ifdef TNOSTRUCTYPE
-  GCST2("TNOSTRUCTYPE", "Unsupported_Object_Type_Requested",
-         TNOSTRUCTYPE+XTI_Error_First);
-#else
-  GDFLT2("TNOSTRUCTYPE", "Unsupported_Object_Type_Requested");
-#endif
-#ifdef TNOTSUPPORT
-  GCST2("TNOTSUPPORT", "Function_Not_Supported", TNOTSUPPORT+XTI_Error_First);
-#else
-  GDFLT2("TNOTSUPPORT", "Function_Not_Supported");
-#endif
-#ifdef TNOUDERR
-  GCST2("TNOUDERR", "No_Unitdata_Error_On_Endpoint",
-         TNOUDERR+XTI_Error_First);
-#else
-  GDFLT2("TNOUDERR", "No_Unitdata_Error_On_Endpoint");
-#endif
-#ifdef TOUTSTATE
-  GCST2("TOUTSTATE", "Function_Not_Valid_For_State",
-         TOUTSTATE+XTI_Error_First);
-#else
-  GDFLT2("TOUTSTATE", "Function_Not_Valid_For_State");
-#endif
-#ifdef TPROTO
-  GCST2("TPROTO", "Protocol_Error", TPROTO+XTI_Error_First);
-#else
-  GDFLT2("TPROTO", "Protocol_Error");
-#endif
-#ifdef TQFULL
-  GCST2("TQFULL", "Endpoint_Queue_Full", TQFULL+XTI_Error_First);
-#else
-  GDFLT2("TQFULL", "Endpoint_Queue_Full");
-#endif
-#ifdef TSTATECHNG
-  GCST2("TSTATECHNG", "State_Change_In_Progress",
-         TSTATECHNG+XTI_Error_First);
-#else
-  GDFLT2("TSTATECHNG", "State_Change_In_Progress");
-#endif
-#ifdef TRESADDR
-  GCST2("TRESADDR", "Surrogate_File_Descriptor_Mismatch",
-         TRESADDR+XTI_Error_First);
-#else
-  GDFLT2("TRESADDR", "Surrogate_File_Descriptor_Mismatch");
-#endif
-#ifdef TRESQLEN
-  GCST2("TRESQLEN", "Incorrect_Surrogate_Queue_Length",
-         TRESQLEN+XTI_Error_First);
-#else
-  GDFLT2("TRESQLEN", "Incorrect_Surrogate_Queue_Length");
-#endif
-
-  XTI_Error_Last = max_GCST2;
-
-  ifprintf(fp,"   subtype XTI_Error_Code is Error_Code\n");
-  ifprintf(fp,"      range %d .. %d;\n", XTI_Error_First, XTI_Error_Last);
-
-  ifprintf(fp,"   --  System Identification\n");
+  ifprintf(fp,"\n   --  System Identification\n");
 
   ifprintf(fp,"   function System_Name return POSIX_String;\n");
   ifprintf(fp,"   function Node_Name return POSIX_String;\n");
@@ -4228,11 +4252,11 @@ void create_posix() {
       if (x.l == 0x00010203) {
          network_byte_order = 1;
          ifprintf(fp,"   Host_Byte_Order_Is_Net_Byte_Order"
-           " : Boolean := True;\n\n");
+           " : Boolean := True;  --  Added\n\n");
       } else {
          network_byte_order = 0;
          ifprintf(fp,"   Host_Byte_Order_Is_Net_Byte_Order"
-           " : Boolean := False;\n\n");
+           " : Boolean := False;  --  Added\n\n");
       }
     } else quit ("short is not 16-bit","");
   } else quit ("int is not 32-bit","");
@@ -4263,9 +4287,9 @@ void create_posix() {
 
   ifprintf(fp,"   type Octet is mod 2 ** 8;\n");
   ifprintf(fp,"   type Octet_Array is\n");
-  ifprintf(fp,"      array (Integer range <>) of aliased Octet;\n");
-  ifprintf(fp,"   type Octet_Array_Pointer is access all Octet_Array;\n");
-  ifprintf(fp,"private\n");
+  ifprintf(fp,"      array (Positive range <>) of aliased Octet;  --   Aliased added\n");
+  ifprintf(fp,"   type Octet_Array_Pointer is access all Octet_Array;  --  Added\n");
+  ifprintf(fp,"\nprivate\n");
 
 #ifdef VERSION
   ifprintf(fp,"   Florist_Version : constant String := \""VERSION"\";\n\n");

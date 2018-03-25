@@ -43,9 +43,11 @@ package POSIX.Configurable_System_Limits is
      return POSIX.Options.Asynchronous_IO_Support;
    function File_Synchronization_Is_Supported
      return POSIX.Options.File_Synchronization_Support;
+   pragma Warnings (Off, "*obsolescent*");
    function Job_Control_Supported                          -- obsolescent
      return POSIX.Job_Control_Support;                     -- obsolescent
    pragma Obsolescent;
+   pragma Warnings (On, "*obsolescent*");
    function Job_Control_Is_Supported
      return POSIX.Options.Job_Control_Support
      renames Job_Control_Supported;
@@ -75,9 +77,11 @@ package POSIX.Configurable_System_Limits is
      return POSIX.Options.Priority_Task_Scheduling_Support;
    function Realtime_Signals_Are_Supported
      return POSIX.Options.Realtime_Signals_Support;
+   pragma Warnings (Off, "*obsolescent*");
    function Saved_IDs_Supported                        --  obsolescent
     return POSIX.Saved_IDs_Support;                    --  obsolescent
    pragma Obsolescent;
+   pragma Warnings (On, "*obsolescent*");
    function Saved_IDs_Are_Supported
      return POSIX.Options.Saved_IDs_Support
      renames Saved_IDs_Supported;
@@ -123,9 +127,11 @@ package POSIX.Configurable_System_Limits is
      return POSIX.Limits.Semaphores_Maxima;
    function Semaphores_Value_Maximum
      return POSIX.Limits.Semaphores_Value_Maxima;
+   pragma Warnings (Off, "*obsolescent*");
    function Stream_Maximum                            -- obsolescent
      return POSIX.Stream_Maxima;                      -- obsolescent
    pragma Obsolescent;
+   pragma Warnings (On, "*obsolescent*");
    function Streams_Maximum
      return POSIX.Limits.Streams_Maxima
      renames Stream_Maximum;

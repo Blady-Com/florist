@@ -74,11 +74,13 @@ package body POSIX.Configurable_System_Limits is
       return sysconf (SC_FSYNC) = 1;
    end File_Synchronization_Is_Supported;
 
+   pragma Warnings (Off, "*obsolescent*");
    function Job_Control_Supported
      return Job_Control_Support is
    begin
       return sysconf (SC_JOB_CONTROL) = 1;
    end Job_Control_Supported;
+   pragma Warnings (On, "*obsolescent*");
 
    function Memory_Mapped_Files_Are_Supported
      return PO.Memory_Mapped_Files_Support is

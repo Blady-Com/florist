@@ -53,7 +53,9 @@ package POSIX.File_Status is
 
    type File_ID is private;
    type Device_ID is private;
+   pragma Warnings (Off, "*obsolescent*");
    subtype Links is Natural range 0 .. POSIX.Link_Limit_Maxima'Last;
+   pragma Warnings (On, "*obsolescent*");
    function Permission_Set_Of (File_Status : Status)
       return POSIX.Permissions.Permission_Set;
    function File_ID_Of (File_Status : Status)

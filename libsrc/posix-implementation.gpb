@@ -281,7 +281,7 @@ package body POSIX.Implementation is
 
    function Not_Implemented_Direct return int is
    begin
-      return ENOSYS;
+      return int (ENOSYS);
    end Not_Implemented_Direct;
 
    function Not_Supported_Neg_One return int is
@@ -292,7 +292,7 @@ package body POSIX.Implementation is
 
    function Not_Supported_Direct return int is
    begin
-      return ENOTSUP;
+      return int (ENOTSUP);
    end Not_Supported_Direct;
 
    ----------------------

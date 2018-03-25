@@ -39,6 +39,7 @@ with POSIX,
      POSIX.Limits,
      POSIX.Options;
 package POSIX.Configurable_File_Limits is
+   pragma Warnings (Off, "*obsolescent*");
 
    function Link_Is_Limited (Pathname : POSIX.Pathname)  --  obsolescent
       return Boolean;                                    --  obsolescent

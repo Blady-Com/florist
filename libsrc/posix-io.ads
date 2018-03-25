@@ -44,9 +44,11 @@ with Ada.Streams,
 pragma Elaborate_All (POSIX);
 package POSIX.IO is
 
+   pragma Warnings (Off, "*obsolescent*");
    type File_Descriptor is
      range 0 .. POSIX.Open_Files_Maxima'Last - 1;
    for File_Descriptor'Size use POSIX.C.int'Size;
+   pragma Warnings (On, "*obsolescent*");
 
    Standard_Input  : constant File_Descriptor := 0;
    Standard_Output : constant File_Descriptor := 1;

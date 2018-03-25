@@ -305,11 +305,11 @@ package body POSIX.Mutexes is
    ----------------
 
    function pthread_mutex_trylock
-     (mutex : Mutex_Descriptor) return int;
+     (mutex : Mutex_Descriptor) return Error_Code;
    pragma Import (C, pthread_mutex_trylock, pthread_mutex_trylock_LINKNAME);
 
    function Try_Lock (M : Mutex_Descriptor) return Boolean is
-      Result : constant int := pthread_mutex_trylock (M);
+      Result : constant Error_Code := pthread_mutex_trylock (M);
       --  Note: pthread_mutex_trylock returns an error code in Result, and
       --  does not set errno.
 
@@ -322,7 +322,7 @@ package body POSIX.Mutexes is
             return False;
 
          when others =>
-            Raise_POSIX_Error (Error_Code (Result));
+            Raise_POSIX_Error (Result);
       end case;
    end Try_Lock;
 

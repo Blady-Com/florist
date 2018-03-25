@@ -40,6 +40,7 @@ with POSIX.C,
      POSIX.Implementation;
 
 package body POSIX.Configurable_File_Limits is
+   pragma Warnings (Off, "*obsolescent*");
 
    use POSIX.C;
    use POSIX.Implementation;
