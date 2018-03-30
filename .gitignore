@@ -2,3 +2,6 @@
 /lib/
 /gensrc/
 *.log
+/gnatsocks/obj/
+/gnatsocks/lib/
+/gnatsocks/bin/

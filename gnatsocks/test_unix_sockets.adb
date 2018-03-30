@@ -3,7 +3,7 @@
 --  syntax errors.
 
 with Sockets.Unix;
-procedure Text_Unix_Sockets is
+procedure Test_Unix_Sockets is
 begin
    null;
 end Test_Unix_Sockets;

@@ -45,7 +45,6 @@ with Ada.Command_Line,
      POSIX_Configurable_System_Limits,
      POSIX_Options,
      POSIX_Process_Identification,
-     POSIX_Process_Primitives,
      POSIX_Signals;
 
 pragma Elaborate_All (POSIX_Process_Identification);
@@ -136,7 +135,7 @@ package body POSIX_Report is
    --  Local Variables  --
    -----------------------
 
-   Super_User_ID : User_ID := int_to_uid (0);
+   Super_User_ID : constant User_ID := int_to_uid (0);
 
    procedure Header (Label : String; Root_OK : Boolean := False) is
       Saved_Verbose : Boolean := Verbose;
@@ -228,7 +227,7 @@ package body POSIX_Report is
    procedure Check_Error_Code
      (EC : POSIX.Error_Code;
       Message : String) is
-      E : POSIX.Error_Code := POSIX.Get_Error_Code;
+      E : constant POSIX.Error_Code := POSIX.Get_Error_Code;
    begin
       if E /= EC then
          Fail ("incorrect error code: " & POSIX.Image (E));
@@ -241,7 +240,7 @@ package body POSIX_Report is
      (EC : POSIX.Error_Code;
       E : Ada.Exceptions.Exception_Occurrence;
       Message : String) is
-      EEC : POSIX.Error_Code := POSIX.Get_Error_Code;
+      EEC : constant POSIX.Error_Code := POSIX.Get_Error_Code;
    begin
       if Exception_Identity (E) /= POSIX_Error'Identity then
          Fail (E, Message);
@@ -308,7 +307,6 @@ package body POSIX_Report is
    end Comment;
 
    function Is_Supported (Option : POSIX_Option) return Boolean is
-      use POSIX_Configurable_System_Limits;
    begin
       case Option is
       when Asynchronous_IO_Option =>

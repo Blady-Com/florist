@@ -31,7 +31,7 @@ procedure multiecho is
    connections : array (connection_id) of sockets.stream_socket;
 
    procedure shut_down (e : ada.exceptions.exception_occurrence);
-   main_task : ada.task_identification.task_id := 
+   main_task : constant ada.task_identification.task_id :=
        ada.task_identification.current_task;
    --  used to shut down the entire program
 
@@ -97,8 +97,8 @@ procedure multiecho is
          writeln (outs, "Hello! Enter BYE to exit.");
          loop
             declare
-               str : string := readln (ins);
-            begin 
+               str : constant string := readln (ins);
+            begin
                exit when str (1..3) = "BYE";
                writeln (outs, "Echo: """ & str & '"');
             end;
@@ -119,7 +119,7 @@ procedure multiecho is
 begin
    sockets.open (s, sockets.internet.new_address
      (sockets.internet.any_port, sockets.internet.all_local_addresses));
-   ada.text_io.put_line ("serving at: " 
+   ada.text_io.put_line ("serving at: "
        & sockets.internet.get_addressstring (
 --     & sockets.internet.get_hostbyaddr (
        sockets.internet.get_internet_address (
@@ -131,5 +131,3 @@ begin
    server_pool.next_turn;
 exception when e : others => shut_down (e);
 end multiecho;
-
-

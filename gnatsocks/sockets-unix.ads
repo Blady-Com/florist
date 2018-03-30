@@ -40,7 +40,7 @@ package Sockets.Unix is
    type Unix_Socket_Address is new Socket_Address with private;
 
    function Get_Address
-     (Sock : in Socket'Class) return Unix_Socket_Address;
+     (Sock : Socket'Class) return Unix_Socket_Address;
 
    function New_Address (Path : String) return Unix_Socket_Address;
    --  specifies the pathname of the socket

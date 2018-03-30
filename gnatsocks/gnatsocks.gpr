@@ -1,0 +1,32 @@
+with "florist";
+library project GNATSocks is
+
+   for Library_Name use "gnatsocks";
+   for Languages use ("Ada");
+   for Source_Dirs use (".");
+   for Object_Dir use "obj";
+   for Library_Dir use "lib";
+
+   for Source_Files use ("sockets-internet.ads", "sockets-internet.adb", "sockets.ads", "sockets.adb",
+                         "sockets-unix.ads", "sockets-unix.adb");
+
+   for Library_Kind use "static";
+
+   type Build_Type is ("Debug", "Production");
+   Build : Build_Type := External ("Build", "Debug");
+
+   package Compiler is
+      case Build is
+         when "Debug" =>
+            for Default_Switches ("Ada") use ("-g", "-gnatwae", "-gnatyg");
+         when "Production" =>
+            for Default_Switches ("Ada") use ("-O2", "-gnatp");
+      end case;
+   end Compiler;
+
+   package Install is
+      for Install_Name use "gnatsocks";
+      for Artifacts ("share/doc/gnatsocks_rm") use ("obj/gnatdoc/*");
+   end Install;
+
+end GNATSocks;

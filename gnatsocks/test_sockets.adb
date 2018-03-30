@@ -54,8 +54,8 @@ begin
    exception when E : others => Fail (E, "A001");
    end;
 
-   declare
-      Ch : Character;
+--     declare
+--        Ch : Character;
    begin
       Test ("open stream socket to telnet port of local host");
       Sockets.Open (Stream_Sock,

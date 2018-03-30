@@ -34,11 +34,7 @@
 ------------------------------------------------------------------------------
 --  [$Revision: 110555 $]
 
-with Ada.Finalization,
-     Ada.Streams,
-     POSIX.C,
-     POSIX.Implementation,
-     System,
+with POSIX.Implementation,
      Unchecked_Conversion;
 package body Sockets.Unix is
 
@@ -61,22 +57,21 @@ package body Sockets.Unix is
      (sockaddr_un_ptr, sockaddr_ptr);
 
    function Get_Address
-     (Sock : in Socket'Class)
+     (Sock : Socket'Class)
      return Unix_Socket_Address is
       addr : aliased struct_sockaddr_un;
       addrlen : aliased int := addr'Size / char'Size;
    begin
       Check (getsockname (Sock.fd, +addr'Unchecked_Access,
         addrlen'Unchecked_Access));
-      if addrlen /= addr'Size / char'Size then raise Constraint_Error; end if;
+      if addrlen /= addr'Size / char'Size then
+         raise Constraint_Error;
+      end if;
       return (Socket_Address with un_addr => addr);
    end Get_Address;
 
-   type String_Ptr is access all String;
    function New_Address (Path : String) return Unix_Socket_Address is
       addr : struct_sockaddr_un;
-      function sptr_to_psptr is new Unchecked_Conversion
-         (String_Ptr, POSIX_String_Ptr);
    begin
       if Path'Length > addr.sun_path'Length - 1 then
          raise Constraint_Error;
@@ -88,7 +83,9 @@ package body Sockets.Unix is
 
    function Get_Path (Addr : Unix_Socket_Address) return String is
    begin
-      if Valid  (Addr) then raise Constraint_Error; end if;
+      if Valid  (Addr) then
+         raise Constraint_Error;
+      end if;
       return Form_String (Addr.un_addr.sun_path (1)'Unchecked_Access);
    end Get_Path;
 
@@ -120,13 +117,9 @@ package body Sockets.Unix is
 
    function Protocol_Family
      (Addr : Unix_Socket_Address) return POSIX.C.int is
+      pragma Unreferenced (Addr);
    begin
       return PF_UNIX;
    end Protocol_Family;
 
 end Sockets.Unix;
-
-
-
-
-

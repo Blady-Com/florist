@@ -78,7 +78,7 @@ package Sockets.Internet is
    type Internet_Socket_Address is new Socket_Address with private;
 
    function Get_Address
-     (Addr : in Socket'Class) return Internet_Socket_Address;
+     (Sock : Socket'Class) return Internet_Socket_Address;
 
    function New_Address
      (Port : Port_Number;

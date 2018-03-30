@@ -57,8 +57,8 @@ begin
    writeln ("Hello! Enter BYE to exit.");
    loop
      declare
-       str : string := readln;
-     begin 
+         str : constant string := readln;
+     begin
        exit when str (1..3) = "BYE";
        writeln ("Echo: """ & str & '"');
      end;

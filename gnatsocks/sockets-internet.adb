@@ -34,8 +34,7 @@
 ------------------------------------------------------------------------------
 --  [$Revision: 110555 $]
 
-with Ada.Streams,
-     POSIX,
+with POSIX,
      POSIX.C,
      POSIX.Implementation,
      System,
@@ -51,16 +50,16 @@ package body Sockets.Internet is
 
    Local_Hostname : String (1 .. 256) := (others => Character'Val (0));
 
-   function inet_addr (cp : char_var_ptr) return unsigned_long;
-      pragma Import (C, inet_addr, inet_addr_LINKNAME);
-   function inet_network (cp : char_var_ptr) return unsigned_long;
-      pragma Import (C, inet_network, inet_network_LINKNAME);
-   function inet_makeaddr (net, lna : int) return struct_in_addr;
-      pragma Import (C, inet_makeaddr, inet_makeaddr_LINKNAME);
-   function inet_lnaof (addr : struct_in_addr) return int;
-      pragma Import (C, inet_lnaof, inet_lnaof_LINKNAME);
-   function inet_netof (addr : struct_in_addr) return int;
-      pragma Import (C, inet_netof, inet_netof_LINKNAME);
+--     function inet_addr (cp : char_var_ptr) return unsigned_long;
+--        pragma Import (C, inet_addr, inet_addr_LINKNAME);
+--     function inet_network (cp : char_var_ptr) return unsigned_long;
+--        pragma Import (C, inet_network, inet_network_LINKNAME);
+--     function inet_makeaddr (net, lna : int) return struct_in_addr;
+--        pragma Import (C, inet_makeaddr, inet_makeaddr_LINKNAME);
+--     function inet_lnaof (addr : struct_in_addr) return int;
+--        pragma Import (C, inet_lnaof, inet_lnaof_LINKNAME);
+--     function inet_netof (addr : struct_in_addr) return int;
+--        pragma Import (C, inet_netof, inet_netof_LINKNAME);
    function inet_ntoa (addr : struct_in_addr) return char_ptr;
       pragma Import (C, inet_ntoa, inet_ntoa_LINKNAME);
 
@@ -84,59 +83,59 @@ package body Sockets.Internet is
      return hostent_ptr;
       pragma Import (C, gethostbyaddr_r, gethostbyaddr_r_LINKNAME);
 
-   function htonl (hostlong  : unsigned_long) return unsigned_long;
-      pragma Import (C, htonl, "c_htonl");
-   function ntohl (netlong   : unsigned_long) return unsigned_long;
-      pragma Import (C, ntohl, "c_ntohl");
+--     function htonl (hostlong  : unsigned_long) return unsigned_long;
+--        pragma Import (C, htonl, "c_htonl");
+--     function ntohl (netlong   : unsigned_long) return unsigned_long;
+--        pragma Import (C, ntohl, "c_ntohl");
    function htons (hostshort : unsigned_short) return unsigned_short;
       pragma Import (C, htons, "c_htons");
-   function ntohs (netshort  : unsigned_short) return unsigned_short;
-      pragma Import (C, ntohs, "c_ntohs");
+--     function ntohs (netshort  : unsigned_short) return unsigned_short;
+--        pragma Import (C, ntohs, "c_ntohs");
 
    function gethostname
      (name : char_var_ptr; namelen : int)
      return int;
       pragma Import (C, gethostname, gethostname_LINKNAME);
 
-   function read
-     (fildes : int;
-      buf : char_var_ptr;
-      nbyte : size_t)
-     return ssize_t;
-      pragma Import (C, read, read_LINKNAME);
-
-   function write
-     (fildes : int;
-      buf : char_ptr;
-      nbyte : size_t)
-     return ssize_t;
-      pragma Import (C, write, write_LINKNAME);
-
-   function open
-     (path : char_ptr;
-      oflag : int;
-      mode  : mode_t := 0)
-     return int;
-      pragma Import (C, open, open_LINKNAME);
-
-   function close (fd : int) return int;
-      pragma Import (C, close, close_LINKNAME);
-   --  close a file descriptor (or socket)
-
-   function unlink (path : char_ptr) return int;
-      pragma Import (C, unlink, unlink_LINKNAME);
-
-   function link
-     (existing : char_ptr;
-      new_name : char_ptr)
-     return int;
-      pragma Import (C, link, link_LINKNAME);
-
-   function fsync (fildes : int) return int;
-      pragma Import (C, fsync, fsync_LINKNAME);
-
-   function stat (path : char_ptr; buf : stat_ptr) return int;
-      pragma Import (C, stat, stat_LINKNAME);
+--     function read
+--       (fildes : int;
+--        buf : char_var_ptr;
+--        nbyte : size_t)
+--       return ssize_t;
+--        pragma Import (C, read, read_LINKNAME);
+--
+--     function write
+--       (fildes : int;
+--        buf : char_ptr;
+--        nbyte : size_t)
+--       return ssize_t;
+--        pragma Import (C, write, write_LINKNAME);
+--
+--     function open
+--       (path : char_ptr;
+--        oflag : int;
+--        mode  : mode_t := 0)
+--       return int;
+--        pragma Import (C, open, open_LINKNAME);
+--
+--     function close (fd : int) return int;
+--        pragma Import (C, close, close_LINKNAME);
+--     --  close a file descriptor (or socket)
+--
+--     function unlink (path : char_ptr) return int;
+--        pragma Import (C, unlink, unlink_LINKNAME);
+--
+--     function link
+--       (existing : char_ptr;
+--        new_name : char_ptr)
+--       return int;
+--        pragma Import (C, link, link_LINKNAME);
+--
+--     function fsync (fildes : int) return int;
+--        pragma Import (C, fsync, fsync_LINKNAME);
+--
+--     function stat (path : char_ptr; buf : stat_ptr) return int;
+--        pragma Import (C, stat, stat_LINKNAME);
 
    function Get_AddressString (Addr : Internet_Address) return String is
    begin
@@ -169,7 +168,9 @@ package body Sockets.Internet is
          buffer => buffer (buffer'First)'Unchecked_Access,
          buflen => buffer'Length,
          errnop => error_code'Unchecked_Access);
-      if p = null then Raise_POSIX_Error; end if;
+      if p = null then
+         Raise_POSIX_Error;
+      end if;
       return (C => cptr_to_sia (p.h_addr_list.all).all);
    end Get_AddrByName;
 
@@ -189,7 +190,9 @@ package body Sockets.Internet is
          buffer => buffer (buffer'First)'Unchecked_Access,
          buflen => buffer'Length,
          errnop => error_code'Unchecked_Access);
-      if p = null then Raise_POSIX_Error; end if;
+      if p = null then
+         Raise_POSIX_Error;
+      end if;
       return Form_String (p.h_name);
    end Get_HostByAddr;
 
@@ -213,7 +216,7 @@ package body Sockets.Internet is
       error_code : aliased int;
       p : hostent_ptr;
       q : char_ptr_ptr;
-      len : integer := 0;
+      len : Integer := 0;
    begin
       p := gethostbyname_r
         (name =>   name (name'First)'Unchecked_Access,
@@ -221,7 +224,9 @@ package body Sockets.Internet is
          buffer => buffer (buffer'First)'Unchecked_Access,
          buflen => buffer'Length,
          errnop => error_code'Unchecked_Access);
-      if p = null then Raise_POSIX_Error; end if;
+      if p = null then
+         Raise_POSIX_Error;
+      end if;
       q := hostent.h_addr_list;
       while q.all /= null loop
          len := len + 1; Advance (q);
@@ -242,14 +247,14 @@ package body Sockets.Internet is
 
    function getsockname
      (socket_fd : int;
-      name : struct_sockaddr_var_ptr;
+      name : sockaddr_var_ptr;
       namelen : access int)
      return int;
       pragma Import (C, getsockname, getsockname_LINKNAME);
    --  returns the current name for a socket
 
    function Get_Address
-     (Sock : in Socket'Class) return Internet_Socket_Address is
+     (Sock : Socket'Class) return Internet_Socket_Address is
       addr : aliased struct_sockaddr_in;
       addrlen : aliased int := addr'Size / char'Size;
       function "+" is new Unchecked_Conversion
@@ -313,7 +318,9 @@ package body Sockets.Internet is
    begin
       Check (getpeername
         (Sock.fd, +addr'Unchecked_Access, addrlen'Unchecked_Access));
-      if addrlen /= addr'Size / char'Size then raise Constraint_Error; end if;
+      if addrlen /= addr'Size / char'Size then
+         raise Constraint_Error;
+      end if;
       return (Socket_Address with in_addr => addr);
    end Get_PeerAddress;
 
@@ -341,11 +348,9 @@ package body Sockets.Internet is
 
    function Protocol_Family
      (Addr : Internet_Socket_Address) return POSIX.C.int is
+      pragma Unreferenced (Addr);
    begin
       return PF_INET;
    end Protocol_Family;
 
 end Sockets.Internet;
-
-
-

@@ -18,7 +18,6 @@ with ada.characters.latin_1;
 with ada.exceptions;
 with ada.task_identification;
 with ada.text_io;
-with ada.direct_io;
 with sockets;
 with sockets.internet;
 with table;
@@ -30,7 +29,7 @@ procedure multidb is
    connections : array (connection_id) of sockets.stream_socket;
 
    procedure shut_down (e : ada.exceptions.exception_occurrence);
-   main_task : ada.task_identification.task_id := 
+   main_task : constant ada.task_identification.task_id :=
        ada.task_identification.current_task;
    --  used to shut down the entire program
 
@@ -67,12 +66,12 @@ procedure multidb is
       character'write (outs, lf);
    end writeln;
 
-   is_letter : array (character) of boolean := 
+   is_letter : constant array (character) of boolean :=
      ('a'..'z' | 'A'..'Z' => true, others => false);
 
    procedure skipln (ins : sockets.input_stream_ptr) is
       c : character := ' ';
-   begin 
+   begin
       while c /= lf loop
          character'read (ins, c);
       end loop;
@@ -126,13 +125,13 @@ procedure multidb is
                string'write (outs, "enter +, ?, ., or ! ");
                character'read (ins, ch);
                skipln (ins);
-               case ch is 
-               when '+' => 
+               case ch is
+               when '+' =>
                   get_string (ins, outs, key);
                   get_string (ins, outs, value);
                   db_task.store (key, value);
                   writeln (outs, "ok.");
-               when '?' => 
+               when '?' =>
                   get_string (ins, outs, key);
                   db_task.fetch (key, value);
                   writeln (outs, "value = " & value & '.');
@@ -161,7 +160,7 @@ procedure multidb is
          begin
             select
             accept store (key : key_string; value : value_string) do
-               set_value (key, value);            
+               set_value (key, value);
             end store;
             or accept fetch (key : key_string; value : out value_string) do
                 value := table.value (key);
@@ -185,7 +184,7 @@ procedure multidb is
 begin
    sockets.open (s, sockets.internet.new_address
      (sockets.internet.any_port, sockets.internet.all_local_addresses));
-   ada.text_io.put_line ("serving at: " 
+   ada.text_io.put_line ("serving at: "
        & sockets.internet.get_addressstring (
        sockets.internet.get_internet_address (
        sockets.internet.get_address (s)))
@@ -196,6 +195,3 @@ begin
    server_pool.next_turn;
 exception when e : others => shut_down (e);
 end multidb;
-
-
-

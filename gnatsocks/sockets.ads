@@ -60,7 +60,7 @@ package Sockets is
    --  closes the socket
 
    function Get_Address
-     (cock : in Socket'Class) return Socket_Address is abstract;
+     (cock : Socket'Class) return Socket_Address is abstract;
    --  gets address of socket
 
    --------------------------------------
@@ -93,7 +93,7 @@ package Sockets is
       Count : Natural := 0);
    --  creates a server socket on the specified port
    --  with the specified backlog count
-   
+
    procedure Accept_Connection
      (Server : Server_Socket;
       Stream : in out Stream_Socket'Class;
@@ -110,26 +110,24 @@ package Sockets is
 
    procedure Open
      (Sock  : in out Datagram_Socket;
-      Addr  : in Socket_Address'Class);
+      Addr  : Socket_Address'Class);
    --  creates a datagram socket on the specified port
    --  with the specified local address
 
    procedure Send
-     (Sock : in Datagram_Socket;
-      Addr : in Socket_Address'Class;
-      Data : in String);
+     (Sock : Datagram_Socket;
+      Addr : Socket_Address'Class;
+      Data : String);
    --  sends Data to the specified address Addr
 
    procedure Receive
-     (Sock : in Datagram_Socket;
-      Addr : out Socket_Address'Class;
+     (Sock : Datagram_Socket;
+      Addr : in out Socket_Address'Class;
       Buff : in out String;
       Last : out Natural);
    --  receives data into Buff
    --  Last is the index of the last position in Buff that is used.
    --  Addr receives the sender's address.
-
-private
 
    function Address
      (Addr : Socket_Address)
@@ -141,6 +139,8 @@ private
 
    function Protocol_Family
      (Addr : Socket_Address) return POSIX.C.int is abstract;
+
+private
 
    type Socket_Address is abstract tagged null record;
 
@@ -187,7 +187,7 @@ private
 
    procedure Write
       (Stream : in out Input_Stream;
-       Item   : in Ada.Streams.Stream_Element_Array);
+       Item   : Ada.Streams.Stream_Element_Array);
 
    procedure Read
       (Stream : in out Output_Stream;
@@ -196,7 +196,7 @@ private
 
    procedure Write
       (Stream : in out Output_Stream;
-       Item   : in Ada.Streams.Stream_Element_Array);
+       Item   : Ada.Streams.Stream_Element_Array);
 
    -----------------------------------
 
@@ -207,7 +207,3 @@ private
    type Datagram_Socket is new Socket with null record;
 
 end Sockets;
-
-
-
-

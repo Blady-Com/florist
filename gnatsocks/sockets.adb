@@ -34,17 +34,12 @@
 ------------------------------------------------------------------------------
 --  [$Revision: 110555 $]
 
-with Ada.Text_IO,
-     Ada.Streams,
-     POSIX,
-     POSIX.C,
-     POSIX.Implementation,
+with POSIX.Implementation,
      System,
      Unchecked_Conversion;
 package body Sockets is
 
-   use Ada.Text_IO,
-       POSIX,
+   use POSIX,
        POSIX.C,
        POSIX.C.Sockets,
        POSIX.Implementation;
@@ -54,7 +49,9 @@ package body Sockets is
 
    procedure Close (Sock : in out Socket'Class) is
    begin
-      if Sock.fd /= 0 then Check (close (Sock.fd)); end if;
+      if Sock.fd /= 0 then
+         Check (close (Sock.fd));
+      end if;
       Sock.fd := 0;
    end Close;
 
@@ -84,8 +81,12 @@ package body Sockets is
      (Sock : in out Stream_Socket;
       Addr : Socket_Address'Class) is
    begin
-      if not Valid (Addr) then raise Constraint_Error; end if;
-      if Sock.fd /= 0 then raise Constraint_Error; end if;
+      if not Valid (Addr) then
+         raise Constraint_Error;
+      end if;
+      if Sock.fd /= 0 then
+         raise Constraint_Error;
+      end if;
       Sock.fd := Check (make_socket (PF_INET, SOCK_STREAM, 0));
       Check (connect (Sock.fd, Address (Addr), Length (Addr)));
       Sock.in_stream.sock := Sock'Unchecked_Access;
@@ -97,13 +98,18 @@ package body Sockets is
 
    function Get_Input_Stream (Sock : Stream_Socket) return Input_Stream_Ptr is
    begin
-      if Sock.fd = 0 then raise Constraint_Error; end if;
+      if Sock.fd = 0 then
+         raise Constraint_Error;
+      end if;
       return Sock.in_ptr;
    end Get_Input_Stream;
 
-   function Get_Output_Stream (Sock : Stream_Socket) return Output_Stream_Ptr is
+   function Get_Output_Stream (Sock : Stream_Socket)
+                               return Output_Stream_Ptr is
    begin
-      if Sock.fd = 0 then raise Constraint_Error; end if;
+      if Sock.fd = 0 then
+         raise Constraint_Error;
+      end if;
       return Sock.out_ptr;
    end Get_Output_Stream;
 
@@ -137,8 +143,12 @@ package body Sockets is
       Addr  : Socket_Address'Class;
       Count : Natural := 0) is
    begin
-      if not Valid (Addr) then raise Constraint_Error; end if;
-      if Sock.fd /= 0 then raise Constraint_Error; end if;
+      if not Valid (Addr) then
+         raise Constraint_Error;
+      end if;
+      if Sock.fd /= 0 then
+         raise Constraint_Error;
+      end if;
       Sock.fd := Check (make_socket (Protocol_Family (Addr), SOCK_STREAM, 0));
       Check (bind (Sock.fd, Address (Addr), Length (Addr)));
       Check (listen (Sock.fd, int (Count)));
@@ -164,19 +174,26 @@ package body Sockets is
       addrlen : aliased int := Length (Peer);
       use type Ada.Tags.Tag;
    begin
-      if Server.fd = 0 then raise Constraint_Error; end if;
-      if Stream.fd /= 0 then raise Constraint_Error; end if;
-      if Server.tag /= Peer'Tag then raise Constraint_Error; end if;
+      if Server.fd = 0 then
+         raise Constraint_Error;
+      end if;
+      if Stream.fd /= 0 then
+         raise Constraint_Error;
+      end if;
+      if Server.tag /= Peer'Tag then
+         raise Constraint_Error;
+      end if;
       --  require that the Peer and Server object be of the same type as the
       --  socket address used to create the Server
       Stream.fd := Check (accept_connection (Server.fd,
         Address (Peer), addrlen'Unchecked_Access));
-      Stream.in_stream.sock := Stream'Unchecked_Access;
+      Stream.in_stream.sock := Stream_Socket (Stream)'Unchecked_Access;
       Stream.in_ptr := Stream.in_stream'Unchecked_Access;
-      Stream.out_stream.sock := Stream'Unchecked_Access;
+      Stream.out_stream.sock := Stream_Socket (Stream)'Unchecked_Access;
       Stream.out_ptr := Stream.out_stream'Unchecked_Access;
       Stream.tag := Server.tag;
-      if addrlen /= Length (Peer) then raise
+      if addrlen /= Length (Peer) then
+         raise
          Constraint_Error;
       end if;
    end Accept_Connection;
@@ -187,8 +204,12 @@ package body Sockets is
      (Sock  : in out Datagram_Socket;
       Addr  : Socket_Address'Class) is
    begin
-      if not Valid (Addr) then raise Constraint_Error; end if;
-      if Sock.fd /= 0 then raise Constraint_Error; end if;
+      if not Valid (Addr) then
+         raise Constraint_Error;
+      end if;
+      if Sock.fd /= 0 then
+         raise Constraint_Error;
+      end if;
       Sock.fd := Check (make_socket (Protocol_Family (Addr), SOCK_DGRAM, 0));
       Check (bind (Sock.fd, Address (Addr), Length (Addr)));
       Sock.tag := Addr'Tag;
@@ -216,8 +237,6 @@ package body Sockets is
        Last   : out Ada.Streams.Stream_Element_Offset) is
       use type Ada.Streams.Stream_Element_Offset;
       Tmp : ssize_t;
-      function "+" is new
-        Unchecked_Conversion (System.Address, char_ptr);
    begin
       Tmp := read (Stream.sock.fd, Item'Address, size_t (Item'Length));
       Check (int (Tmp));
@@ -226,7 +245,7 @@ package body Sockets is
 
    procedure Write
       (Stream : in out Input_Stream;
-       Item   : in Ada.Streams.Stream_Element_Array) is
+       Item   : Ada.Streams.Stream_Element_Array) is
    begin
       Raise_POSIX_Error (Operation_Not_Implemented);
    end Write;
@@ -241,7 +260,7 @@ package body Sockets is
 
    procedure Write
       (Stream : in out Output_Stream;
-       Item   : in Ada.Streams.Stream_Element_Array) is
+       Item   : Ada.Streams.Stream_Element_Array) is
       function "+" is new
         Unchecked_Conversion (System.Address, char_ptr);
    begin
@@ -262,20 +281,31 @@ package body Sockets is
       pragma Import (C, sendto, sendto_LINKNAME);
 
    procedure Send
-     (Sock : in Datagram_Socket;
-      Addr : in Socket_Address'Class;
-      Data : in String) is
-      Data_With_NUL : POSIX_String;
+     (Sock : Datagram_Socket;
+      Addr : Socket_Address'Class;
+      Data : String) is
+      --        Data_With_NUL : POSIX_String;
+      use type Ada.Tags.Tag;
+      function "+" is new
+        Unchecked_Conversion (System.Address, char_ptr);
+      function "+" is new
+        Unchecked_Conversion (System.Address, int_ptr);
    begin
-      if not Valid (Addr) then raise Constraint_Error; end if;
-      if Sock.fd /= 0 then raise Constraint_Error; end if;
-      if Sock.tag /= Addr'Tag then raise Constraint_Error; end if;
+      if not Valid (Addr) then
+         raise Constraint_Error;
+      end if;
+      if Sock.fd /= 0 then
+         raise Constraint_Error;
+      end if;
+      if Sock.tag /= Addr'Tag then
+         raise Constraint_Error;
+      end if;
       Check (sendto (socket_fd => Sock.fd,
         buf => +Data (Data'First)'Address,
         len => Data'Length,
         flags => 0,
         from => Address (Addr),
-        fromlen => Length (Addr)));
+        fromlen => +Length (Addr)'Address));
    end Send;
 
    function recvfrom
@@ -289,24 +319,35 @@ package body Sockets is
       pragma Import (C, recvfrom, recvfrom_LINKNAME);
 
    procedure Receive
-     (Sock : in Datagram_Socket;
-      Addr : out Socket_Address'Class;
+     (Sock : Datagram_Socket;
+      Addr : in out Socket_Address'Class;
       Buff : in out String;
       Last : out Natural) is
+      use type Ada.Tags.Tag;
+      function "+" is new
+        Unchecked_Conversion (System.Address, char_ptr);
+      function "+" is new
+        Unchecked_Conversion (System.Address, int_ptr);
    begin
-      if not Valid (Addr) then raise Constraint_Error; end if;
-      if Sock.fd /= 0 then raise Constraint_Error; end if;
-      if Sock.tag /= Addr'Tag then raise Constraint_Error; end if;
-      Check (recvfrom (socket_fd => Sock.fd,
+      if not Valid (Addr) then
+         raise Constraint_Error;
+      end if;
+      if Sock.fd /= 0 then
+         raise Constraint_Error;
+      end if;
+      if Sock.tag /= Addr'Tag then
+         raise Constraint_Error;
+      end if;
+      Last := Natural (recvfrom (socket_fd => Sock.fd,
         buf => +Buff (Buff'First)'Address,
         len => Buff'Length,
         flags => 0,
-        from => Address (Buff),
-        fromlen => Length (Addr)));
+        from => Address (Addr),
+        fromlen => +Length (Addr)'Address));
+      Check (int (Last));
    end Receive;
 
    ----------------------------------------------------
-
 
 --  Stuff that may be bound-to in future extensions?
 
@@ -369,5 +410,3 @@ package body Sockets is
 --    shutdown
 
 end Sockets;
-
-
