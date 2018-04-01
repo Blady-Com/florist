@@ -645,8 +645,9 @@ begin
    Test ("Get_Timer_State, invalid timer ID");
    declare
       Timer : Timer_ID;  --  uninitialized
+      State : Timer_State;
    begin
-      Get_Timer_State (Timer);
+      State := Get_Timer_State (Timer);
       Assert (False,
         "A067: can Get_Timer_State from Uninitialized Timer_ID");
    exception
@@ -664,8 +665,9 @@ begin
    Test ("Get_Timer_Overruns, invalid timer ID");
    declare
       Timer : Timer_ID;  --  uninitialized
+      Count : Natural;
    begin
-      Get_Timer_Overruns (Timer);
+      Count := Get_Timer_Overruns (Timer);
       Assert (False, "A070: can get overruns from Uninitialized Timer_ID");
    exception
    when E1 : POSIX_Error =>

@@ -93,7 +93,7 @@ begin
       Len        : constant System_Storage_Elements.Storage_Offset := 5;
       --  We are going to deal with strings of length 5.
 
-      Offset     : constant IO_Count := Truncate_To_Page (1000);
+      Offset     : constant IO_Offset := IO_Offset (Truncate_To_Page (1000));
       New_Offset : IO_Offset;
 
    begin
@@ -241,7 +241,7 @@ begin
       Len        : constant System_Storage_Elements.Storage_Offset := 5;
       --  We are going to deal with strings of length 5.
 
-      Offset     : constant IO_Count := Truncate_To_Page (1000);
+      Offset     : constant IO_Offset := IO_Offset (Truncate_To_Page (1000));
       New_Offset : IO_Offset;
 
    begin
@@ -403,7 +403,7 @@ begin
       Len        : constant System_Storage_Elements.Storage_Offset := 5;
       --  We are going to deal with strings of length 5.
 
-      Offset     : constant IO_Count := Truncate_To_Page (1000);
+      Offset     : constant IO_Offset := IO_Offset (Truncate_To_Page (1000));
       New_Offset : IO_Offset;
    begin
 
@@ -491,7 +491,7 @@ begin
       Len        : constant System_Storage_Elements.Storage_Offset := 5;
       --  We are going to deal with strings of length 5.
 
-      Offset     : constant IO_Count := Truncate_To_Page (1000);
+      Offset     : constant IO_Offset := IO_Offset (Truncate_To_Page (1000));
       New_Offset : IO_Offset;
    begin
 

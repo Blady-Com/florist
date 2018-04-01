@@ -5,3 +5,6 @@
 /gnatsocks/obj/
 /gnatsocks/lib/
 /gnatsocks/bin/
+/tests/bin/
+/tests/obj/
+/tests/test.dir/

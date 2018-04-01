@@ -77,7 +77,7 @@ procedure p120502 is
 
 begin
 
-   Header ("p120501.adb", true);
+   Header ("p120502", true);
 
    declare
    begin

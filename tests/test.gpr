@@ -1,0 +1,21 @@
+with "florist";
+project Test is
+
+   for Languages use ("Ada");
+   for Source_Dirs use (".");
+   for Object_Dir use "obj";
+   for Exec_Dir use "bin";
+
+   package Compiler is
+       for Default_Switches ("Ada") use ("-g", "-gnatwa");
+   end Compiler;
+
+   package Binder is
+       for Default_Switches ("Ada") use ("-E");
+   end Binder;
+
+   package Linker is
+       for Default_Switches ("Ada") use ("-Wl,-no_pie");
+   end Linker;
+
+end Test;

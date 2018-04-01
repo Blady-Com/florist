@@ -236,7 +236,7 @@ procedure p120501 is
 
 begin
 
-   Header ("p120501.adb", true);
+   Header ("p120501", true);
 
    --  Clean up old memory objects, in case another test
    --  shut down improperly, leaving object behind.

@@ -192,7 +192,7 @@ package body Test_Parameters is
       when SIGILL  | SIGABRT | SIGFPE  | SIGBUS |
            SIGSEGV | SIGALRM
          => return True;
-#     if Linux then
+#     if Linux and HAVE_Leroy_Threads then
       --  Additional reserved signals for GNAT with Leroy Linux threads
       when SIGUSR1 | SIGUSR2 | SIGINT
         |  5 --  SIGTRAP
@@ -384,9 +384,9 @@ package body Test_Parameters is
             Ada.Strings.Unbounded.Count (Ubuf, "localhost") = 0 then
             Ubuf := To_Unbounded_String (Slice (Ubuf, 1, Last));
             if Index (Ubuf, ".") /= 0 then
-               if Index (Ubuf, "" & HT) /= 0 then
+               if Index (Ubuf, "" & Ada.Characters.Latin_1.HT) /= 0 then
                   Ubuf := To_Unbounded_String
-                     (Slice (Ubuf, 1, Index (Ubuf, "" &  HT) - 1));
+                     (Slice (Ubuf, 1, Index (Ubuf, "" &  Ada.Characters.Latin_1.HT) - 1));
                elsif Index (Ubuf, " ") /= 0 then
                   Ubuf := To_Unbounded_String
                      (Slice (Ubuf, 1, Index (Ubuf, " ") - 1));

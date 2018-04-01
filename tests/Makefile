@@ -7,19 +7,9 @@
 #
 .POSIX:
 #
-include ../Config
 MASTERDIR=/part1/florist/tests
-PAVT_VERSION=pavt-1.4
-# The following definitions are for using the modified GNAT runtime
-# system files contained in subdirectory "runtime".
-#GNATMAKEFLAGS1 = -g -a -A../floristlib -L../floristlib
-# The following definitions are for using the default installed GNAT
-# runtime system.
-GNATMAKEFLAGS1 = -j4 -g -a -I- -I. -A../runtime\
- -A../floristlib -L../runtime -L../floristlib
-#
-GNATMAKEFLAGS2= -cargs -gnatga -largs $(LIBS) -lflorist
-GNATMAKEFLAGS2a= -cargs -largs $(LIBS) -lflorist
+PAVT_VERSION=pavt-1.4a
+GNATMAKEFLAGS = -p -P test
 GNATPREPFLAGS = -r
 TOOLS =\
  renumber.adb\
@@ -237,7 +227,6 @@ TESTS =\
 SPECIAL_TESTS=\
  p020400\
  p030300\
- p030300a\
  p140100\
  p150100\
  p990010\
@@ -255,16 +244,16 @@ SPECIAL_TESTS=\
 #
 .SUFFIXES: .gps .gpb .ads .adb .o .c
 .gps.ads:
-	PATH=${PATH}\:.:..; gnatprep $< $@ ../gnatprep.config $(GNATPREPFLAGS)
+	gnatprep $< $@ gnatprep.config $(GNATPREPFLAGS)
 .gpb.adb:
-	PATH=${PATH}\:.:..; gnatprep $< $@ ../gnatprep.config $(GNATPREPFLAGS)
+	gnatprep $< $@ gnatprep.config $(GNATPREPFLAGS)
 .c.o:
 	gcc -c -g $<
 #
 tests: $(TESTS) $(SPECIAL_TESTS)
 #
 p020400:  p020400.ads p020400.adb
-p021000:  p021000.ads p021000.adb 
+p021000:  p021000.ads p021000.adb
 p030100:  p030100.ads p030100.adb p030100b
 p030100b: p030100b.ads p030100b.adb
 p030101:  p030101.ads p030101.adb
@@ -400,22 +389,22 @@ p990011:  p990011.ads p990011.adb\
 testit: testit.adb
 test_parameters.adb: test_parameters.gpb
 $(TESTS) testit:  posix_report.ads posix_report.adb\
-  ../floristlib/libflorist.a test_parameters.ads test_parameters.adb
-	gnatmake  $(GNATMAKEFLAGS1) $@ $(GNATMAKEFLAGS2)
+  test_parameters.ads test_parameters.adb
+	gnatmake  $(GNATMAKEFLAGS) $@
 #
 # Due to zealousness of the "-gnatg" style-checker,
 # the following tests need to be compiled without "-gnatg".
 #
 $(SPECIAL_TESTS):  posix_report.ads posix_report.adb\
-  ../floristlib/libflorist.a test_parameters.ads test_parameters.adb
-	gnatmake  $(GNATMAKEFLAGS1) $@ $(GNATMAKEFLAGS2a)
+  test_parameters.ads test_parameters.adb
+	gnatmake  $(GNATMAKEFLAGS) $@
 #
 # Make a separate directory in which to run the tests,
 # so we have less chance of a wild test trashing our sources.
 #
 test.dir:
 	mkdir test.dir
-	ln -s .. test.dir/bin
+	ln -s ../bin test.dir/bin
 #
 # Compile all the tests
 #
@@ -463,5 +452,3 @@ distribution: make_test_links
 	./make_test_links ./${PAVT_VERSION} $(MASTERDIR)
 	tar cvhf ${PAVT_VERSION}.tar ${PAVT_VERSION}
 	gzip ${PAVT_VERSION}.tar
-rts: s-interr.adb s-intman.adb s-inmaop.adb
-	gnatmake  -a $(GNATMAKEFLAGS1) dummy $(GNATMAKEFLAGS2a)
