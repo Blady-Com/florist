@@ -1,0 +1,106 @@
+#!/bin/sh
+# run all the tests that can reasonably run in a batch
+# 
+# FLAGS determines the degree of verbosity of the output.
+# Setting it to "-t" give the tersest form of output.
+FLAGS="-t"
+#
+# set up resource limits, to help catch any runaway tests
+#
+echo ulimit -d 10000
+ulimit -d 10000
+echo ulimit -s 5000
+ulimit -s 5000
+echo ulimit -t 10
+ulimit -t 10
+# virtual memory limit not supported by Linux (2.0.33)
+#echo ulimit -v 200000
+#ulimit -v 200000
+#
+# remove the old log file
+#
+rm -f run_tests_1.log
+#
+# run the tests
+#
+ ../p020400 ${FLAGS} >> run_tests_1.log 2>&1
+ ../p021000 ${FLAGS} >> run_tests_1.log 2>&1
+if [ ! -h bin ]
+then rm -f ./bin;
+     ln -fs .. ./bin;
+fi
+ln -fs ../p030100b
+ ../p030100 ${FLAGS} >> run_tests_1.log 2>&1
+ln -fs ../p030101b
+ ../p030101 ${FLAGS} >> run_tests_1.log 2>&1
+ln -fs ../p030102
+ ../p030102 ${FLAGS} >> run_tests_1.log 2>&1
+ ../p030200 ${FLAGS} >> run_tests_1.log 2>&1
+ ../p030300 ${FLAGS} >> run_tests_1.log 2>&1
+ln -fs ../p030301b
+ ../p030301 ${FLAGS} >> run_tests_1.log 2>&1
+ ../p030303 ${FLAGS} >> run_tests_1.log 2>&1
+ ../p030304 ${FLAGS} >> run_tests_1.log 2>&1
+ ../p030305 ${FLAGS} >> run_tests_1.log 2>&1
+ln -fs ../p030306a
+ ../p030306 ${FLAGS} >> run_tests_1.log 2>&1
+ ../p040100 ${FLAGS} >> run_tests_1.log 2>&1
+ ../p040101 ${FLAGS} >> run_tests_1.log 2>&1
+#p040300 requires PWD to be set to the current working directory
+PWD=`pwd`
+export PWD
+ ../p040300 ${FLAGS} >> run_tests_1.log 2>&1
+ ../p040301 ${FLAGS} >> run_tests_1.log 2>&1
+ ../p050100 ${FLAGS} >> run_tests_1.log 2>&1
+ ../p050200 ${FLAGS} >> run_tests_1.log 2>&1
+umask 033
+ ../p050300 ${FLAGS} >> run_tests_1.log 2>&1
+# p060100 requires Standard_Error to be a terminal device
+ ../p060100 ${FLAGS} >> run_tests_1.log
+ ../p060200 ${FLAGS} >> run_tests_1.log 2>&1
+ ../p060300 ${FLAGS} >> run_tests_1.log 2>&1
+ ../p090100 ${FLAGS} >> run_tests_1.log 2>&1
+ ../p090200 ${FLAGS} >> run_tests_1.log 2>&1
+# ../p060100 ${FLAGS} >> run_tests_1.log 2>&1
+# ../p060200 ${FLAGS} >> run_tests_1.log 2>&1
+# ../p060300 ${FLAGS} >> run_tests_1.log 2>&1
+# p070200 requires Standard_Error to be a terminal device
+# and (apparently) cannot be run in background without hanging
+# on attempt to set terminal characteristics "after output"
+# or "after input and output".  
+ ../p070200 ${FLAGS} >> run_tests_1.log
+ ../p090100 ${FLAGS} >> run_tests_1.log 2>&1
+ ../p090200 ${FLAGS} >> run_tests_1.log 2>&1
+ ../p110100 ${FLAGS} >> run_tests_1.log 2>&1
+#   p110101 required raising ulimit -v to 20000
+ ../p110101 ${FLAGS} >> run_tests_1.log 2>&1
+ ../p110200 ${FLAGS} >> run_tests_1.log 2>&1
+ ../p110201 ${FLAGS} >> run_tests_1.log 2>&1
+ ../p110300 ${FLAGS} >> run_tests_1.log 2>&1
+ ../p120100 ${FLAGS} >> run_tests_1.log 2>&1
+ ../p120101 ${FLAGS} >> run_tests_1.log 2>&1
+ ../p120200 ${FLAGS} >> run_tests_1.log 2>&1
+ ../p120300 ${FLAGS} >> run_tests_1.log 2>&1
+ ../p120400 ${FLAGS} >> run_tests_1.log 2>&1
+ ../p120500 ${FLAGS} >> run_tests_1.log 2>&1
+ ../p120501 ${FLAGS} >> run_tests_1.log 2>&1
+ln -fs ../p120502a
+ ../p120502 ${FLAGS} >> run_tests_1.log 2>&1
+ ../p140100 ${FLAGS} >> run_tests_1.log 2>&1
+ ../p140101 ${FLAGS} >> run_tests_1.log 2>&1
+ln -fs ../p150100b
+ ../p150100 ${FLAGS} >> run_tests_1.log 2>&1
+ ../p150101 ${FLAGS} >> run_tests_1.log 2>&1
+# Run the following tests by hand, since they take a very long
+# time to run and generally exceed the resource and time limits set
+# in this script to catch infinite loops.
+# ../p990010 ${FLAGS} >> run_tests_1.log 2>&1
+# ../p990011 ${FLAGS} >> run_tests_1.log 2>&1
+# ../p990020 ${FLAGS} >> run_tests_1.log 2>&1
+# ../p990030 ${FLAGS} >> run_tests_1.log 2>&1
+# ../p990040 ${FLAGS} >> run_tests_1.log 2>&1
+# ../p990050 ${FLAGS} >> run_tests_1.log 2>&1
+# ../p990060 ${FLAGS} >> run_tests_1.log 2>&1
+# ../p990070 ${FLAGS} >> run_tests_1.log 2>&1
+# ../p990080 ${FLAGS} >> run_tests_1.log 2>&1
+# ../p990090 ${FLAGS} >> run_tests_1.log 2>&1

@@ -1,0 +1,8 @@
+This directory contains tests for the POSIX.5c socket interfaces.
+The tests with names beginning with "p" are newest, and have all been
+written based on the final approved version of the POSIX.5c standard.
+
+The tests with names beginning with "test_" are legacy tests,
+which have not been reviewed since the last few revisions of the
+POSIX.5c standard during the ballot process; therefore they should be
+viewed with skepticism.
