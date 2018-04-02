@@ -203,7 +203,7 @@ package body POSIX.Sockets is
          null;
 #     else
          Message.C.msg_control    := To_char_ptr (Data);
-         Message.C.msg_controllen := size_t (Length);
+         Message.C.msg_controllen := socklen_t (Length);
 #     end if;
    end Set_Ancillary_Data;
 
@@ -1083,7 +1083,6 @@ package body POSIX.Sockets is
          := Message_Option_Set (POSIX.Empty_Set)) is
       Result   : ssize_t;
       Old_Mask : aliased Signal_Mask;
-      use Ada_Streams;
    begin
       if Octets_Requested <= 0 then
          Octets_Received := 0;
@@ -1117,7 +1116,6 @@ package body POSIX.Sockets is
        Options          : in  Message_Option_Set
          := Message_Option_Set (POSIX.Empty_Set)) is
       Result : ssize_t;
-      use Ada_Streams;
    begin
       if Octets_Requested <= 0 then
          Octets_Received := 0;
@@ -1165,7 +1163,6 @@ package body POSIX.Sockets is
       Result : ssize_t;
       Old_Mask : aliased Signal_Mask;
       Address_Length : aliased size_t := 0;
-      use Ada_Streams;
    begin
       if Octets_Requested <= 0 then
          Octets_Received := 0;
@@ -1205,7 +1202,6 @@ package body POSIX.Sockets is
          := Message_Option_Set (POSIX.Empty_Set)) is
       Result : ssize_t;
       Address_Length : aliased size_t;
-      use Ada_Streams;
    begin
       if Octets_Requested <= 0 then
          Octets_Received := 0;
@@ -1305,7 +1301,6 @@ package body POSIX.Sockets is
          := Message_Option_Set (POSIX.Empty_Set)) is
       Result : ssize_t;
       Old_Mask : aliased Signal_Mask;
-      use Ada_Streams;
    begin
       if Octets_To_Send <= 0 then
          Octets_Sent := 0;
@@ -1331,7 +1326,6 @@ package body POSIX.Sockets is
        Options        : in  Message_Option_Set
          := Message_Option_Set (POSIX.Empty_Set)) is
       Result : ssize_t;
-      use Ada_Streams;
    begin
       if Octets_To_Send <= 0 then
          Octets_Sent := 0;
@@ -1371,7 +1365,6 @@ package body POSIX.Sockets is
          := Message_Option_Set (POSIX.Empty_Set)) is
       Result : ssize_t;
       Old_Mask : aliased Signal_Mask;
-      use Ada_Streams;
    begin
       if Octets_To_Send <= 0 then
          Octets_Sent := 0;
@@ -1401,7 +1394,6 @@ package body POSIX.Sockets is
        Options        : in  Message_Option_Set
          := Message_Option_Set (POSIX.Empty_Set)) is
       Result : ssize_t;
-      use Ada_Streams;
    begin
       if Octets_To_Send <= 0 then
          Octets_Sent := 0;

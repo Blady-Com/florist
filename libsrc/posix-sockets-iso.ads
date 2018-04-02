@@ -49,7 +49,7 @@ package POSIX.Sockets.ISO is
                           : constant Protocol_Number := 0;
    Connectionless_Mode_Network_Protocol
                           : constant Protocol_Number := 0;
-   type ISO_Socket_Address is new Socket_Address with private;
+   type ISO_Socket_Address is private;
    type ISO_Address is new POSIX.Octet_Array;
    type Presentation_Selector is new POSIX.Octet_Array;
    type Session_Selector is new POSIX.Octet_Array;
@@ -83,7 +83,7 @@ package POSIX.Sockets.ISO is
    --  Dispatching operations for ISO_Socket_Address
    function Get_Socket_Name (Handle : Socket_Message)
      return ISO_Socket_Address;
-   function Get_Address (Info_Item : Socket_Address_Information)
+   function Get_Address (Info_Item : Socket_Address_Info)
      return ISO_Socket_Address;
    function Get_Peer_Name (Socket : POSIX.IO.File_Descriptor)
      return ISO_Socket_Address;
@@ -252,10 +252,29 @@ package POSIX.Sockets.ISO is
        To     : in     TP_Network_Service);
 
 private
-   
-   type ISO_Socket_Address is new Socket_Address with record
-      C : aliased POSIX.C.Sockets.struct_sockaddr_iso :=
-        POSIX.C.Sockets.struct_sockaddr_iso ' (
+
+   type u_char is mod 256;
+   type char_array is array (Natural range <>) of char;
+
+   type struct_iso_addr is record
+      isoa_len     : u_char;
+      isoa_genaddr : char_array (0..19);
+   end record;
+
+   type struct_sockaddr_iso is record
+      siso_len    : u_char;
+      siso_family : u_char;
+      siso_plen   : u_char;
+      siso_slen   : u_char;
+      siso_tlen   : u_char;
+      siso_addr   : struct_iso_addr;
+      siso_pad    : char_array (0..5);
+   end record;
+
+   type ISO_Socket_Address is record
+      C : aliased struct_sockaddr_iso :=
+        struct_sockaddr_iso ' (
+          siso_len    => 0,
           siso_family => AF_ISO,
           siso_plen   => 0,
           siso_slen   => 0,
@@ -279,19 +298,19 @@ private
       case Kind is
          when Connection_Data   =>
             C1    : aliased POSIX.C.Sockets.struct_cmsghdr :=
-               struct_cmsghdr ' (cmsg_len   => size_t (12 + Size),
+               struct_cmsghdr ' (cmsg_len   => socklen_t (12 + Size),
                                  cmsg_level => 0,  -- SOL_TRANSPORT
                                  cmsg_type  => 0); -- TPOPT_CONN_DATA)
             Data1 : POSIX.Octet_Array (1 .. Size);
          when Disconnect_Data   =>
             C2    : aliased POSIX.C.Sockets.struct_cmsghdr :=
-               struct_cmsghdr ' (cmsg_len   => size_t (12 + Size),
+               struct_cmsghdr ' (cmsg_len   => socklen_t (12 + Size),
                                  cmsg_level => 0,  -- SOL_TRANSPORT
                                  cmsg_type  => 0); -- TPOPT_DISC_DATA)
             Data2 : POSIX.Octet_Array (1 .. Size);
          when Confirmation_Data   =>
             C3    : aliased POSIX.C.Sockets.struct_cmsghdr :=
-               struct_cmsghdr ' (cmsg_len   => size_t (12 + Size),
+               struct_cmsghdr ' (cmsg_len   => socklen_t (12 + Size),
                                  cmsg_level => 0,  -- SOL_TRANSPORT
                                  cmsg_type  => 0); -- TPOPT_CFRM_DATA)
             Data3 : POSIX.Octet_Array (1 .. Size);

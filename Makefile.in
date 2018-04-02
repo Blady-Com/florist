@@ -72,7 +72,12 @@ else
 C-POSIX-SIGNALS_GENERATED =
 endif
 
-GNATPREP_SOURCES = $(GENDIR)/posix-implementation.adb $(GENDIR)/threads/posix-timers-extensions.adb
+GNATPREP_SOURCES = $(GENDIR)/posix-implementation.adb\
+                   $(GENDIR)/threads/posix-timers-extensions.adb\
+                   $(GENDIR)/posix-sockets-internet.adb\
+                   $(GENDIR)/posix-sockets.adb\
+                   $(GENDIR)/posix-sockets.ads\
+                   $(GENDIR)/posix-xti.adb
 
 GENERATED = $(C-POSIX_GENERATED) $(C-POSIX-SIGNALS_GENERATED) $(GNATPREP_SOURCES)
 

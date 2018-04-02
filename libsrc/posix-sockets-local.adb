@@ -120,7 +120,7 @@ package body POSIX.Sockets.Local is
       if c_address_len /= struct_sockaddr_un'Size / char'Size then
          raise Constraint_Error;
       end if;
-      return (Socket_Address with C => c_address);
+      return (C => c_address);
    end Get_Peer_Name;
 
    -----------------------
@@ -142,7 +142,7 @@ package body POSIX.Sockets.Local is
       if c_address_len /= struct_sockaddr_un'Size / char'Size then
          raise Constraint_Error;
       end if;
-      return (Socket_Address with C => c_address);
+      return (C => c_address);
    end Get_Socket_Name;
 
    -----------------------
@@ -155,19 +155,19 @@ package body POSIX.Sockets.Local is
       --  cast the generic address pointer to a local socket
       --  address pointer and dereference it. Note that dot1g uses
       --  void* for these. Solaris uses typedef caddr_t which is char*.
-      return (Socket_Address with C => To_Ptr (Handle.C.msg_name).all);
+      return (C => To_Ptr (Handle.C.msg_name).all);
    end Get_Socket_Name;
 
    -------------------
    --  Get_Address  --
    -------------------
 
-   function Get_Address (Info_Item : Socket_Address_Information)
+   function Get_Address (Info_Item : Socket_Address_Info)
       return Local_Socket_Address is
    begin
       --  cast the generic socket address pointer to a local socket
       --  address pointer and dereference it
-      return (Socket_Address with C => To_Ptr (Info_Item.C.ai_addr).all);
+      return (C => To_Ptr (Info_Item.C.ai_addr).all);
    end Get_Address;
 
 end POSIX.Sockets.Local;

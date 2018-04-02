@@ -41,7 +41,7 @@
 with POSIX.C;
 package POSIX.XTI.mOSI is
 
-   type mOSI_XTI_Address is new XTI_Address with private;
+   type mOSI_XTI_Address is private;
    mOSI_Address_Length_Maximum : constant Natural := 0;
    type AP_Invocation_Id is new POSIX.Octet_Array;
    type AE_Invocation_Id is new POSIX.Octet_Array;
@@ -85,7 +85,7 @@ package POSIX.XTI.mOSI is
        PA      : in     Presentation_Address);
    --  Dispatching operations for mOSI_XTI_Address
    procedure Get_Address
-      (Info_Item : in     Connection_Information;
+      (Info_Item : in     Connection_Info;
        Address   : in out mOSI_XTI_Address);
 
    mOSI_Connection_Mode     : constant Option_Level := 0;
@@ -167,8 +167,8 @@ package POSIX.XTI.mOSI is
    No_Common_Version         : constant Reason_Code := 0;
 
 private
-   
-   type mOSI_XTI_Address is new XTI_Address with null record;
+
+   type mOSI_XTI_Address is new XTI_Address;
    type Presentation_Context_List is new Integer;
    type Presentation_Context_Item is new Integer;
    type Syntax_Object_List is new Integer;

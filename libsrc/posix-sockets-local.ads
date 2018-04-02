@@ -44,7 +44,7 @@ with POSIX.C;
 package POSIX.Sockets.Local is
 
    Local_Protocol : constant Protocol_Family := PF_LOCAL;
-   type Local_Socket_Address is new Socket_Address with private;
+   type Local_Socket_Address is private;
    function Get_Socket_Path (Name : Local_Socket_Address)
      return POSIX.Pathname;
    procedure Set_Socket_Path
@@ -53,7 +53,7 @@ package POSIX.Sockets.Local is
    --  Dispatching operations for Local_Socket_Address
    function Get_Socket_Name (Handle : Socket_Message)
      return Local_Socket_Address;
-   function Get_Address (Info_Item : Socket_Address_Information)
+   function Get_Address (Info_Item : Socket_Address_Info)
      return Local_Socket_Address;
    function Get_Peer_Name (Socket : POSIX.IO.File_Descriptor)
      return Local_Socket_Address;
@@ -61,10 +61,10 @@ package POSIX.Sockets.Local is
      return Local_Socket_Address;
 
 private
-   
+
    use POSIX.C.Sockets;
 
-   type Local_Socket_Address is new Socket_Address with record
+   type Local_Socket_Address is record
       C : aliased POSIX.C.Sockets.struct_sockaddr_un :=
          struct_sockaddr_un ' (sun_family => AF_LOCAL,
                                sun_path   => (others => NUL));

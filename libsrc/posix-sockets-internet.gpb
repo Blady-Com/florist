@@ -739,7 +739,7 @@ package body POSIX.Sockets.Internet is
          null;
 #     else
          Message.C.msg_control := To_char_ptr (Data.C1'Address);
-         Message.C.msg_controllen := size_t (Data'Size / char'Size);
+         Message.C.msg_controllen := socklen_t (Data'Size / char'Size);
 #     end if;
    end Set_Ancillary_Data;
 

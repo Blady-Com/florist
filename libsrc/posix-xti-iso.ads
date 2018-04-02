@@ -44,7 +44,7 @@ with POSIX.C;
 package POSIX.XTI.ISO is
 
    ISO_TP_Level :  constant Option_Level := 0;
-   type ISO_XTI_Address is new XTI_Address with private;
+   type ISO_XTI_Address is private;
    type ISO_Option is (Enabled, Disabled);
    function Get_Value (Option_Item : Protocol_Option)
      return ISO_Option;
@@ -96,7 +96,7 @@ package POSIX.XTI.ISO is
        To          : in     Protection_Level);
    --  Dispatching operations for ISO_XTI_Address
    procedure Get_Address
-      (Info_Item : in     Connection_Information;
+      (Info_Item : in     Connection_Info;
        Address   : in out ISO_XTI_Address);
 
    Throughput                   : constant Option_Name := 0;
@@ -198,8 +198,8 @@ package POSIX.XTI.ISO is
    Connectionless_Checksum      : constant Option_Name := 0;
 
 private
-   
-   type ISO_XTI_Address is new XTI_Address with null record;
+
+   type ISO_XTI_Address is new XTI_Address;
    type Rate is new Integer;
    type Requested_Rate is new Integer;
    type Throughput_Rate is new Integer;
