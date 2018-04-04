@@ -1,5 +1,9 @@
 package body POSIX.Sockets.ISO is
 
+   pragma Warnings (Off);
+   pragma Style_Checks (Off);
+   --  Implementation needed...
+
    ---------------------
    -- Get_ISO_Address --
    ---------------------

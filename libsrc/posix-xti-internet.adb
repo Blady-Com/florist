@@ -9,18 +9,14 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with Ada.Streams,
-     POSIX.C,
-     POSIX.Implementation,
+with POSIX.Implementation,
      System,
      Text_IO,
-     Unchecked_Conversion,
-     System.Address_Image;
+     Unchecked_Conversion;
 
 package body POSIX.XTI.Internet is
 
    use Ada.Streams,
-       POSIX.C,
        POSIX.Implementation,
        POSIX.C.Sockets,
        POSIX.C.NetDB;
@@ -35,19 +31,21 @@ package body POSIX.XTI.Internet is
 --   pragma Import (C, c_inet_ntoa, POSIX.C.Netinet.inet_ntoa_LINKNAME);
 
    function To_char_ptr is new Unchecked_Conversion (System.Address, char_ptr);
-   function To_Address is new Unchecked_Conversion (char_ptr, System.Address);
+--   function To_Address is new Unchecked_Conversion
+--                               (char_ptr, System.Address);
    function To_sockaddr_in is new Unchecked_Conversion
                                (char_ptr, POSIX.C.Sockets.sockaddr_in_ptr);
-   function To_ptr is new Unchecked_Conversion
-                               (System.Address, POSIX.C.XTI.t_bind_ptr);
+--   function To_ptr is new Unchecked_Conversion
+--                               (System.Address, POSIX.C.XTI.t_bind_ptr);
 
-   function To_in_addr_ptr is new Unchecked_Conversion
-                               (System.Address, POSIX.C.Sockets.in_addr_ptr);
+--   function To_in_addr_ptr is new Unchecked_Conversion
+--                               (System.Address, POSIX.C.Sockets.in_addr_ptr);
 
-   function c_t_getprotaddr (fd           : int;
-                             boundaddr    : POSIX.C.XTI.t_bind_ptr;
-                             peeraddr     : POSIX.C.XTI.t_bind_ptr) return int;
-   pragma Import (C, c_t_getprotaddr, POSIX.C.XTI.t_getprotaddr_LINKNAME);
+--   function c_t_getprotaddr (fd           : int;
+--                             boundaddr    : POSIX.C.XTI.t_bind_ptr;
+--                             peeraddr     : POSIX.C.XTI.t_bind_ptr)
+--      return int;
+--   pragma Import (C, c_t_getprotaddr, POSIX.C.XTI.t_getprotaddr_LINKNAME);
 
    --  Internet support from <netdb.h>
    --  Note : using the thread safe versions of the following rather
@@ -82,7 +80,7 @@ package body POSIX.XTI.Internet is
    function c_endprotoent return int;
    pragma Import (C, c_endprotoent, POSIX.C.NetDB.endprotoent_LINKNAME);
 
-   package Integer_IO is new Text_IO.Integer_IO (integer);
+   package Integer_IO is new Text_IO.Integer_IO (Integer);
    use Integer_IO;
 
    function Get_Value (Option_Item : Protocol_Option)
@@ -90,19 +88,21 @@ package body POSIX.XTI.Internet is
 
       type opthdr_and_data is record
          header : POSIX.C.XTI.struct_t_opthdr;
-         data   : integer;
+         data   : Integer;
       end record;
-      pragma Pack (opthdr_and_data);
+--      pragma Pack (opthdr_and_data);
       type opthdr_and_data_ptr is access opthdr_and_data;
       function To_opthdr_and_data_ptr is new Unchecked_Conversion
               (System.Address, opthdr_and_data_ptr);
 
    begin
-      if (To_opthdr_and_data_ptr (Option_Item.C'Address).data
-         = integer (POSIX.C.XTI.T_YES)) then
+      if To_opthdr_and_data_ptr (Option_Item.C'Address).data
+        = Integer (POSIX.C.XTI.T_YES)
+      then
          return Enabled;
-      elsif (To_opthdr_and_data_ptr (Option_Item.C'Address).data
-         = integer (POSIX.C.XTI.T_NO)) then
+      elsif To_opthdr_and_data_ptr (Option_Item.C'Address).data
+        = Integer (POSIX.C.XTI.T_NO)
+      then
          return Disabled;
       else
          return Disabled;
@@ -111,21 +111,21 @@ package body POSIX.XTI.Internet is
 
    procedure Set_Option
       (Option_Item : in out Protocol_Option;
-       Level       : in     Option_Level;
-       Name        : in     Option_Name;
-       To          : in     XTI_Option) is
+       Level       : Option_Level;
+       Name        : Option_Name;
+       To          : XTI_Option) is
 
       type opthdr_and_data is record
          header : POSIX.C.XTI.struct_t_opthdr;
          data   : POSIX.XTI.Option_Value;
       end record;
-      pragma Pack (opthdr_and_data);
+--      pragma Pack (opthdr_and_data);
       type opthdr_and_data_ptr is access opthdr_and_data;
       function To_opthdr_and_data_ptr is new Unchecked_Conversion
               (System.Address, opthdr_and_data_ptr);
 
    begin
-      if (To = Enabled) then
+      if To = Enabled then
          To_opthdr_and_data_ptr (Option_Item.C'Address).data
                                  := POSIX.XTI.Option_Value (POSIX.C.XTI.T_YES);
       else
@@ -146,7 +146,7 @@ package body POSIX.XTI.Internet is
 
    procedure Set_Internet_Port
       (Name       : in out Internet_XTI_Address;
-       Port_Value : in     Internet_Port) is
+       Port_Value : Internet_Port) is
    begin
       Name.sockaddr_in.sin_port := POSIX.C.Sockets.in_port_t (Port_Value);
       Name.netbuf.maxlen := Name.sockaddr_in'Size / char'Size;
@@ -163,7 +163,7 @@ package body POSIX.XTI.Internet is
 
    procedure Set_Internet_Address
       (Name          : in out Internet_XTI_Address;
-       Address_Value : in     Internet_Address) is
+       Address_Value : Internet_Address) is
    begin
       Name.sockaddr_in.sin_addr.s_addr := Address_Value.C.s_addr;
       Name.netbuf.maxlen := Name.sockaddr_in'Size / char'Size;
@@ -176,34 +176,34 @@ package body POSIX.XTI.Internet is
    --------------------------------------
 
    --  Internet Address Manipulation
-   function c_htons (x : Internet_Port) return Internet_Port;
-   pragma Import (C, c_htons, "c_htons");
+--   function c_htons (x : Internet_Port) return Internet_Port;
+--   pragma Import (C, c_htons, "c_htons");
 --   function Host_To_Network_Byte_Order (Port : Internet_Port)
 --     return Internet_Port is
 --   begin
 --      return c_htons (Port);
 --   end Host_To_Network_Byte_Order;
 
-   function c_ntohs (x : Internet_Port) return Internet_Port;
-   pragma Import (C, c_ntohs, "c_ntohs");
+--   function c_ntohs (x : Internet_Port) return Internet_Port;
+--   pragma Import (C, c_ntohs, "c_ntohs");
 --   function Network_To_Host_Byte_Order (Port : Internet_Port)
 --     return Internet_Port is
 --   begin
 --      return c_ntohs (Port);
 --   end Network_To_Host_Byte_Order;
 
-   function c_htonl (x : POSIX.C.Sockets.in_addr_t)
-                return POSIX.C.Sockets.in_addr_t;
-   pragma Import (C, c_htonl, "c_htonl");
+--   function c_htonl (x : POSIX.C.Sockets.in_addr_t)
+--                return POSIX.C.Sockets.in_addr_t;
+--   pragma Import (C, c_htonl, "c_htonl");
 --   function Host_To_Network_Byte_Order (Address : Internet_Address)
 --     return Internet_Address is
 --   begin
 --      return (C => (s_addr => c_htonl (Address.C.s_addr)));
 --   end Host_To_Network_Byte_Order;
 
-   function c_ntohl (x : POSIX.C.Sockets.in_addr_t)
-                return POSIX.C.Sockets.in_addr_t;
-   pragma Import (C, c_ntohl, "c_ntohl");
+--   function c_ntohl (x : POSIX.C.Sockets.in_addr_t)
+--                return POSIX.C.Sockets.in_addr_t;
+--   pragma Import (C, c_ntohl, "c_ntohl");
 --   function Network_To_Host_Byte_Order (Address : Internet_Address)
 --     return Internet_Address is
 --   begin
@@ -222,7 +222,8 @@ package body POSIX.XTI.Internet is
    begin
       if c_inet_addr
        (Address (Address'First)'Unchecked_Access) =
-                 POSIX.C.Netinet.INADDR_NONE then
+          POSIX.C.Netinet.INADDR_NONE
+      then
          return False;
       else
          return True;
@@ -232,6 +233,7 @@ package body POSIX.XTI.Internet is
    function Internet_Address_To_String (Address : Internet_Address)
      return POSIX.POSIX_String is
       temp_var : POSIX.C.Sockets.struct_in_addr;
+      pragma Unreferenced (temp_var);
    begin
       temp_var.s_addr := Address.C.s_addr;
       return POSIX.C.Form_POSIX_String
@@ -313,7 +315,7 @@ package body POSIX.XTI.Internet is
    end Get_Network_Info_By_Name;
 
    procedure Open_Network_Database_Connection
-      (Stay_Open : in Boolean) is
+      (Stay_Open : Boolean) is
    begin
       if Stay_Open then
          Check (c_setnetent (1));
@@ -397,7 +399,7 @@ package body POSIX.XTI.Internet is
    end Get_Protocol_Info_By_Name;
 
    procedure Open_Protocol_Database_Connection
-      (Stay_Open : in Boolean) is
+      (Stay_Open : Boolean) is
    begin
       if Stay_Open then
          Check (c_setprotoent (1));
@@ -427,7 +429,7 @@ package body POSIX.XTI.Internet is
 
    procedure Set_Status
       (Info_Item : in out Keep_Alive_Info;
-       To        : in     Keep_Alive_Status) is
+       To        : Keep_Alive_Status) is
    begin
       if To = Keep_Alive_On then
          Info_Item.C.kp_onoff := POSIX.C.XTI.T_YES;
@@ -446,7 +448,7 @@ package body POSIX.XTI.Internet is
 
    procedure Set_Keep_Alive_Timeout
       (Info_Item : in out Keep_Alive_Info;
-       Minutes   : in     Positive) is
+       Minutes   : Positive) is
    begin
       Info_Item.C.kp_timeout := long (Minutes);
    end Set_Keep_Alive_Timeout;
@@ -464,16 +466,17 @@ package body POSIX.XTI.Internet is
          header : POSIX.C.XTI.struct_t_opthdr;
          data   : POSIX.C.XTI.struct_t_kpalive;
       end record;
-      pragma Pack (opthdr_and_kpalive);
+--      pragma Pack (opthdr_and_kpalive);
       type opthdr_and_kpalive_ptr is access opthdr_and_kpalive;
       function To_opthdr_and_kpalive_ptr is new Unchecked_Conversion
               (System.Address, opthdr_and_kpalive_ptr);
       function To_Option_Name is new Unchecked_Conversion
-               (unsigned_long, Option_Name);
+             (unsigned, Option_Name);
    begin
 
-      if (To_Option_Name (Option_Item.C.name) =
-        POSIX.XTI.Internet.TCP_Keep_Alive_Interval) then
+      if To_Option_Name (unsigned (Option_Item.C.name)) =
+        POSIX.XTI.Internet.TCP_Keep_Alive_Interval
+      then
          return (C => (To_opthdr_and_kpalive_ptr
                           (Option_Item.C'Address).data));
       else
@@ -487,14 +490,14 @@ package body POSIX.XTI.Internet is
 
    procedure Set_Option
       (Option_Item : in out  Protocol_Option;
-       Level       : in      Option_Level;
-       Name        : in      Option_Name;
-       Value       : in      Keep_Alive_Info) is
+       Level       : Option_Level;
+       Name        : Option_Name;
+       Value       : Keep_Alive_Info) is
       type opthdr_and_kpalive is record
          header : POSIX.C.XTI.struct_t_opthdr;
          data   : POSIX.C.XTI.struct_t_kpalive;
       end record;
-      pragma Pack (opthdr_and_kpalive);
+--      pragma Pack (opthdr_and_kpalive);
       type opthdr_and_kpalive_ptr is access opthdr_and_kpalive;
       function To_opthdr_and_kpalive_ptr is new Unchecked_Conversion
               (System.Address, opthdr_and_kpalive_ptr);
@@ -507,7 +510,7 @@ package body POSIX.XTI.Internet is
       Option_Item.C.name  := unsigned_long (Name);
    end Set_Option;
 
-   procedure Get_Value (Option_Item : in  Protocol_Option;
+   procedure Get_Value (Option_Item : Protocol_Option;
                         IP_Option   : out IP_Option_List;
                         Count       : out Natural) is
       list_size : Natural :=
@@ -517,7 +520,7 @@ package body POSIX.XTI.Internet is
          header : POSIX.C.XTI.struct_t_opthdr;
          data   : IP_Option_List (0 .. list_size);
       end record;
-      pragma Pack (opthdr_and_data);
+--      pragma Pack (opthdr_and_data);
       type opthdr_and_data_ptr is access opthdr_and_data;
       function To_opthdr_and_data_ptr is new Unchecked_Conversion
               (System.Address, opthdr_and_data_ptr);
@@ -534,14 +537,14 @@ package body POSIX.XTI.Internet is
 
    procedure Set_Option
       (Option_Item : in out Protocol_Option;
-       Level       : in     Option_Level;
-       Name        : in     Option_Name;
-       To          : in     IP_Option_List) is
+       Level       : Option_Level;
+       Name        : Option_Name;
+       To          : IP_Option_List) is
       type opthdr_and_data is record
          header : POSIX.C.XTI.struct_t_opthdr;
          data   : IP_Option_List (To'First .. To'Last);
       end record;
-      pragma Pack (opthdr_and_data);
+--      pragma Pack (opthdr_and_data);
       type opthdr_and_data_ptr is access opthdr_and_data;
       function To_opthdr_and_data_ptr is new Unchecked_Conversion
               (System.Address, opthdr_and_data_ptr);
@@ -569,18 +572,18 @@ package body POSIX.XTI.Internet is
 
    procedure Set_Option
       (Option_Item : in out Protocol_Option;
-       Level       : in     Option_Level;
-       Name        : in     Option_Name;
-       Service     : in     IP_Service_Type;
-       Precedence  : in     IP_Precedence_Level) is
-      type opthdr_and_data is record
-         header : POSIX.C.XTI.struct_t_opthdr;
-         data   : integer;
-      end record;
-      pragma Pack (opthdr_and_data);
-      type opthdr_and_data_ptr is access opthdr_and_data;
-      function To_opthdr_and_data_ptr is new Unchecked_Conversion
-              (System.Address, opthdr_and_data_ptr);
+       Level       : Option_Level;
+       Name        : Option_Name;
+       Service     : IP_Service_Type;
+       Precedence  : IP_Precedence_Level) is
+--        type opthdr_and_data is record
+--           header : POSIX.C.XTI.struct_t_opthdr;
+--           data   : Integer;
+--        end record;
+--      pragma Pack (opthdr_and_data);
+--      type opthdr_and_data_ptr is access opthdr_and_data;
+--      function To_opthdr_and_data_ptr is new Unchecked_Conversion
+--              (System.Address, opthdr_and_data_ptr);
    begin
       Raise_POSIX_Error (Operation_Not_Implemented);
       Option_Item.C.level := unsigned_long (Level);
@@ -702,12 +705,13 @@ package body POSIX.XTI.Internet is
 
    function Is_Internet_XTI_Address (Ptr : XTI_Address_Pointer)
      return Boolean is
-      in_XTI_Addr_ptr : Internet_XTI_Address_Pointer;
+      in_XTI_Addr_ptr : constant Internet_XTI_Address_Pointer
+        := To_Internet_XTI_Address (Ptr);
    begin
       if in_XTI_Addr_ptr.sockaddr_in.sin_family = POSIX.C.Sockets.AF_INET then
-         return true;
+         return True;
       else
-         return false;
+         return False;
       end if;
    end Is_Internet_XTI_Address;
 

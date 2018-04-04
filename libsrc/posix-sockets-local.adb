@@ -28,30 +28,28 @@
 --  file  COPYING.  If not,  write to  the  Free  Software  Foundation, 59  --
 --  Temple Place - Suite 330, Boston, MA 02111-1307, USA.                   --
 --                                                                          --
---  As a special exception, if other files instantiate generics from  this  --
---  unit, or you link this unit with other files to produce an  executable, --
---  this  unit does not by itself cause the  resulting  executable  to  be  --
---  covered  by the  GNU  General  Public License. This exception does not  --
---  however invalidate any other  reasons why the executable file might be  --
---  covered by the GNU Public License.                                      --
+--                                                                          --
+--                                                                          --
+--                                                                          --
+--                                                                          --
+--                                                                          --
+--                                                                          --
 --                                                                          --
 ------------------------------------------------------------------------------
 
 with POSIX.C; use POSIX.C;
-with GNAT.IO; use GNAT.IO;
 with POSIX.Implementation; use POSIX.Implementation;
 with Unchecked_Conversion;
 with System;
 package body POSIX.Sockets.Local is
 
-   use POSIX.C.Sockets;
    use POSIX.C.NetDB;
    --  unchecked conversions
 
    function To_Ptr is
      new Unchecked_Conversion (sockaddr_ptr, sockaddr_un_ptr);
-   function To_Ptr is
-     new Unchecked_Conversion (char_ptr, sockaddr_un_ptr);
+--   function To_Ptr is
+--     new Unchecked_Conversion (char_ptr, sockaddr_un_ptr);
    function "+" is
      new Unchecked_Conversion (sockaddr_un_ptr, sockaddr_var_ptr);
 
@@ -72,8 +70,8 @@ package body POSIX.Sockets.Local is
 
    procedure Set_Socket_Path
       (Name : in out Local_Socket_Address;
-       Path : in     POSIX.Pathname) is
-      Path_With_NUL : POSIX.Pathname := Path & NUL;
+       Path : POSIX.Pathname) is
+      Path_With_NUL : constant POSIX.Pathname := Path & NUL;
    begin
       Name.C.sun_path (Path_With_NUL'First .. Path_With_NUL'Last)
          := Path_With_NUL;

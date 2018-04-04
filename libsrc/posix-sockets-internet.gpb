@@ -45,9 +45,6 @@ with System;
 --   with Ada.Integer_Text_IO; use Ada.Integer_Text_IO;
 package body POSIX.Sockets.Internet is
 
-   use POSIX.C.Sockets;
-   use POSIX.C.NetDB;
-
    --  unchecked conversions
 
    function To_char_ptr is new Unchecked_Conversion
@@ -56,7 +53,7 @@ package body POSIX.Sockets.Internet is
    function To_char_var_ptr is new Unchecked_Conversion
       (System.Address, char_var_ptr);
 
-   type IP_Ancillary_Data_Access is access all IP_Ancillary_Data;
+--   type IP_Ancillary_Data_Access is access all IP_Ancillary_Data;
 
    function To_sockaddr_var_ptr is new Unchecked_Conversion
       (System.Address, sockaddr_var_ptr);
@@ -107,7 +104,7 @@ package body POSIX.Sockets.Internet is
 
    procedure Set_Internet_Port
       (Name  : in out Internet_Socket_Address;
-       Port  : in     Internet_Port) is
+       Port  : Internet_Port) is
    begin
       Name.C.sin_port := in_port_t (Port);
    end Set_Internet_Port;
@@ -120,7 +117,7 @@ package body POSIX.Sockets.Internet is
 
    procedure Set_Internet_Address
       (Name    : in out Internet_Socket_Address;
-       Address : in     Internet_Address) is
+       Address : Internet_Address) is
    begin
       Name.C.sin_addr.s_addr := Address.C.s_addr;
    end Set_Internet_Address;
@@ -163,7 +160,8 @@ package body POSIX.Sockets.Internet is
      return Boolean is
    begin
       if c_inet_addr
-         (Address (Address'First)'Unchecked_Access) = INADDR_NONE then
+         (Address (Address'First)'Unchecked_Access) = INADDR_NONE
+      then
          return False;
       else
          return True;
@@ -173,11 +171,8 @@ package body POSIX.Sockets.Internet is
    function c_inet_ntoa (addr : System.Address) return char_ptr;
    pragma Import (C, c_inet_ntoa, "c_inet_ntoa");
 
-
-   function strlen (str : in char_ptr) return size_t;
-   pragma Import (C, strlen, "strlen");
-
-
+--   function strlen (str : char_ptr) return size_t;
+--   pragma Import (C, strlen, "strlen");
 
    function Internet_Address_To_String (Address : Internet_Address)
      return POSIX.POSIX_String is
@@ -252,10 +247,11 @@ package body POSIX.Sockets.Internet is
          Temp := Fetch_Errno;
          if Temp = ERANGE then
             raise Constraint_Error;
-         else return (C => (n_name     => null,
-                      n_aliases  => null,
-                      n_addrtype => 0,
-                      n_net      => 0));
+         else
+            return (C => (n_name     => null,
+                          n_aliases  => null,
+                          n_addrtype => 0,
+                          n_net      => 0));
          end if;
       end if;
    end Get_Network_Info_By_Address;
@@ -305,7 +301,7 @@ package body POSIX.Sockets.Internet is
    pragma Import (C, c_setnetent, setnetent_LINKNAME);
 
    procedure Open_Network_Database_Connection
-      (Stay_Open : in Boolean) is
+      (Stay_Open : Boolean) is
    begin
       if Stay_Open then
          Check (c_setnetent (1));
@@ -433,7 +429,7 @@ package body POSIX.Sockets.Internet is
    pragma Import (C, c_setprotoent, setprotoent_LINKNAME);
 
    procedure Open_Protocol_Database_Connection
-      (Stay_Open : in Boolean) is
+      (Stay_Open : Boolean) is
    begin
       if Stay_Open then
          Check (c_setprotoent (1));
@@ -469,10 +465,10 @@ package body POSIX.Sockets.Internet is
    end Get_Keep_Alive_Interval;
 
    procedure Set_Keep_Alive_Interval
-      (Socket : in POSIX.IO.File_Descriptor;
-       To     : in Keep_Alive_Time) is
+      (Socket : POSIX.IO.File_Descriptor;
+       To     : Keep_Alive_Time) is
       optval : aliased int;
-      optlen : aliased size_t := optval'Size / char'Size;
+      optlen : aliased constant size_t := optval'Size / char'Size;
    begin
       optval := int (To);
       Check (c_setsockopt (int (Socket), int (IPPROTO_TCP),
@@ -497,12 +493,14 @@ package body POSIX.Sockets.Internet is
    end Get_No_Delay;
 
    procedure Set_No_Delay
-      (Socket : in POSIX.IO.File_Descriptor;
-       To     : in Socket_Option_Value) is
+      (Socket : POSIX.IO.File_Descriptor;
+       To     : Socket_Option_Value) is
       optval : aliased int := 0;
-      optlen : size_t := optval'Size / char'Size;
+      optlen : constant size_t := optval'Size / char'Size;
    begin
-      if To = Enabled then optval := 1; end if;
+      if To = Enabled then
+         optval := 1;
+      end if;
       Check (c_setsockopt (int (Socket), int (IPPROTO_TCP), int (TCP_NODELAY),
              To_char_ptr (optval'Address), optlen));
    end Set_No_Delay;
@@ -521,10 +519,10 @@ package body POSIX.Sockets.Internet is
    end Get_Retransmit_Time_Maximum;
 
    procedure Set_Retransmit_Time_Maximum
-      (Socket : in POSIX.IO.File_Descriptor;
-       To     : in Socket_Retransmit_Time) is
+      (Socket : POSIX.IO.File_Descriptor;
+       To     : Socket_Retransmit_Time) is
       optval : aliased int;
-      optlen : aliased size_t := optval'Size / char'Size;
+      optlen : aliased constant size_t := optval'Size / char'Size;
    begin
       optval := int (To);
       Check (c_setsockopt (int (Socket), int (IPPROTO_TCP), int (TCP_MAXRXT),
@@ -562,12 +560,14 @@ package body POSIX.Sockets.Internet is
    end Get_Standardized_Urgent_Data;
 
    procedure Set_Standardized_Urgent_Data
-      (Socket : in POSIX.IO.File_Descriptor;
-       To     : in Socket_Option_Value) is
+      (Socket : POSIX.IO.File_Descriptor;
+       To     : Socket_Option_Value) is
       optval : aliased int := 0;
-      optlen : size_t := optval'Size / char'Size;
+      optlen : constant size_t := optval'Size / char'Size;
    begin
-      if To = Enabled then optval := 1; end if;
+      if To = Enabled then
+         optval := 1;
+      end if;
       Check (c_setsockopt (int (Socket), int (IPPROTO_TCP), int (TCP_STDURG),
              To_char_ptr (optval'Address), optlen));
    end Set_Standardized_Urgent_Data;
@@ -590,7 +590,7 @@ package body POSIX.Sockets.Internet is
    end IP_Header_Options_In_Use;
 
    procedure Reset_IP_Header_Options              --  send null to reset
-      (Socket : in POSIX.IO.File_Descriptor) is
+      (Socket : POSIX.IO.File_Descriptor) is
    begin
       Check (c_setsockopt (int (Socket), int (IPPROTO_IP), int (IP_OPTIONS),
              To_char_ptr (System.Null_Address), 0));
@@ -608,9 +608,9 @@ package body POSIX.Sockets.Internet is
    end Get_IP_Header_Options;
 
    procedure Set_IP_Header_Options
-      (Socket  : in POSIX.IO.File_Descriptor;
-       To      : in IP_Options_Buffer) is
-      optlen : size_t := To'Size / char'Size;
+      (Socket  : POSIX.IO.File_Descriptor;
+       To      : IP_Options_Buffer) is
+      optlen : constant size_t := To'Size / char'Size;
    begin
       Check (c_setsockopt (int (Socket), int (IPPROTO_IP), int (IP_OPTIONS),
              To_char_ptr (To.C'Address), optlen));
@@ -625,7 +625,7 @@ package body POSIX.Sockets.Internet is
 
    procedure Set_First_Hop
       (Options : in out IP_Options_Buffer;
-       Address : in     Internet_Address) is
+       Address : Internet_Address) is
    begin
       Options.C.ip_dst := Address.C;
    end Set_First_Hop;
@@ -639,7 +639,7 @@ package body POSIX.Sockets.Internet is
 
    procedure Set_IP_Options
       (Options : in out IP_Options_Buffer;
-       Buffer  : in     POSIX.Octet_Array) is
+       Buffer  : POSIX.Octet_Array) is
    begin
       Options.C.ip_opts := Buffer;
    end Set_IP_Options;
@@ -663,10 +663,10 @@ package body POSIX.Sockets.Internet is
    end Get_Type_Of_Service;
 
    procedure Set_Type_Of_Service
-      (Socket : in POSIX.IO.File_Descriptor;
-       To     : in IP_Type_Of_Service) is
+      (Socket : POSIX.IO.File_Descriptor;
+       To     : IP_Type_Of_Service) is
       optval : aliased int := 0;
-      optlen : size_t := optval'Size / char'Size;
+      optlen : constant size_t := optval'Size / char'Size;
    begin
       case To is
          when Low_Delay        => optval := IPTOS_LOWDELAY;
@@ -692,10 +692,10 @@ package body POSIX.Sockets.Internet is
    end Get_Initial_Time_To_Live;
 
    procedure Set_Initial_Time_To_Live
-      (Socket : in POSIX.IO.File_Descriptor;
-       To     : in Time_To_Live) is
+      (Socket : POSIX.IO.File_Descriptor;
+       To     : Time_To_Live) is
       optval : aliased int;
-      optlen : aliased size_t := optval'Size / char'Size;
+      optlen : aliased constant size_t := optval'Size / char'Size;
    begin
       optval := int (To);
       Check (c_setsockopt (int (Socket), int (IPPROTO_IP), int (IP_TTL),
@@ -721,19 +721,21 @@ package body POSIX.Sockets.Internet is
    end Get_Receive_Destination_Address;
 
    procedure Set_Receive_Destination_Address
-      (Socket : in POSIX.IO.File_Descriptor;
-       To     : in Socket_Option_Value) is
+      (Socket : POSIX.IO.File_Descriptor;
+       To     : Socket_Option_Value) is
       optval : aliased int := 0;
-      optlen : size_t := optval'Size / char'Size;
+      optlen : constant size_t := optval'Size / char'Size;
    begin
-      if To = Enabled then optval := 1; end if;
+      if To = Enabled then
+         optval := 1;
+      end if;
       Check (c_setsockopt (int (Socket), int (IPPROTO_IP),
         int (IP_RECVDSTADDR), To_char_ptr (optval'Address), optlen));
    end Set_Receive_Destination_Address;
 
    procedure Set_Ancillary_Data
       (Message : in out Socket_Message;
-       Data    : in     IP_Ancillary_Data_Pointer) is
+       Data    : IP_Ancillary_Data_Pointer) is
    begin
 #     if BSD4_3 then
          null;
@@ -773,12 +775,14 @@ package body POSIX.Sockets.Internet is
    end Get_Header_Included;
 
    procedure Set_Header_Included
-      (Socket : in POSIX.IO.File_Descriptor;
-       To     : in Socket_Option_Value) is
+      (Socket : POSIX.IO.File_Descriptor;
+       To     : Socket_Option_Value) is
       optval : aliased int := 0;
-      optlen : size_t := optval'Size / char'Size;
+      optlen : constant size_t := optval'Size / char'Size;
    begin
-      if To = Enabled then optval := 1; end if;
+      if To = Enabled then
+         optval := 1;
+      end if;
       Check (c_setsockopt (int (Socket), int (IPPROTO_UDP), int (IP_HDRINCL),
              To_char_ptr (optval'Address), optlen));
    end Set_Header_Included;
@@ -875,7 +879,7 @@ package body POSIX.Sockets.Internet is
    begin
       if Ptr = null then
          return null;
-      elsif (Ptr.C.sa_family = POSIX.C.Sockets.AF_INET) then
+      elsif Ptr.C.sa_family = POSIX.C.Sockets.AF_INET then
          return To_Internet_Socket_Address (Ptr);
       else
          --  Need to find out exact error ??
@@ -888,11 +892,11 @@ package body POSIX.Sockets.Internet is
      return Boolean is
    begin
       if Ptr = null then
-         return false;
-      elsif (Ptr.C.sa_family = POSIX.C.Sockets.AF_INET) then
-         return true;
+         return False;
+      elsif Ptr.C.sa_family = POSIX.C.Sockets.AF_INET then
+         return True;
       else
-         return false;
+         return False;
       end if;
    end Is_Internet_Socket_Address;
 

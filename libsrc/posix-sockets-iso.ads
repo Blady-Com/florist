@@ -59,27 +59,27 @@ package POSIX.Sockets.ISO is
      return ISO_Address;
    procedure Set_ISO_Address
       (Name          : in out ISO_Socket_Address;
-       Address_Value : in     ISO_Address);
+       Address_Value :        ISO_Address);
    function Get_Presentation_Selector (Name : ISO_Socket_Address)
      return Presentation_Selector;
    procedure Set_Presentation_Selector
       (Name     : in out ISO_Socket_Address;
-       Selector : in     Presentation_Selector);
+       Selector :        Presentation_Selector);
    function Get_Session_Selector (Name : ISO_Socket_Address)
      return Session_Selector;
    procedure Set_Session_Selector
       (Name     : in out ISO_Socket_Address;
-       Selector : in     Session_Selector);
+       Selector :        Session_Selector);
    function Get_Transport_Selector (Name : ISO_Socket_Address)
      return Transport_Selector;
    procedure Set_Transport_Selector
       (Name     : in out ISO_Socket_Address;
-       Selector : in     Transport_Selector);
+       Selector :        Transport_Selector);
    function Get_GOSIP_Selector (Name : ISO_Socket_Address)
      return GOSIP_Selector;
    procedure Set_GOSIP_Selector
       (Name     : in out ISO_Socket_Address;
-       Selector : in     GOSIP_Selector);
+       Selector :        GOSIP_Selector);
    --  Dispatching operations for ISO_Socket_Address
    function Get_Socket_Name (Handle : Socket_Message)
      return ISO_Socket_Address;
@@ -99,14 +99,14 @@ package POSIX.Sockets.ISO is
       (Socket : POSIX.IO.File_Descriptor)
      return CL_Options;
    procedure Set_CL_Options
-      (Socket : in POSIX.IO.File_Descriptor;
-       To     : in CL_Options);
+      (Socket : POSIX.IO.File_Descriptor;
+       To     : CL_Options);
    function Get_CL_Flags
       (Socket : POSIX.IO.File_Descriptor)
      return CL_Flags;
    procedure Set_CL_Flags
-      (Socket : in POSIX.IO.File_Descriptor;
-       To     : in CL_Flags);
+      (Socket : POSIX.IO.File_Descriptor;
+       To     : CL_Flags);
 
    type TP_Flags is new POSIX.Option_Set;
    Public_Data_Network_Quality_Of_Service
@@ -120,33 +120,33 @@ package POSIX.Sockets.ISO is
       (Socket : POSIX.IO.File_Descriptor)
      return POSIX.Octet_Array;
    procedure Set_Connection_Data
-      (Socket : in POSIX.IO.File_Descriptor;
-       To     : in POSIX.Octet_Array);
+      (Socket : POSIX.IO.File_Descriptor;
+       To     : POSIX.Octet_Array);
    function Get_Disconnect_Data
       (Socket : POSIX.IO.File_Descriptor)
      return POSIX.Octet_Array;
    procedure Set_Disconnect_Data
-      (Socket : in POSIX.IO.File_Descriptor;
-       To     : in POSIX.Octet_Array);
+      (Socket : POSIX.IO.File_Descriptor;
+       To     : POSIX.Octet_Array);
    function Get_Confirmation_Data
       (Socket : POSIX.IO.File_Descriptor)
      return POSIX.Octet_Array;
    procedure Set_Confirmation_Data
-      (Socket : in POSIX.IO.File_Descriptor;
-       To     : in POSIX.Octet_Array);
+      (Socket : POSIX.IO.File_Descriptor;
+       To     : POSIX.Octet_Array);
    type TP_Ancillary_Data_Type is
       (Connection_Data, Disconnect_Data, Confirmation_Data);
    type TP_Ancillary_Data (Kind : TP_Ancillary_Data_Type;
                            Size : Positive) is private;
    procedure Set_Ancillary_Data
       (Message : in out Socket_Message;
-       Object  : in     TP_Ancillary_Data);
+       Object  :        TP_Ancillary_Data);
    function Get_Ancillary_Data
       (Message : Socket_Message)
      return TP_Ancillary_Data;
    procedure Set_Ancillary_Data_Array
       (Object : in out TP_Ancillary_Data;
-       Data   : in     POSIX.Octet_Array);
+       Data   :        POSIX.Octet_Array);
    function Get_Ancillary_Data_Array
       (Object : TP_Ancillary_Data)
      return POSIX.Octet_Array;
@@ -155,28 +155,28 @@ package POSIX.Sockets.ISO is
       (Socket : POSIX.IO.File_Descriptor)
      return Connection_Parameters;
    procedure Set_Connection_Parameters
-      (Socket : in POSIX.IO.File_Descriptor;
-       To     : in Connection_Parameters);
+      (Socket : POSIX.IO.File_Descriptor;
+       To     : Connection_Parameters);
    function Get_Retransmit_Number
       (Object : Connection_Parameters)
      return Natural;
    procedure Set_Retransmit_Number
       (Object : in out Connection_Parameters;
-       To     : in     Natural);
+       To     :        Natural);
    type Window_Size is range 128 .. 16384;
    function Get_Window_Size
       (Object : Connection_Parameters)
      return Window_Size;
    procedure Set_Window_Size
       (Object : in out Connection_Parameters;
-       To     : in     Window_Size);
+       To     :        Window_Size);
    type TPDU_Size is range 7 .. 13;
    function Get_TPDU_Size
       (Object : Connection_Parameters)
      return TPDU_Size;
    procedure Set_TPDU_Size
       (Object : in out Connection_Parameters;
-       To     : in     TPDU_Size);
+       To     :        TPDU_Size);
    type TP_Acknowledgment_Strategy is
       (Acknowledge_Window, Acknowledge_Each);
    function Get_Acknowledgment_Strategy
@@ -184,7 +184,7 @@ package POSIX.Sockets.ISO is
      return TP_Acknowledgment_Strategy;
    procedure Set_Acknowledgment_Strategy
       (Object : in out Connection_Parameters;
-       To     : in     TP_Acknowledgment_Strategy);
+       To     :        TP_Acknowledgment_Strategy);
    type TP_Retransmit_Strategy is
       (Retransmit_Each_Packet, Use_Congestion_Window, Fast_Start);
    function Get_Retransmit_Strategy
@@ -192,7 +192,7 @@ package POSIX.Sockets.ISO is
      return TP_Retransmit_Strategy;
    procedure Set_Retransmit_Strategy
       (Object : in out Connection_Parameters;
-       To     : in     TP_Retransmit_Strategy);
+       To     :        TP_Retransmit_Strategy);
    type TP_Class is new POSIX.Option_Set;
    TP_Class_0 : constant TP_Class := Empty_Set;
    TP_Class_1 : constant TP_Class := Empty_Set;
@@ -204,37 +204,37 @@ package POSIX.Sockets.ISO is
      return TP_Class;
    procedure Set_TP_Class
       (Object : in out Connection_Parameters;
-       To     : in     TP_Class);
+       To     :        TP_Class);
    function Get_Extended_Format
       (Object : Connection_Parameters)
      return Boolean;
    procedure Set_Extended_Format
       (Object : in out Connection_Parameters;
-       To     : in     Boolean);
+       To     :        Boolean);
    function Get_Expedited_Service
       (Object : Connection_Parameters)
      return Boolean;
    procedure Set_Expedited_Service
       (Object : in out Connection_Parameters;
-       To     : in     Boolean);
+       To     :        Boolean);
    function Get_Negotiate_Checksums
       (Object : Connection_Parameters)
      return Boolean;
    procedure Set_Negotiate_Checksums
       (Object : in out Connection_Parameters;
-       To     : in     Boolean);
+       To     :        Boolean);
    function Get_Signal_Disconnections
       (Object : Connection_Parameters)
      return Boolean;
    procedure Set_Signal_Disconnections
       (Object : in out Connection_Parameters;
-       To     : in     Boolean);
+       To     :        Boolean);
    function Get_Protect_Parameters
       (Object : Connection_Parameters)
      return Boolean;
    procedure Set_Protect_Parameters
       (Object : in out Connection_Parameters;
-       To     : in     Boolean);
+       To     :        Boolean);
    type TP_Network_Service is new Integer;
    ISO_Connectionless          : constant TP_Network_Service
       := 0;
@@ -249,7 +249,7 @@ package POSIX.Sockets.ISO is
      return TP_Network_Service;
    procedure Set_Network_Service
       (Object : in out Connection_Parameters;
-       To     : in     TP_Network_Service);
+       To     :        TP_Network_Service);
 
 private
 
@@ -258,7 +258,7 @@ private
 
    type struct_iso_addr is record
       isoa_len     : u_char;
-      isoa_genaddr : char_array (0..19);
+      isoa_genaddr : char_array (0 .. 19);
    end record;
 
    type struct_sockaddr_iso is record
@@ -268,12 +268,12 @@ private
       siso_slen   : u_char;
       siso_tlen   : u_char;
       siso_addr   : struct_iso_addr;
-      siso_pad    : char_array (0..5);
+      siso_pad    : char_array (0 .. 5);
    end record;
 
    type ISO_Socket_Address is record
       C : aliased struct_sockaddr_iso :=
-        struct_sockaddr_iso ' (
+        struct_sockaddr_iso'(
           siso_len    => 0,
           siso_family => AF_ISO,
           siso_plen   => 0,
@@ -298,21 +298,21 @@ private
       case Kind is
          when Connection_Data   =>
             C1    : aliased POSIX.C.Sockets.struct_cmsghdr :=
-               struct_cmsghdr ' (cmsg_len   => socklen_t (12 + Size),
-                                 cmsg_level => 0,  -- SOL_TRANSPORT
-                                 cmsg_type  => 0); -- TPOPT_CONN_DATA)
+               struct_cmsghdr'(cmsg_len   => socklen_t (12 + Size),
+                               cmsg_level => 0,  -- SOL_TRANSPORT
+                               cmsg_type  => 0); -- TPOPT_CONN_DATA)
             Data1 : POSIX.Octet_Array (1 .. Size);
          when Disconnect_Data   =>
             C2    : aliased POSIX.C.Sockets.struct_cmsghdr :=
-               struct_cmsghdr ' (cmsg_len   => socklen_t (12 + Size),
-                                 cmsg_level => 0,  -- SOL_TRANSPORT
-                                 cmsg_type  => 0); -- TPOPT_DISC_DATA)
+               struct_cmsghdr'(cmsg_len   => socklen_t (12 + Size),
+                               cmsg_level => 0,  -- SOL_TRANSPORT
+                               cmsg_type  => 0); -- TPOPT_DISC_DATA)
             Data2 : POSIX.Octet_Array (1 .. Size);
          when Confirmation_Data   =>
             C3    : aliased POSIX.C.Sockets.struct_cmsghdr :=
-               struct_cmsghdr ' (cmsg_len   => socklen_t (12 + Size),
-                                 cmsg_level => 0,  -- SOL_TRANSPORT
-                                 cmsg_type  => 0); -- TPOPT_CFRM_DATA)
+               struct_cmsghdr'(cmsg_len   => socklen_t (12 + Size),
+                               cmsg_level => 0,  -- SOL_TRANSPORT
+                               cmsg_type  => 0); -- TPOPT_CFRM_DATA)
             Data3 : POSIX.Octet_Array (1 .. Size);
       end case;
    end record;

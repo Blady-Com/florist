@@ -43,8 +43,7 @@ with POSIX.C,
 package POSIX.Sockets.Internet is
 
    use POSIX.C.Netinet,
-       POSIX.C.NetDB,
-       POSIX.C.Sockets;
+       POSIX.C.NetDB;
 
    Internet_Protocol : constant Protocol_Family := PF_INET;
    ICMP              : constant Protocol_Number := IPPROTO_ICMP;
@@ -72,7 +71,7 @@ package POSIX.Sockets.Internet is
      return Internet_Port;
    procedure Set_Internet_Port
       (Name  : in out Internet_Socket_Address;
-       Port  : in     Internet_Port);
+       Port  : Internet_Port);
 
    type Internet_Address is private;
    Unspecified_Internet_Address : constant Internet_Address;
@@ -83,7 +82,7 @@ package POSIX.Sockets.Internet is
      return Internet_Address;
    procedure Set_Internet_Address
       (Name    : in out Internet_Socket_Address;
-       Address : in     Internet_Address);
+       Address : Internet_Address);
    function Get_Socket_Name (Handle : Socket_Message)
      return Internet_Socket_Address;
    function Get_Address (Info_Item : Socket_Address_Info)
@@ -102,7 +101,7 @@ package POSIX.Sockets.Internet is
      return POSIX.POSIX_String;
    --  Network Database Functions
    type Network_Info is private;
-   type Network_Number is range 0 .. (2**32 -1);
+   type Network_Number is range 0 .. (2**32 - 1);
    Unspecified_Network_Number : constant Network_Number;
    type Database_Array is new POSIX.Octet_Array;
    type Database_Array_Pointer is access all Database_Array;
@@ -110,7 +109,7 @@ package POSIX.Sockets.Internet is
      return POSIX.POSIX_String;
    generic
       with procedure Action
-         (Alias_Name : in     POSIX.POSIX_String;
+         (Alias_Name : POSIX.POSIX_String;
           Quit       : in out Boolean);
    procedure For_Every_Network_Alias (Info_Item : Network_Info);
    function Get_Family (Info_Item : Network_Info)
@@ -127,7 +126,7 @@ package POSIX.Sockets.Internet is
        Storage : Database_Array_Pointer)
      return Network_Info;
    procedure Open_Network_Database_Connection
-      (Stay_Open : in Boolean);
+      (Stay_Open : Boolean);
    procedure Close_Network_Database_Connection;
    --  Network Protocol Database Functions
    type Protocol_Info is private;
@@ -135,7 +134,7 @@ package POSIX.Sockets.Internet is
      return POSIX.POSIX_String;
    generic
       with procedure Action
-         (Alias_Name : in     POSIX.POSIX_String;
+         (Alias_Name : POSIX.POSIX_String;
           Quit       : in out Boolean);
    procedure For_Every_Protocol_Alias (Info_Item : Protocol_Info);
    function Get_Protocol_Number (Info_Item : Protocol_Info)
@@ -149,7 +148,7 @@ package POSIX.Sockets.Internet is
        Storage : Database_Array_Pointer)
      return Protocol_Info;
    procedure Open_Protocol_Database_Connection
-      (Stay_Open : in Boolean);
+      (Stay_Open : Boolean);
    procedure Close_Protocol_Database_Connection;
 
    subtype Keep_Alive_Time is Seconds range 1 .. Seconds'Last;
@@ -157,14 +156,14 @@ package POSIX.Sockets.Internet is
       (Socket : POSIX.IO.File_Descriptor)
      return Keep_Alive_Time;
    procedure Set_Keep_Alive_Interval
-      (Socket : in POSIX.IO.File_Descriptor;
-       To     : in Keep_Alive_Time);
+      (Socket : POSIX.IO.File_Descriptor;
+       To     : Keep_Alive_Time);
    function Get_No_Delay
       (Socket : POSIX.IO.File_Descriptor)
      return Socket_Option_Value;
    procedure Set_No_Delay
-      (Socket : in POSIX.IO.File_Descriptor;
-       To     : in Socket_Option_Value);
+      (Socket : POSIX.IO.File_Descriptor;
+       To     : Socket_Option_Value);
    subtype Socket_Retransmit_Time is Seconds range -1 .. Seconds'Last;
    Wait_Forever : constant Socket_Retransmit_Time := -1;
    Retransmit_Time_Default
@@ -173,8 +172,8 @@ package POSIX.Sockets.Internet is
       (Socket : POSIX.IO.File_Descriptor)
      return Socket_Retransmit_Time;
    procedure Set_Retransmit_Time_Maximum
-      (Socket : in POSIX.IO.File_Descriptor;
-       To     : in Socket_Retransmit_Time);
+      (Socket : POSIX.IO.File_Descriptor;
+       To     : Socket_Retransmit_Time);
    function Get_Segment_Size_Maximum
       (Socket : POSIX.IO.File_Descriptor)
      return Positive;
@@ -182,33 +181,33 @@ package POSIX.Sockets.Internet is
       (Socket : POSIX.IO.File_Descriptor)
      return Socket_Option_Value;
    procedure Set_Standardized_Urgent_Data
-      (Socket : in POSIX.IO.File_Descriptor;
-       To     : in Socket_Option_Value);
+      (Socket : POSIX.IO.File_Descriptor;
+       To     : Socket_Option_Value);
 
    function IP_Header_Options_In_Use
       (Socket : POSIX.IO.File_Descriptor)
      return Boolean;
    procedure Reset_IP_Header_Options
-      (Socket : in POSIX.IO.File_Descriptor);
+      (Socket : POSIX.IO.File_Descriptor);
    type IP_Options_Buffer is private;
    function Get_IP_Header_Options
       (Socket : POSIX.IO.File_Descriptor)
      return IP_Options_Buffer;
    procedure Set_IP_Header_Options
-      (Socket : in POSIX.IO.File_Descriptor;
-       To     : in IP_Options_Buffer);
+      (Socket : POSIX.IO.File_Descriptor;
+       To     : IP_Options_Buffer);
    function Get_First_Hop
       (Options : IP_Options_Buffer)
      return Internet_Address;
    procedure Set_First_Hop
       (Options : in out IP_Options_Buffer;
-       Address : in     Internet_Address);
+       Address : Internet_Address);
    function Get_IP_Options
       (Options : IP_Options_Buffer)
      return POSIX.Octet_Array;
    procedure Set_IP_Options
       (Options : in out IP_Options_Buffer;
-       Buffer  : in     POSIX.Octet_Array);
+       Buffer  : POSIX.Octet_Array);
    type IP_Type_Of_Service is private;
    Low_Delay        : constant IP_Type_Of_Service;
    High_Throughput  : constant IP_Type_Of_Service;
@@ -219,26 +218,26 @@ package POSIX.Sockets.Internet is
       (Socket : POSIX.IO.File_Descriptor)
      return IP_Type_Of_Service;
    procedure Set_Type_Of_Service
-      (Socket : in POSIX.IO.File_Descriptor;
-       To     : in IP_Type_Of_Service);
+      (Socket : POSIX.IO.File_Descriptor;
+       To     : IP_Type_Of_Service);
    function Get_Initial_Time_To_Live
       (Socket : POSIX.IO.File_Descriptor)
      return Time_To_Live;
    procedure Set_Initial_Time_To_Live
-      (Socket : in POSIX.IO.File_Descriptor;
-       To     : in Time_To_Live);
+      (Socket : POSIX.IO.File_Descriptor;
+       To     : Time_To_Live);
    function Get_Receive_Destination_Address
       (Socket : POSIX.IO.File_Descriptor)
      return Socket_Option_Value;
    procedure Set_Receive_Destination_Address
-      (Socket : in POSIX.IO.File_Descriptor;
-       To     : in Socket_Option_Value);
+      (Socket : POSIX.IO.File_Descriptor;
+       To     : Socket_Option_Value);
 
    type IP_Ancillary_Data is private;
    type IP_Ancillary_Data_Pointer is access all IP_Ancillary_Data;
    procedure Set_Ancillary_Data
       (Message : in out Socket_Message;
-       Data    : in     IP_Ancillary_Data_Pointer);
+       Data    : IP_Ancillary_Data_Pointer);
    function Get_Destination_Address
       (Data : IP_Ancillary_Data)
      return Internet_Address;
@@ -246,8 +245,8 @@ package POSIX.Sockets.Internet is
       (Socket : POSIX.IO.File_Descriptor)
      return Socket_Option_Value;
    procedure Set_Header_Included
-      (Socket : in POSIX.IO.File_Descriptor;
-       To     : in Socket_Option_Value);
+      (Socket : POSIX.IO.File_Descriptor;
+       To     : Socket_Option_Value);
 
 private
 
@@ -255,10 +254,10 @@ private
       Length : POSIX.C.size_t := POSIX.C.Sockets.struct_sockaddr_in'Size /
                                  System.Storage_Unit;
       C : aliased POSIX.C.Sockets.struct_sockaddr_in :=
-        struct_sockaddr_in' (sin_family => AF_INET,
-                             sin_port   => 0,
-                             sin_addr   => (s_addr => 0),
-                             sin_zero   => (others => NUL));
+        struct_sockaddr_in'(sin_family => AF_INET,
+                            sin_port   => 0,
+                            sin_addr   => (s_addr => 0),
+                            sin_zero   => (others => NUL));
    end record;
 
    type Internet_Address is record
@@ -288,13 +287,13 @@ private
 
    type IP_Ancillary_Data is record
       C1 : aliased POSIX.C.Sockets.struct_cmsghdr :=
-         struct_cmsghdr ' (cmsg_len   => 16,
-                           cmsg_level => IPPROTO_IP,
-                           cmsg_type  => IP_RECVDSTADDR);
+         struct_cmsghdr'(cmsg_len   => 16,
+                         cmsg_level => IPPROTO_IP,
+                         cmsg_type  => IP_RECVDSTADDR);
       C2 : POSIX.C.Sockets.struct_in_addr;
    end record;
 
-   type IP_Type_Of_Service is new integer;
+   type IP_Type_Of_Service is new Integer;
    Low_Delay        : constant IP_Type_Of_Service
      := POSIX.C.Netinet.IPTOS_LOWDELAY;
    High_Throughput  : constant IP_Type_Of_Service

@@ -38,7 +38,6 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with POSIX.C;
 package POSIX.XTI.mOSI is
 
    type mOSI_XTI_Address is private;
@@ -56,19 +55,19 @@ package POSIX.XTI.mOSI is
      return mOSI_Address_Flags;
    procedure Set_Flags
       (Address : in out mOSI_XTI_Address;
-       To      : in     mOSI_Address_Flags);
+       To      : mOSI_Address_Flags);
    function Get_AP_Invocation_Id
       (Address : mOSI_XTI_Address)
      return AP_Invocation_Id;
    procedure Set_AP_Invocation_Id
       (Address : in out mOSI_XTI_Address;
-       To      : in     AP_Invocation_Id);
+       To      : AP_Invocation_Id);
    function Get_AE_Invocation_Id
       (Address : mOSI_XTI_Address)
      return AE_Invocation_Id;
    procedure Set_AE_Invocation_Id
       (Address : in out mOSI_XTI_Address;
-       To      : in     AE_Invocation_Id);
+       To      : AE_Invocation_Id);
    function Get_AP_Title
       (Address : mOSI_XTI_Address)
      return AP_Title;
@@ -80,12 +79,12 @@ package POSIX.XTI.mOSI is
      return Presentation_Address;
    procedure Set_OSI_Address
       (Address : in out mOSI_XTI_Address;
-       AP      : in     AP_Title;
-       AE      : in     AE_Qualifier;
-       PA      : in     Presentation_Address);
+       AP      : AP_Title;
+       AE      : AE_Qualifier;
+       PA      : Presentation_Address);
    --  Dispatching operations for mOSI_XTI_Address
    procedure Get_Address
-      (Info_Item : in     Connection_Info;
+      (Info_Item : Connection_Info;
        Address   : in out mOSI_XTI_Address);
 
    mOSI_Connection_Mode     : constant Option_Level := 0;
@@ -99,22 +98,22 @@ package POSIX.XTI.mOSI is
      return Application_Context_Name;
    procedure Set_Option
       (Option_Item : in out Protocol_Option;
-       Level       : in     Option_Level;
-       Name        : in     Option_Name;
-       Value       : in     Application_Context_Name);
+       Level       : Option_Level;
+       Name        : Option_Name;
+       Value       : Application_Context_Name);
    function Get_Value (Option_Item : Protocol_Option)
      return Presentation_Context_List;
    procedure Set_Option
       (Option_Item : in out Protocol_Option;
-       Level       : in     Option_Level;
-       Name        : in     Option_Name;
-       Value       : in     Presentation_Context_List);
+       Level       : Option_Level;
+       Name        : Option_Name;
+       Value       : Presentation_Context_List);
    --  Presentation Context Definition and Result List
    type Presentation_Context_Item is private;
    type Presentation_Item_Id is new Integer;
    procedure Set_Presentation_Id
       (List : in out Presentation_Context_Item;
-       Item : in     Presentation_Item_Id);
+       Item : Presentation_Item_Id);
    function Get_Presentation_Id
       (Item : Presentation_Context_Item)
      return Presentation_Item_Id;
@@ -124,14 +123,14 @@ package POSIX.XTI.mOSI is
        Transfer_Syntax_Not_Supported, Local_DCS_Limit_Exceeded);
    procedure Set_Negotiation_Result
       (List : in out Presentation_Context_Item;
-       Item : in     Negotiation_Result);
+       Item : Negotiation_Result);
    function Get_Negotiation_Result
       (Item : Presentation_Context_Item)
      return Negotiation_Result;
    type Syntax_Object_List is private;
    procedure Set_Syntax_Object
       (List : in out Presentation_Context_Item;
-       Item : in     Syntax_Object_List);
+       Item : Syntax_Object_List);
    function Get_Syntax_Object
       (Item : Presentation_Context_Item)
      return Syntax_Object_List;
@@ -139,24 +138,25 @@ package POSIX.XTI.mOSI is
    procedure Make_Empty (List : in out Presentation_Context_List);
    procedure Add_Item_To_List
       (List : in out Presentation_Context_List;
-       Item : in     Presentation_Context_Item);
+       Item : Presentation_Context_Item);
+   pragma Warnings (Off);
    generic
        with procedure Action
-          (Id   : in     Presentation_Context_Item;
+          (Id   : Presentation_Context_Item;
            Quit : in out Boolean);
    procedure For_Every_Presentation_Context_Item
-      (List : in Presentation_Context_List);
+      (List : Presentation_Context_List);
    Empty_Syntax_Object_List : constant Syntax_Object_List;
    procedure Make_Empty (List : in out Syntax_Object_List);
    procedure Add_Item_To_List
       (List : in out Syntax_Object_List;
-       Item : in     Object_Identifier);
+       Item : Object_Identifier);
    generic
        with procedure Action
-          (Object : in     Object_Identifier;
+          (Object : Object_Identifier;
            Quit   : in out Boolean);
    procedure For_Every_Object_Identifier
-      (List : in Syntax_Object_List);
+      (List : Syntax_Object_List);
 
    Rejected_By_Peer          : constant Reason_Code := 0;
    AC_Name_Not_Supported     : constant Reason_Code := 0;

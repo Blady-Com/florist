@@ -28,27 +28,21 @@
 --  file  COPYING.  If not,  write to  the  Free  Software  Foundation, 59  --
 --  Temple Place - Suite 330, Boston, MA 02111-1307, USA.                   --
 --                                                                          --
---  As a special exception, if other files instantiate generics from  this  --
---  unit, or you link this unit with other files to produce an  executable, --
---  this  unit does not by itself cause the  resulting  executable  to  be  --
---  covered  by the  GNU  General  Public License. This exception does not  --
---  however invalidate any other  reasons why the executable file might be  --
---  covered by the GNU Public License.                                      --
+--                                                                          --
+--                                                                          --
+--                                                                          --
+--                                                                          --
+--                                                                          --
+--                                                                          --
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with POSIX,
-     POSIX.IO,
-     POSIX.Signals;
-with POSIX.C,
-     POSIX.Implementation,
+with POSIX.Implementation,
      System,
      Unchecked_Conversion;
 package body POSIX.Event_Management is
 
-   use POSIX.C,
-       POSIX.C.Sockets,
-       POSIX.Implementation;
+   use POSIX.Implementation;
 
    --  unchecked conversions for poll/select system calls
 
@@ -88,11 +82,11 @@ package body POSIX.Event_Management is
 
    procedure Set_File
       (Poll_Item : in out Poll_File_Descriptor;
-       File      : in     POSIX.IO.File_Descriptor) is
+       File      : POSIX.IO.File_Descriptor) is
    begin
       Poll_Item.C.fd := int (File);
    end Set_File;
-   
+
    function Get_Events (Poll_Item : Poll_File_Descriptor)
       return Poll_Events is
    begin
@@ -102,7 +96,7 @@ package body POSIX.Event_Management is
 
    procedure Set_Events
       (Poll_Item : in out Poll_File_Descriptor;
-       Events    : in     Poll_Events) is
+       Events    : Poll_Events) is
    begin
       Poll_Item.C.events := short (To_Int (Option_Set (Events).Option));
    end Set_Events;
@@ -116,7 +110,7 @@ package body POSIX.Event_Management is
 
    procedure Set_Returned_Events
       (Poll_Item : in out Poll_File_Descriptor;
-       Events    : in     Poll_Events) is
+       Events    : Poll_Events) is
    begin
       Poll_Item.C.revents := short (To_Int (Option_Set (Events).Option));
    end Set_Returned_Events;
@@ -124,7 +118,7 @@ package body POSIX.Event_Management is
    procedure Poll
       (Files          : in out Poll_File_Descriptor_Set;
        Response_Count : out    Natural;
-       Timeout        : in     Duration) is
+       Timeout        : Duration) is
    begin
       Response_Count := Natural (Check_NNeg (c_poll (
          fds     => Files (Files'First).C'Unchecked_Access,
@@ -141,7 +135,7 @@ package body POSIX.Event_Management is
          nfds    => unsigned (Files'Length),
          timeout => INFTIM)));
    end Poll;
-       
+
    -------------------
    --  Select_File  --
    -------------------
@@ -153,14 +147,14 @@ package body POSIX.Event_Management is
 
    procedure Add_File_Descriptor_To_Set
       (Set  : in out File_Descriptor_Set;
-       File : in     Select_File_Descriptor) is
+       File : Select_File_Descriptor) is
    begin
       c_fd_set (int (File), Set.C'Unchecked_Access);
    end Add_File_Descriptor_To_Set;
 
    procedure Remove_File_Descriptor_From_Set
       (Set  : in out File_Descriptor_Set;
-       File : in     Select_File_Descriptor) is
+       File : Select_File_Descriptor) is
    begin
       c_fd_clr (int (File), Set.C'Unchecked_Access);
    end Remove_File_Descriptor_From_Set;
@@ -170,7 +164,7 @@ package body POSIX.Event_Management is
        File : Select_File_Descriptor)
       return Boolean is
    begin
-      if (c_fd_isset (int (File), Set.C'Unchecked_Access) = 0) then
+      if c_fd_isset (int (File), Set.C'Unchecked_Access) = 0 then
          return False;
       else
          return True;
@@ -196,7 +190,7 @@ package body POSIX.Event_Management is
        Write_Files    : in out File_Descriptor_Set;
        Except_Files   : in out File_Descriptor_Set;
        Files_Selected :    out Natural;
-       Timeout        : in     Duration) is
+       Timeout        : Duration) is
       Timeval : aliased struct_timeval;
    begin
       Timeval := To_Struct_Timeval (Timeout);
@@ -213,17 +207,17 @@ package body POSIX.Event_Management is
        Write_Files    : in out File_Descriptor_Set;
        Except_Files   : in out File_Descriptor_Set;
        Files_Selected :    out Natural;
-       Signals        : in     POSIX.Signals.Signal_Set) is
-      Old_Mask : POSIX.Signals.Signal_Set;
+       Signals        : POSIX.Signals.Signal_Set) is
+      Discard_Old_Mask : POSIX.Signals.Signal_Set;
    begin
-      POSIX.Signals.Set_Blocked_Signals (Signals, Old_Mask);
+      POSIX.Signals.Set_Blocked_Signals (Signals, Discard_Old_Mask);
       Files_Selected := Natural (Check_NNeg (c_select (
          nfds      => int (FD_SETSIZE),
          readfds   => Read_Files.C'Unchecked_Access,
          writefds  => Write_Files.C'Unchecked_Access,
          exceptfds => Except_Files.C'Unchecked_Access,
          timeout   => To_ptr (System.Null_Address))));
-      POSIX.Signals.Set_Blocked_Signals (Old_Mask, Old_Mask);
+      POSIX.Signals.Set_Blocked_Signals (Discard_Old_Mask, Discard_Old_Mask);
    end Select_File;
 
    procedure Select_File
@@ -231,27 +225,27 @@ package body POSIX.Event_Management is
        Write_Files    : in out File_Descriptor_Set;
        Except_Files   : in out File_Descriptor_Set;
        Files_Selected :    out Natural;
-       Signals        : in     POSIX.Signals.Signal_Set;
-       Timeout        : in     Duration) is
+       Signals        : POSIX.Signals.Signal_Set;
+       Timeout        : Duration) is
       Timeval  : aliased struct_timeval;
-      Old_Mask : POSIX.Signals.Signal_Set;
+      Discard_Old_Mask : POSIX.Signals.Signal_Set;
    begin
       Timeval := To_Struct_Timeval (Timeout);
-      POSIX.Signals.Set_Blocked_Signals (Signals, Old_Mask);
+      POSIX.Signals.Set_Blocked_Signals (Signals, Discard_Old_Mask);
       Files_Selected := Natural (Check_NNeg (c_select (
          nfds      => int (FD_SETSIZE),
          readfds   => Read_Files.C'Unchecked_Access,
          writefds  => Write_Files.C'Unchecked_Access,
          exceptfds => Except_Files.C'Unchecked_Access,
          timeout   => Timeval'Unchecked_Access)));
-      POSIX.Signals.Set_Blocked_Signals (Old_Mask, Old_Mask);
+      POSIX.Signals.Set_Blocked_Signals (Discard_Old_Mask, Discard_Old_Mask);
    end Select_File;
 
    procedure For_Every_File_In (Set : File_Descriptor_Set) is
       Quit : Boolean := False;
    begin
       for I in 0 .. FD_SETSIZE - 1 loop
-         if (c_fd_isset (int (I), Set.C'Unchecked_Access) /= 0) then
+         if c_fd_isset (int (I), Set.C'Unchecked_Access) /= 0 then
             Action (Select_File_Descriptor (I), Quit);
             exit when Quit;
          end if;

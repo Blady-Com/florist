@@ -37,17 +37,11 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with POSIX,
-     POSIX.C,
-     POSIX.Implementation,
-     POSIX.IO,
-     System,
+with POSIX.Implementation,
      Unchecked_Conversion;
 
 package body POSIX.Sockets is
 
-   use POSIX.C;
-   use POSIX.C.Sockets;
    use POSIX.C.NetDB;
    use POSIX.IO;
    use POSIX.Implementation;
@@ -59,14 +53,14 @@ package body POSIX.Sockets is
 
    function To_char_ptr is new Unchecked_Conversion
      (System.Address, char_ptr);
-   function To_char_ptr is new Unchecked_Conversion
-     (sockaddr_var_ptr, char_ptr);
+--   function To_char_ptr is new Unchecked_Conversion
+--     (sockaddr_var_ptr, char_ptr);
 
    function To_char_var_ptr is new Unchecked_Conversion
      (System.Address, char_var_ptr);
 
-   function To_size_t_var_ptr is new Unchecked_Conversion
-     (System.Address, size_t_var_ptr);
+--   function To_size_t_var_ptr is new Unchecked_Conversion
+--     (System.Address, size_t_var_ptr);
 
    function To_Address is new Unchecked_Conversion
      (char_ptr, System.Address);
@@ -119,25 +113,25 @@ package body POSIX.Sockets is
    --  of 1024, so 32 32-bit longs are needed to bitmap that number
    --  of file descriptors. Not sure what this means for the
    --  configure program.
-   type fd_mask is array (1 .. 32) of unsigned;
-   type struct_fd_set is record
-      fd_bits : fd_mask;
-   end record;
-   pragma Convention (C, struct_fd_set);
-   type fd_set_ptr is access all struct_fd_set;
-   pragma Convention (C, fd_set_ptr);
-   type fd_set_const_ptr is access constant struct_fd_set;
-   pragma Convention (C, fd_set_const_ptr);
+--   type fd_mask is array (1 .. 32) of unsigned;
+--   type struct_fd_set is record
+--      fd_bits : fd_mask;
+--   end record;
+--   pragma Convention (C, struct_fd_set);
+--   type fd_set_ptr is access all struct_fd_set;
+--   pragma Convention (C, fd_set_ptr);
+--   type fd_set_const_ptr is access constant struct_fd_set;
+--   pragma Convention (C, fd_set_const_ptr);
 
    --  select macros to manipulate the fd_set bitmap
-   procedure c_fd_set (fd : int; fdsetp : fd_set_ptr);
-   pragma Import (C, c_fd_set, "c_fd_set");
-   procedure c_fd_clr (fd : int; fdsetp : fd_set_ptr);
-   pragma Import (C, c_fd_clr, "c_fd_clr");
-   function c_fd_isset (fd : int; fdsetp : fd_set_const_ptr) return int;
-   pragma Import (C, c_fd_isset, "c_fd_isset");
-   procedure c_fd_zero (fdsetp : fd_set_ptr);
-   pragma Import (C, c_fd_zero, "c_fd_zero");
+--   procedure c_fd_set (fd : int; fdsetp : fd_set_ptr);
+--   pragma Import (C, c_fd_set, "c_fd_set");
+--   procedure c_fd_clr (fd : int; fdsetp : fd_set_ptr);
+--   pragma Import (C, c_fd_clr, "c_fd_clr");
+--   function c_fd_isset (fd : int; fdsetp : fd_set_const_ptr) return int;
+--   pragma Import (C, c_fd_isset, "c_fd_isset");
+--   procedure c_fd_zero (fdsetp : fd_set_ptr);
+--   pragma Import (C, c_fd_zero, "c_fd_zero");
 
    -----------------------
    --  Socket Messages  --
@@ -145,7 +139,7 @@ package body POSIX.Sockets is
 
    procedure Set_Socket_Name
       (Message : in out Socket_Message;
-       Name    : in     Socket_Address_Pointer) is
+       Name    : Socket_Address_Pointer) is
    begin
       Message.C.msg_name := Name.C'Unchecked_Access;
       Message.C.msg_namelen := Name.Length;
@@ -153,7 +147,7 @@ package body POSIX.Sockets is
 
    procedure Set_IO_Vector_Array
       (Message : in out Socket_Message;
-       Ptr     : in     IO_Vector_Array_Pointer) is
+       Ptr     : IO_Vector_Array_Pointer) is
    begin
       Message.C.msg_iov := To_iovec_ptr (Ptr (Ptr'First)'Address);
       Message.C.msg_iovlen := size_t (Ptr.all'Length);
@@ -168,7 +162,7 @@ package body POSIX.Sockets is
 
    procedure Set_Message_Options
       (Message : in out Socket_Message;
-       Options : in     Message_Option_Set) is
+       Options : Message_Option_Set) is
    begin
 #     if BSD4_3 then
          null;
@@ -196,8 +190,8 @@ package body POSIX.Sockets is
 
    procedure Set_Ancillary_Data
      (Message : in out Socket_Message;
-      Data    : in     System.Address;
-      Length  : in     POSIX.IO_Count) is
+      Data    : System.Address;
+      Length  : POSIX.IO_Count) is
    begin
 #     if BSD4_3 then
          null;
@@ -237,9 +231,9 @@ package body POSIX.Sockets is
    pragma Import (C, c_accept, accept_LINKNAME);
 
    procedure Accept_Connection
-     (Socket            : in  POSIX.IO.File_Descriptor;
+     (Socket            : POSIX.IO.File_Descriptor;
       Connection_Socket : out POSIX.IO.File_Descriptor;
-      Name              : in  Socket_Address_Pointer)
+      Name              : Socket_Address_Pointer)
    is
       Address_Length : aliased size_t;
    begin
@@ -272,8 +266,8 @@ package body POSIX.Sockets is
    pragma Import (C, c_bind, bind_LINKNAME);
 
    procedure Bind
-      (Socket : in POSIX.IO.File_Descriptor;
-       Name   : in Socket_Address_Pointer) is
+      (Socket : POSIX.IO.File_Descriptor;
+       Name   : Socket_Address_Pointer) is
    begin
       Check (c_bind (int (Socket),
         To_sockaddr_ptr (Name.C'Address), Name.Length));
@@ -291,8 +285,8 @@ package body POSIX.Sockets is
    pragma Import (C, c_connect, connect_LINKNAME);
 
    procedure Connect
-      (Socket : in POSIX.IO.File_Descriptor;
-       Peer   : in Socket_Address_Pointer) is
+      (Socket : POSIX.IO.File_Descriptor;
+       Peer   : Socket_Address_Pointer) is
    begin
       Check (c_connect (int (Socket),
         To_sockaddr_ptr (Peer.C'Address), Peer.Length));
@@ -303,8 +297,8 @@ package body POSIX.Sockets is
    --------------------
 
    procedure Specify_Peer
-      (Socket : in POSIX.IO.File_Descriptor;
-       Peer   : in Socket_Address_Pointer) is
+      (Socket : POSIX.IO.File_Descriptor;
+       Peer   : Socket_Address_Pointer) is
    begin
       Check (c_connect (int (Socket),
         To_sockaddr_ptr (Peer.C'Address), Peer.Length));
@@ -315,7 +309,7 @@ package body POSIX.Sockets is
    ----------------------
 
    procedure Unspecify_Peer
-      (Socket : in POSIX.IO.File_Descriptor) is
+      (Socket : POSIX.IO.File_Descriptor) is
    begin
       Check (c_connect (int (Socket), null, 0));
    end Unspecify_Peer;
@@ -352,10 +346,10 @@ package body POSIX.Sockets is
    procedure Create_Pair
       (Peer1    : out POSIX.IO.File_Descriptor;
        Peer2    : out POSIX.IO.File_Descriptor;
-       Domain   : in  Protocol_Family;
-       Of_Type  : in  Socket_Type;
-       Protocol : in  Protocol_Number := Default_Protocol) is
-      Result : fdpair := (0, 0);
+       Domain   : Protocol_Family;
+       Of_Type  : Socket_Type;
+       Protocol : Protocol_Number := Default_Protocol) is
+      Result : constant fdpair := (0, 0);
    begin
       Check (c_socketpair (int (Domain), int (Of_Type),
              int (Protocol), Result));
@@ -389,7 +383,7 @@ package body POSIX.Sockets is
 
    procedure Set_Flags
       (Info_Item : in out Socket_Address_Info;
-       Flags     : in     Address_Flags) is
+       Flags     : Address_Flags) is
    begin
       Info_Item.C.ai_flags := To_int (Option_Set (Flags).Option);
    end Set_Flags;
@@ -402,7 +396,7 @@ package body POSIX.Sockets is
 
    procedure Set_Family
       (Info_Item : in out Socket_Address_Info;
-       Family    : in     Protocol_Family) is
+       Family    : Protocol_Family) is
    begin
       Info_Item.C.ai_family := int (Family);
    end Set_Family;
@@ -415,7 +409,7 @@ package body POSIX.Sockets is
 
    procedure Set_Socket_Type
       (Info_Item : in out Socket_Address_Info;
-       To        : in     Socket_Type) is
+       To        : Socket_Type) is
    begin
       Info_Item.C.ai_socktype := int (To);
    end Set_Socket_Type;
@@ -428,7 +422,7 @@ package body POSIX.Sockets is
 
    procedure Set_Protocol_Number
       (Info_Item : in out Socket_Address_Info;
-       Protocol  : in     Protocol_Number) is
+       Protocol  : Protocol_Number) is
    begin
       Info_Item.C.ai_protocol := int (Protocol);
    end Set_Protocol_Number;
@@ -451,9 +445,9 @@ package body POSIX.Sockets is
    pragma Import (C, c_getaddrinfo, getaddrinfo_LINKNAME);
 
    procedure Get_Socket_Address_Info
-      (Name    : in     POSIX.POSIX_String;
-       Service : in     POSIX.POSIX_String;
-       Request : in     Socket_Address_Info;
+      (Name    : POSIX.POSIX_String;
+       Service : POSIX.POSIX_String;
+       Request : Socket_Address_Info;
        Info    : in out Socket_Address_Info_List) is
       Pai : aliased addrinfo_ptr;
       Result : int;
@@ -593,12 +587,14 @@ package body POSIX.Sockets is
    end Get_Socket_Broadcast;
 
    procedure Set_Socket_Broadcast
-      (Socket : in POSIX.IO.File_Descriptor;
-       To     : in Socket_Option_Value) is
+      (Socket : POSIX.IO.File_Descriptor;
+       To     : Socket_Option_Value) is
       optval : aliased int := 0;
-      optlen : size_t := optval'Size / char'Size;
+      optlen : constant size_t := optval'Size / char'Size;
    begin
-      if To = Enabled then optval := 1; end if;
+      if To = Enabled then
+         optval := 1;
+      end if;
       Check (c_setsockopt (s       => int (Socket),
                            level   => int (SOL_SOCKET),
                            optname => int (SO_BROADCAST),
@@ -627,12 +623,14 @@ package body POSIX.Sockets is
    end Get_Socket_Debugging;
 
    procedure Set_Socket_Debugging
-      (Socket : in POSIX.IO.File_Descriptor;
-       To     : in Socket_Option_Value) is
+      (Socket : POSIX.IO.File_Descriptor;
+       To     : Socket_Option_Value) is
       optval : aliased int := 0;
-      optlen : size_t := optval'Size / char'Size;
+      optlen : constant size_t := optval'Size / char'Size;
    begin
-      if To = Enabled then optval := 1; end if;
+      if To = Enabled then
+         optval := 1;
+      end if;
       Check (c_setsockopt (s       => int (Socket),
                            level   => int (SOL_SOCKET),
                            optname => int (SO_DEBUG),
@@ -661,12 +659,14 @@ package body POSIX.Sockets is
    end Get_Socket_Routing;
 
    procedure Set_Socket_Routing
-      (Socket : in POSIX.IO.File_Descriptor;
-       To     : in Socket_Option_Value) is
+      (Socket : POSIX.IO.File_Descriptor;
+       To     : Socket_Option_Value) is
       optval : aliased int := 0;
-      optlen : size_t := optval'Size / char'Size;
+      optlen : constant size_t := optval'Size / char'Size;
    begin
-      if To = Disabled then optval := 1; end if;
+      if To = Disabled then
+         optval := 1;
+      end if;
       Check (c_setsockopt (s       => int (Socket),
                            level   => int (SOL_SOCKET),
                            optname => int (SO_DONTROUTE),
@@ -711,12 +711,14 @@ package body POSIX.Sockets is
    end Get_Socket_Keep_Alive;
 
    procedure Set_Socket_Keep_Alive
-      (Socket : in POSIX.IO.File_Descriptor;
-       To     : in Socket_Option_Value) is
+      (Socket : POSIX.IO.File_Descriptor;
+       To     : Socket_Option_Value) is
       optval : aliased int := 0;
-      optlen : size_t := optval'Size / char'Size;
+      optlen : constant size_t := optval'Size / char'Size;
    begin
-      if To = Enabled then optval := 1; end if;
+      if To = Enabled then
+         optval := 1;
+      end if;
       Check (c_setsockopt (s       => int (Socket),
                            level   => int (SOL_SOCKET),
                            optname => int (SO_KEEPALIVE),
@@ -741,10 +743,10 @@ package body POSIX.Sockets is
    end Get_Socket_Linger_Time;
 
    procedure Set_Socket_Linger_Time
-      (Socket : in POSIX.IO.File_Descriptor;
-       To     : in Linger_Time) is
+      (Socket : POSIX.IO.File_Descriptor;
+       To     : Linger_Time) is
       optval : aliased struct_linger;
-      optlen : size_t := optval'Size / char'Size;
+      optlen : constant size_t := optval'Size / char'Size;
    begin
       if To = 0 then
          optval.l_onoff := 0;
@@ -781,12 +783,14 @@ package body POSIX.Sockets is
    end Get_Socket_OOB_Data_Inline;
 
    procedure Set_Socket_OOB_Data_Inline
-      (Socket : in POSIX.IO.File_Descriptor;
-       To     : in Socket_Option_Value) is
+      (Socket : POSIX.IO.File_Descriptor;
+       To     : Socket_Option_Value) is
       optval : aliased int := 0;
-      optlen : size_t := optval'Size / char'Size;
+      optlen : constant size_t := optval'Size / char'Size;
    begin
-      if To = Enabled then optval := 1; end if;
+      if To = Enabled then
+         optval := 1;
+      end if;
       Check (c_setsockopt (s       => int (Socket),
                            level   => int (SOL_SOCKET),
                            optname => int (SO_OOBINLINE),
@@ -811,10 +815,10 @@ package body POSIX.Sockets is
    end Get_Socket_Receive_Buffer_Size;
 
    procedure Set_Socket_Receive_Buffer_Size
-      (Socket : in POSIX.IO.File_Descriptor;
-       To     : in POSIX.IO_Count) is
+      (Socket : POSIX.IO.File_Descriptor;
+       To     : POSIX.IO_Count) is
       optval : aliased int;
-      optlen : aliased size_t := optval'Size / char'Size;
+      optlen : aliased constant size_t := optval'Size / char'Size;
    begin
       optval := int (To);
       Check (c_setsockopt (s       => int (Socket),
@@ -841,10 +845,10 @@ package body POSIX.Sockets is
    end Get_Socket_Receive_Low_Water_Mark;
 
    procedure Set_Socket_Receive_Low_Water_Mark
-      (Socket : in POSIX.IO.File_Descriptor;
-       To     : in POSIX.IO_Count) is
+      (Socket : POSIX.IO.File_Descriptor;
+       To     : POSIX.IO_Count) is
       optval : aliased int;
-      optlen : aliased size_t := optval'Size / char'Size;
+      optlen : aliased constant size_t := optval'Size / char'Size;
    begin
       optval := int (To);
       Check (c_setsockopt (s       => int (Socket),
@@ -871,10 +875,10 @@ package body POSIX.Sockets is
    end Get_Socket_Receive_Timeout;
 
    procedure Set_Socket_Receive_Timeout
-      (Socket : in POSIX.IO.File_Descriptor;
-       To     : in Duration) is
+      (Socket : POSIX.IO.File_Descriptor;
+       To     : Duration) is
       optval : aliased struct_timeval;
-      optlen : aliased size_t := optval'Size / char'Size;
+      optlen : aliased constant size_t := optval'Size / char'Size;
    begin
       optval := POSIX.Implementation.To_Struct_Timeval (To);
       Check (c_setsockopt (s       => int (Socket),
@@ -905,12 +909,14 @@ package body POSIX.Sockets is
    end Get_Socket_Reuse_Addresses;
 
    procedure Set_Socket_Reuse_Addresses
-      (Socket : in POSIX.IO.File_Descriptor;
-       To     : in Socket_Option_Value) is
+      (Socket : POSIX.IO.File_Descriptor;
+       To     : Socket_Option_Value) is
       optval : aliased int := 0;
-      optlen : size_t := optval'Size / char'Size;
+      optlen : constant size_t := optval'Size / char'Size;
    begin
-      if To = Enabled then optval := 1; end if;
+      if To = Enabled then
+         optval := 1;
+      end if;
       Check (c_setsockopt (s       => int (Socket),
                            level   => int (SOL_SOCKET),
                            optname => int (SO_REUSEADDR),
@@ -935,10 +941,10 @@ package body POSIX.Sockets is
    end Get_Socket_Send_Buffer_Size;
 
    procedure Set_Socket_Send_Buffer_Size
-      (Socket : in POSIX.IO.File_Descriptor;
-       To     : in POSIX.IO_Count) is
+      (Socket : POSIX.IO.File_Descriptor;
+       To     : POSIX.IO_Count) is
       optval : aliased int;
-      optlen : aliased size_t := optval'Size / char'Size;
+      optlen : aliased constant size_t := optval'Size / char'Size;
    begin
       optval := int (To);
       Check (c_setsockopt (s       => int (Socket),
@@ -965,10 +971,10 @@ package body POSIX.Sockets is
    end Get_Socket_Send_Low_Water_Mark;
 
    procedure Set_Socket_Send_Low_Water_Mark
-      (Socket : in POSIX.IO.File_Descriptor;
-       To     : in POSIX.IO_Count) is
+      (Socket : POSIX.IO.File_Descriptor;
+       To     : POSIX.IO_Count) is
       optval : aliased int;
-      optlen : aliased size_t := optval'Size / char'Size;
+      optlen : aliased constant size_t := optval'Size / char'Size;
    begin
       optval := int (To);
       Check (c_setsockopt (s       => int (Socket),
@@ -995,10 +1001,10 @@ package body POSIX.Sockets is
    end Get_Socket_Send_Timeout;
 
    procedure Set_Socket_Send_Timeout
-      (Socket : in POSIX.IO.File_Descriptor;
-       To     : in Duration) is
+      (Socket : POSIX.IO.File_Descriptor;
+       To     : Duration) is
       optval : aliased struct_timeval;
-      optlen : aliased size_t := optval'Size / char'Size;
+      optlen : aliased constant size_t := optval'Size / char'Size;
    begin
       optval := To_Struct_Timeval (To);
       Check (c_setsockopt (s       => int (Socket),
@@ -1054,8 +1060,8 @@ package body POSIX.Sockets is
    pragma Import (C, c_listen, listen_LINKNAME);
 
    procedure Listen
-      (Socket  : in POSIX.IO.File_Descriptor;
-       Backlog : in Connection_Queue_Length :=
+      (Socket  : POSIX.IO.File_Descriptor;
+       Backlog : Connection_Queue_Length :=
                     Connection_Queue_Length'Last) is
    begin
       Check (c_listen (int (Socket), int (Backlog)));
@@ -1074,12 +1080,12 @@ package body POSIX.Sockets is
    pragma Import (C, c_recv, recv_LINKNAME);
 
    procedure Receive
-      (Socket           : in  POSIX.IO.File_Descriptor;
-       Buffer           : in  System.Address;
-       Octets_Requested : in  POSIX.IO_Count;
+      (Socket           : POSIX.IO.File_Descriptor;
+       Buffer           : System.Address;
+       Octets_Requested : POSIX.IO_Count;
        Octets_Received  : out POSIX.IO_Count;
-       Masked_Signals   : in  POSIX.Signal_Masking;
-       Options          : in  Message_Option_Set
+       Masked_Signals   : POSIX.Signal_Masking;
+       Options          : Message_Option_Set
          := Message_Option_Set (POSIX.Empty_Set)) is
       Result   : ssize_t;
       Old_Mask : aliased Signal_Mask;
@@ -1109,11 +1115,11 @@ package body POSIX.Sockets is
    end Receive;
 
    procedure Receive
-      (Socket           : in  POSIX.IO.File_Descriptor;
-       Buffer           : in  System.Address;
-       Octets_Requested : in  POSIX.IO_Count;
+      (Socket           : POSIX.IO.File_Descriptor;
+       Buffer           : System.Address;
+       Octets_Requested : POSIX.IO_Count;
        Octets_Received  : out POSIX.IO_Count;
-       Options          : in  Message_Option_Set
+       Options          : Message_Option_Set
          := Message_Option_Set (POSIX.Empty_Set)) is
       Result : ssize_t;
    begin
@@ -1152,13 +1158,13 @@ package body POSIX.Sockets is
    pragma Import (C, c_recvfrom, recvfrom_LINKNAME);
 
    procedure Receive
-      (Socket           : in  POSIX.IO.File_Descriptor;
-       Buffer           : in  System.Address;
-       Octets_Requested : in  POSIX.IO_Count;
+      (Socket           : POSIX.IO.File_Descriptor;
+       Buffer           : System.Address;
+       Octets_Requested : POSIX.IO_Count;
        Octets_Received  : out POSIX.IO_Count;
-       From             : in  Socket_Address_Pointer;
-       Masked_Signals   : in  POSIX.Signal_Masking;
-       Options          : in  Message_Option_Set
+       From             : Socket_Address_Pointer;
+       Masked_Signals   : POSIX.Signal_Masking;
+       Options          : Message_Option_Set
          := Message_Option_Set (POSIX.Empty_Set)) is
       Result : ssize_t;
       Old_Mask : aliased Signal_Mask;
@@ -1193,12 +1199,12 @@ package body POSIX.Sockets is
    end Receive;
 
    procedure Receive
-      (Socket           : in  POSIX.IO.File_Descriptor;
-       Buffer           : in  System.Address;
-       Octets_Requested : in  POSIX.IO_Count;
+      (Socket           : POSIX.IO.File_Descriptor;
+       Buffer           : System.Address;
+       Octets_Requested : POSIX.IO_Count;
        Octets_Received  : out POSIX.IO_Count;
-       From             : in  Socket_Address_Pointer;
-       Options          : in  Message_Option_Set
+       From             : Socket_Address_Pointer;
+       Options          : Message_Option_Set
          := Message_Option_Set (POSIX.Empty_Set)) is
       Result : ssize_t;
       Address_Length : aliased size_t;
@@ -1238,11 +1244,11 @@ package body POSIX.Sockets is
    pragma Import (C, c_recvmsg, recvmsg_LINKNAME);
 
    procedure Receive_Message
-      (Socket          : in     POSIX.IO.File_Descriptor;
+      (Socket          : POSIX.IO.File_Descriptor;
        Message         : in out Socket_Message;
        Octets_Received : out    POSIX.IO_Count;
-       Masked_Signals  : in     POSIX.Signal_Masking;
-       Options         : in     Message_Option_Set
+       Masked_Signals  : POSIX.Signal_Masking;
+       Options         : Message_Option_Set
          := Message_Option_Set (POSIX.Empty_Set)) is
       Result : ssize_t;
       Old_Mask : aliased Signal_Mask;
@@ -1261,10 +1267,10 @@ package body POSIX.Sockets is
    end Receive_Message;
 
    procedure Receive_Message
-      (Socket          : in     POSIX.IO.File_Descriptor;
+      (Socket          : POSIX.IO.File_Descriptor;
        Message         : in out Socket_Message;
        Octets_Received : out    POSIX.IO_Count;
-       Options         : in     Message_Option_Set
+       Options         : Message_Option_Set
          := Message_Option_Set (POSIX.Empty_Set)) is
       Result : ssize_t;
    begin
@@ -1292,12 +1298,12 @@ package body POSIX.Sockets is
    pragma Import (C, c_send, send_LINKNAME);
 
    procedure Send
-      (Socket         : in  POSIX.IO.File_Descriptor;
-       Buffer         : in  System.Address;
-       Octets_To_Send : in  POSIX.IO_Count;
+      (Socket         : POSIX.IO.File_Descriptor;
+       Buffer         : System.Address;
+       Octets_To_Send : POSIX.IO_Count;
        Octets_Sent    : out POSIX.IO_Count;
-       Masked_Signals : in  POSIX.Signal_Masking;
-       Options        : in  Message_Option_Set
+       Masked_Signals : POSIX.Signal_Masking;
+       Options        : Message_Option_Set
          := Message_Option_Set (POSIX.Empty_Set)) is
       Result : ssize_t;
       Old_Mask : aliased Signal_Mask;
@@ -1314,16 +1320,17 @@ package body POSIX.Sockets is
       Restore_Signals (Masked_Signals, Old_Mask'Unchecked_Access);
       if Result >= 0 then
          Octets_Sent := POSIX.IO_Count (Result);
-      else Raise_POSIX_Error;
+      else
+         Raise_POSIX_Error;
       end if;
    end Send;
 
    procedure Send
-      (Socket         : in  POSIX.IO.File_Descriptor;
-       Buffer         : in  System.Address;
-       Octets_To_Send : in  POSIX.IO_Count;
+      (Socket         : POSIX.IO.File_Descriptor;
+       Buffer         : System.Address;
+       Octets_To_Send : POSIX.IO_Count;
        Octets_Sent    : out POSIX.IO_Count;
-       Options        : in  Message_Option_Set
+       Options        : Message_Option_Set
          := Message_Option_Set (POSIX.Empty_Set)) is
       Result : ssize_t;
    begin
@@ -1337,7 +1344,8 @@ package body POSIX.Sockets is
                         flags => To_int (Option_Set (Options).Option));
       if Result >= 0 then
          Octets_Sent := POSIX.IO_Count (Result);
-      else Raise_POSIX_Error;
+      else
+         Raise_POSIX_Error;
       end if;
    end Send;
 
@@ -1355,13 +1363,13 @@ package body POSIX.Sockets is
    pragma Import (C, c_sendto, sendto_LINKNAME);
 
    procedure Send
-      (Socket         : in  POSIX.IO.File_Descriptor;
-       Buffer         : in  System.Address;
-       Octets_To_Send : in  POSIX.IO_Count;
+      (Socket         : POSIX.IO.File_Descriptor;
+       Buffer         : System.Address;
+       Octets_To_Send : POSIX.IO_Count;
        Octets_Sent    : out POSIX.IO_Count;
-       To             : in  Socket_Address_Pointer;
-       Masked_Signals : in  POSIX.Signal_Masking;
-       Options        : in  Message_Option_Set
+       To             : Socket_Address_Pointer;
+       Masked_Signals : POSIX.Signal_Masking;
+       Options        : Message_Option_Set
          := Message_Option_Set (POSIX.Empty_Set)) is
       Result : ssize_t;
       Old_Mask : aliased Signal_Mask;
@@ -1386,12 +1394,12 @@ package body POSIX.Sockets is
    end Send;
 
    procedure Send
-      (Socket         : in  POSIX.IO.File_Descriptor;
-       Buffer         : in  System.Address;
-       Octets_To_Send : in  POSIX.IO_Count;
+      (Socket         : POSIX.IO.File_Descriptor;
+       Buffer         : System.Address;
+       Octets_To_Send : POSIX.IO_Count;
        Octets_Sent    : out POSIX.IO_Count;
-       To             : in  Socket_Address_Pointer;
-       Options        : in  Message_Option_Set
+       To             : Socket_Address_Pointer;
+       Options        : Message_Option_Set
          := Message_Option_Set (POSIX.Empty_Set)) is
       Result : ssize_t;
    begin
@@ -1421,11 +1429,11 @@ package body POSIX.Sockets is
    pragma Import (C, c_sendmsg, sendmsg_LINKNAME);
 
    procedure Send_Message
-      (Socket         : in  POSIX.IO.File_Descriptor;
-       Message        : in  Socket_Message;
+      (Socket         : POSIX.IO.File_Descriptor;
+       Message        : Socket_Message;
        Octets_Sent    : out POSIX.IO_Count;
-       Masked_Signals : in  POSIX.Signal_Masking;
-       Options        : in  Message_Option_Set
+       Masked_Signals : POSIX.Signal_Masking;
+       Options        : Message_Option_Set
          := Message_Option_Set (POSIX.Empty_Set)) is
       Result : ssize_t;
       Old_Mask : aliased Signal_Mask;
@@ -1444,10 +1452,10 @@ package body POSIX.Sockets is
    end Send_Message;
 
    procedure Send_Message
-      (Socket      : in  POSIX.IO.File_Descriptor;
-       Message     : in  Socket_Message;
+      (Socket      : POSIX.IO.File_Descriptor;
+       Message     : Socket_Message;
        Octets_Sent : out POSIX.IO_Count;
-       Options     : in  Message_Option_Set
+       Options     : Message_Option_Set
          := Message_Option_Set (POSIX.Empty_Set)) is
       Result : ssize_t;
    begin
@@ -1470,8 +1478,8 @@ package body POSIX.Sockets is
    pragma Import (C, c_shutdown, shutdown_LINKNAME);
 
    procedure Shutdown
-      (Socket : in POSIX.IO.File_Descriptor;
-       Mode   : in Shutdown_Mode) is
+      (Socket : POSIX.IO.File_Descriptor;
+       Mode   : Shutdown_Mode) is
    begin
       case Mode is
          when Further_Receives_Disallowed =>

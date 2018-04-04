@@ -45,7 +45,6 @@ with POSIX,
      System;
 package POSIX.XTI is
 
-
    type XTI_Flags is new POSIX.Option_Set;
    Expedited_Data      : constant XTI_Flags;
    More_Data           : constant XTI_Flags;
@@ -140,7 +139,7 @@ package POSIX.XTI is
      return Linger_Option;
    procedure Set_Status
       (Item   : in out Linger_Info;
-       Linger : in     Linger_Option);
+       Linger : Linger_Option);
    function Period_Is_Infinite (Item : Linger_Info)
      return Boolean;
    function Period_Is_Unspecified (Item : Linger_Info)
@@ -153,7 +152,7 @@ package POSIX.XTI is
       (Item : in out Linger_Info);
    procedure Set_Period
       (Item : in out Linger_Info;
-       Time : in     Linger_Time);
+       Time : Linger_Time);
 
    type Protocol_Option is private;
    type Option_Value is range Integer'First .. Integer'Last;
@@ -183,23 +182,23 @@ package POSIX.XTI is
      return Linger_Info;
    procedure Set_Option
       (Option_Item : in out  Protocol_Option;
-       Level       : in      Option_Level;
-       Name        : in      Option_Name);
+       Level       : Option_Level;
+       Name        : Option_Name);
    procedure Set_Option
       (Option_Item : in out  Protocol_Option;
-       Level       : in      Option_Level;
-       Name        : in      Option_Name;
-       Value       : in      Option_Value);
+       Level       : Option_Level;
+       Name        : Option_Name;
+       Value       : Option_Value);
    procedure Set_Option
       (Option_Item : in out  Protocol_Option;
-       Level       : in      Option_Level;
-       Name        : in      Option_Name;
-       Value       : in      Option_Value_Array);
+       Level       : Option_Level;
+       Name        : Option_Name;
+       Value       : Option_Value_Array);
    procedure Set_Option
       (Option_Item : in out  Protocol_Option;
-       Level       : in      Option_Level;
-       Name        : in      Option_Name;
-       Value       : in      Linger_Info);
+       Level       : Option_Level;
+       Name        : Option_Name;
+       Value       : Linger_Info);
 
    type Protocol_Option_List is private;
    type Protocol_Option_List_Pointer is
@@ -208,21 +207,21 @@ package POSIX.XTI is
       (Info_Item : in out Protocol_Option_List);
    procedure Append
       (Info_Item : in out Protocol_Option_List;
-       Option    : in     Protocol_Option);
+       Option    : Protocol_Option);
    type Octet_Buffer_Pointer is access all POSIX.Octet_Array;
    procedure Set_Buffer
       (Info_Item      : in out Protocol_Option_List;
-       Options_Buffer : in     Octet_Buffer_Pointer);
+       Options_Buffer : Octet_Buffer_Pointer);
    generic
       with procedure Action
-        (Info : in     Protocol_Option;
+        (Info : Protocol_Option;
          Quit : in out Boolean);
-   procedure For_Every_Item (Info_Item : in Protocol_Option_List);
+   procedure For_Every_Item (Info_Item : Protocol_Option_List);
    function Number_Of_Options (Info_Item : Protocol_Option_List)
      return Natural;
    procedure Get_Option
-      (Info_Item     : in  Protocol_Option_List;
-       Option_Number : in  Positive;
+      (Info_Item     : Protocol_Option_List;
+       Option_Number : Positive;
        Option        : out Protocol_Option);
 
    type Reason_Code is range 0 .. Integer'Last;
@@ -233,20 +232,20 @@ package POSIX.XTI is
 
    procedure Set_Address
       (Info_Item  : in out Connection_Info;
-       Address    : in     XTI_Address_Pointer);
+       Address    : XTI_Address_Pointer);
    function Get_Options (Info_Item : Connection_Info)
      return Protocol_Option_List;
    procedure Set_Options
       (Info_Item : in out Connection_Info;
-       Options   : in     Protocol_Option_List_Pointer);
+       Options   : Protocol_Option_List_Pointer);
    procedure Set_User_Data
       (Info_Item  : in out Connection_Info;
-       User_Data  : in     System.Address;
-       Max_Length : in     POSIX.IO_Count);
+       User_Data  : System.Address;
+       Max_Length : POSIX.IO_Count);
    --  implictly sets Length = Max_Length
    procedure Set_User_Data_Length
       (Info_Item  : in out Connection_Info;
-       Length     : in     POSIX.IO_Count);
+       Length     : POSIX.IO_Count);
    function Get_User_Data_Length
       (Info_Item : Connection_Info)
      return POSIX.IO_Count;
@@ -255,7 +254,7 @@ package POSIX.XTI is
      return Natural;
    procedure Set_Sequence_Number
       (Info_Item : in out Connection_Info;
-       Number    : in     Natural);
+       Number    : Natural);
 
    subtype IO_Vector_Range is Positive range
       1 .. POSIX_Limits.XTI_IO_Vector_Maxima'Last;
@@ -273,107 +272,107 @@ package POSIX.XTI is
    Incoming_Release : constant Interface_State;
 
    procedure Accept_Connection
-      (Listening_Endpoint  : in POSIX_IO.File_Descriptor;
-       Responding_Endpoint : in POSIX_IO.File_Descriptor;
-       Call                : in Connection_Info);
+      (Listening_Endpoint  : POSIX_IO.File_Descriptor;
+       Responding_Endpoint : POSIX_IO.File_Descriptor;
+       Call                : Connection_Info);
    procedure Accept_Connection
-      (Listening_Endpoint  : in POSIX_IO.File_Descriptor;
-       Responding_Endpoint : in POSIX_IO.File_Descriptor);
+      (Listening_Endpoint  : POSIX_IO.File_Descriptor;
+       Responding_Endpoint : POSIX_IO.File_Descriptor);
 
    procedure Acknowledge_Orderly_Release
-      (Endpoint : in POSIX_IO.File_Descriptor);
+      (Endpoint : POSIX_IO.File_Descriptor);
    procedure Acknowledge_Orderly_Release
-      (Endpoint : in  POSIX_IO.File_Descriptor;
+      (Endpoint : POSIX_IO.File_Descriptor;
        Reason   : out Reason_Code);
 
    procedure Acknowledge_Orderly_Release_With_Data
-      (Endpoint         : in  POSIX_IO.File_Descriptor;
+      (Endpoint         : POSIX_IO.File_Descriptor;
        Reason           : out Reason_Code;
-       User_Data        : in  System.Address;
-       Octets_Requested : in  POSIX.IO_Count;
+       User_Data        : System.Address;
+       Octets_Requested : POSIX.IO_Count;
        Octets_Received  : out POSIX.IO_Count);
 
    procedure Bind
-      (Endpoint              : in  POSIX_IO.File_Descriptor;
-       Request_Address       : in  XTI_Address_Pointer;
-       Request_Queue_Length  : in  Natural;
-       Response_Address      : in  XTI_Address_Pointer;
+      (Endpoint              : POSIX_IO.File_Descriptor;
+       Request_Address       : XTI_Address_Pointer;
+       Request_Queue_Length  : Natural;
+       Response_Address      : XTI_Address_Pointer;
        Response_Queue_Length : out Natural);
    procedure Bind
-      (Endpoint              : in  POSIX_IO.File_Descriptor;
-       Request_Queue_Length  : in  Natural;
-       Response_Address      : in  XTI_Address_Pointer;
+      (Endpoint              : POSIX_IO.File_Descriptor;
+       Request_Queue_Length  : Natural;
+       Response_Address      : XTI_Address_Pointer;
        Response_Queue_Length : out Natural);
    procedure Bind
-      (Endpoint             : in POSIX_IO.File_Descriptor;
-       Request_Address      : in XTI_Address_Pointer;
-       Request_Queue_Length : in Natural);
+      (Endpoint             : POSIX_IO.File_Descriptor;
+       Request_Address      : XTI_Address_Pointer;
+       Request_Queue_Length : Natural);
    procedure Bind
-      (Endpoint         : in POSIX_IO.File_Descriptor;
-       Response_Address : in XTI_Address_Pointer);
+      (Endpoint         : POSIX_IO.File_Descriptor;
+       Response_Address : XTI_Address_Pointer);
    procedure Bind
-      (Endpoint : in POSIX_IO.File_Descriptor);
+      (Endpoint : POSIX_IO.File_Descriptor);
 
    procedure Close
-      (Endpoint : in POSIX_IO.File_Descriptor);
+      (Endpoint : POSIX_IO.File_Descriptor);
 
    procedure Confirm_Connection
-      (Endpoint : in POSIX_IO.File_Descriptor;
-       Call     : in Connection_Info_Pointer);
+      (Endpoint : POSIX_IO.File_Descriptor;
+       Call     : Connection_Info_Pointer);
    procedure Confirm_Connection
-      (Endpoint : in POSIX_IO.File_Descriptor);
+      (Endpoint : POSIX_IO.File_Descriptor);
 
    procedure Connect
-      (Endpoint : in POSIX_IO.File_Descriptor;
-       Send     : in Connection_Info;
-       Receive  : in Connection_Info_Pointer);
+      (Endpoint : POSIX_IO.File_Descriptor;
+       Send     : Connection_Info;
+       Receive  : Connection_Info_Pointer);
    procedure Connect
-      (Endpoint : in POSIX_IO.File_Descriptor;
-       Send     : in Connection_Info);
+      (Endpoint : POSIX_IO.File_Descriptor;
+       Send     : Connection_Info);
 
    procedure Gather_And_Send_Data
-      (Endpoint        : in  POSIX_IO.File_Descriptor;
-       Vector          : in  IO_Vector_Array;
-       Flags           : in  XTI_Flags;
+      (Endpoint        : POSIX_IO.File_Descriptor;
+       Vector          : IO_Vector_Array;
+       Flags           : XTI_Flags;
        Octets_Sent     : out POSIX.IO_Count);
 
    procedure Gather_And_Send_Data_Unit
-      (Endpoint        : in POSIX_IO.File_Descriptor;
-       Address         : in XTI_Address_Pointer;
-       Vector          : in IO_Vector_Array);
+      (Endpoint        : POSIX_IO.File_Descriptor;
+       Address         : XTI_Address_Pointer;
+       Vector          : IO_Vector_Array);
    procedure Gather_And_Send_Data_Unit
-      (Endpoint        : in POSIX_IO.File_Descriptor;
-       Address         : in XTI_Address_Pointer;
-       Vector          : in IO_Vector_Array;
-       Options         : in Protocol_Option_List);
+      (Endpoint        : POSIX_IO.File_Descriptor;
+       Address         : XTI_Address_Pointer;
+       Vector          : IO_Vector_Array;
+       Options         : Protocol_Option_List);
 
    function Get_Current_State (Endpoint : POSIX_IO.File_Descriptor)
      return Interface_State;
 
    procedure Get_Info
-      (Endpoint : in POSIX_IO.File_Descriptor;
-       Info     : in Communications_Provider_Info_Pointer);
+      (Endpoint : POSIX_IO.File_Descriptor;
+       Info     : Communications_Provider_Info_Pointer);
 
    procedure Get_Protocol_Address
-      (Endpoint      : in POSIX_IO.File_Descriptor;
-       Bound_Address : in XTI_Address_Pointer;
-       Peer_Address  : in XTI_Address_Pointer);
+      (Endpoint      : POSIX_IO.File_Descriptor;
+       Bound_Address : XTI_Address_Pointer;
+       Peer_Address  : XTI_Address_Pointer);
 
    procedure Initiate_Orderly_Release
-      (Endpoint : in POSIX_IO.File_Descriptor);
+      (Endpoint : POSIX_IO.File_Descriptor);
    procedure Initiate_Orderly_Release
-      (Endpoint : in POSIX_IO.File_Descriptor;
-       Reason   : in Reason_Code);
+      (Endpoint : POSIX_IO.File_Descriptor;
+       Reason   : Reason_Code);
 
    procedure Initiate_Orderly_Release_With_Data
-      (Endpoint       : in POSIX_IO.File_Descriptor;
-       Reason         : in Reason_Code;
-       User_Data      : in System.Address;
-       Octets_To_Send : in POSIX.IO_Count);
+      (Endpoint       : POSIX_IO.File_Descriptor;
+       Reason         : Reason_Code;
+       User_Data      : System.Address;
+       Octets_To_Send : POSIX.IO_Count);
 
    procedure Listen
-      (Endpoint : in POSIX_IO.File_Descriptor;
-       Call     : in Connection_Info_Pointer);
+      (Endpoint : POSIX_IO.File_Descriptor;
+       Call     : Connection_Info_Pointer);
 
    type XTI_Events is new POSIX.Option_Set;
    Connect_Request_Received    : constant XTI_Events;
@@ -402,124 +401,124 @@ package POSIX.XTI is
    Send_Buffer_Size       : constant Option_Name := POSIX.C.XTI.XTI_SNDBUF;
    Send_Low_Water_Mark    : constant Option_Name := POSIX.C.XTI.XTI_SNDLOWAT;
    procedure Manage_Options
-      (Endpoint       : in  POSIX_IO.File_Descriptor;
-       Request        : in  Protocol_Option_List;
-       Request_Flag   : in  Options_Flags;
-       Response       : in  Protocol_Option_List_Pointer;
+      (Endpoint       : POSIX_IO.File_Descriptor;
+       Request        : Protocol_Option_List;
+       Request_Flag   : Options_Flags;
+       Response       : Protocol_Option_List_Pointer;
        Response_Flags : out Option_Status);
 
    procedure Open
       (Endpoint : out POSIX_IO.File_Descriptor;
-       Name     : in  POSIX.POSIX_String;
-       Mode     : in  POSIX_IO.File_Mode;
-       Options  : in  POSIX_IO.Open_Option_Set;
-       Info     : in  Communications_Provider_Info_Pointer);
+       Name     : POSIX.POSIX_String;
+       Mode     : POSIX_IO.File_Mode;
+       Options  : POSIX_IO.Open_Option_Set;
+       Info     : Communications_Provider_Info_Pointer);
    procedure Open
       (Endpoint : out POSIX_IO.File_Descriptor;
-       Name     : in  POSIX.POSIX_String;
-       Mode     : in  POSIX_IO.File_Mode;
-       Options  : in  POSIX_IO.Open_Option_Set);
+       Name     : POSIX.POSIX_String;
+       Mode     : POSIX_IO.File_Mode;
+       Options  : POSIX_IO.Open_Option_Set);
 
    procedure Receive
-      (Endpoint         : in  POSIX_IO.File_Descriptor;
-       Buffer           : in  System.Address;
-       Octets_Requested : in  POSIX.IO_Count;
+      (Endpoint         : POSIX_IO.File_Descriptor;
+       Buffer           : System.Address;
+       Octets_Requested : POSIX.IO_Count;
        Octets_Received  : out POSIX.IO_Count;
        Flags            : out XTI_Flags);
 
    procedure Receive_And_Scatter_Data
-      (Endpoint          : in  POSIX_IO.File_Descriptor;
-       Vector            : in  IO_Vector_Array;
+      (Endpoint          : POSIX_IO.File_Descriptor;
+       Vector            : IO_Vector_Array;
        Octets_Received   : out POSIX.IO_Count;
        Flags             : out XTI_Flags);
 
    procedure Receive_And_Scatter_Data_Unit
-      (Endpoint          : in  POSIX_IO.File_Descriptor;
-       Address           : in  XTI_Address_Pointer;
-       Options           : in  Protocol_Option_List_Pointer;
-       Vector            : in  IO_Vector_Array;
+      (Endpoint          : POSIX_IO.File_Descriptor;
+       Address           : XTI_Address_Pointer;
+       Options           : Protocol_Option_List_Pointer;
+       Vector            : IO_Vector_Array;
        Octets_Received   : out POSIX.IO_Count;
        Flags             : out XTI_Flags);
 
    procedure Receive_Data_Unit
-      (Endpoint         : in  POSIX_IO.File_Descriptor;
-       User_Data        : in  System.Address;
-       Octets_Requested : in  POSIX.IO_Count;
-       Address          : in  XTI_Address_Pointer;
-       Options          : in  Protocol_Option_List_Pointer;
+      (Endpoint         : POSIX_IO.File_Descriptor;
+       User_Data        : System.Address;
+       Octets_Requested : POSIX.IO_Count;
+       Address          : XTI_Address_Pointer;
+       Options          : Protocol_Option_List_Pointer;
        Flags            : out XTI_Flags);
    procedure Receive_Data_Unit
-      (Endpoint         : in  POSIX_IO.File_Descriptor;
-       User_Data        : in  System.Address;
-       Octets_Requested : in  POSIX.IO_Count;
-       Address          : in  XTI_Address_Pointer;
+      (Endpoint         : POSIX_IO.File_Descriptor;
+       User_Data        : System.Address;
+       Octets_Requested : POSIX.IO_Count;
+       Address          : XTI_Address_Pointer;
        Flags            : out XTI_Flags);
 
    type Unit_Data_Error_Code is new Integer;
    procedure Retrieve_Data_Unit_Error
-      (Endpoint : in  POSIX_IO.File_Descriptor;
-       Address  : in  XTI_Address_Pointer;
-       Options  : in  Protocol_Option_List_Pointer;
+      (Endpoint : POSIX_IO.File_Descriptor;
+       Address  : XTI_Address_Pointer;
+       Options  : Protocol_Option_List_Pointer;
        Error    : out Unit_Data_Error_Code);
    procedure Retrieve_Data_Unit_Error
-      (Endpoint : in  POSIX_IO.File_Descriptor;
-       Address  : in  XTI_Address_Pointer;
+      (Endpoint : POSIX_IO.File_Descriptor;
+       Address  : XTI_Address_Pointer;
        Error    : out Unit_Data_Error_Code);
    procedure Retrieve_Data_Unit_Error
-      (Endpoint : in  POSIX_IO.File_Descriptor;
-       Options  : in  Protocol_Option_List_Pointer;
+      (Endpoint : POSIX_IO.File_Descriptor;
+       Options  : Protocol_Option_List_Pointer;
        Error    : out Unit_Data_Error_Code);
    procedure Retrieve_Data_Unit_Error
-      (Endpoint : in  POSIX_IO.File_Descriptor;
+      (Endpoint : POSIX_IO.File_Descriptor;
        Error    : out Unit_Data_Error_Code);
 
    procedure Retrieve_Disconnect_Info
-      (Endpoint         : in  POSIX_IO.File_Descriptor;
-       User_Data        : in  System.Address;
-       Octets_Requested : in  POSIX.IO_Count;
+      (Endpoint         : POSIX_IO.File_Descriptor;
+       User_Data        : System.Address;
+       Octets_Requested : POSIX.IO_Count;
        Reason           : out Reason_Code;
        Sequence_Number  : out Natural);
    procedure Clear_Disconnect_Info
-      (Endpoint : in POSIX_IO.File_Descriptor);
+      (Endpoint : POSIX_IO.File_Descriptor);
 
    procedure Send
-      (Endpoint       : in  POSIX_IO.File_Descriptor;
-       Buffer         : in  System.Address;
-       Octets_To_Send : in  POSIX.IO_Count;
-       Flags          : in  XTI_Flags;
+      (Endpoint       : POSIX_IO.File_Descriptor;
+       Buffer         : System.Address;
+       Octets_To_Send : POSIX.IO_Count;
+       Flags          : XTI_Flags;
        Octets_Sent    : out POSIX.IO_Count);
 
    procedure Send_Data_Unit
-      (Endpoint       : in POSIX_IO.File_Descriptor;
-       User_Data      : in System.Address;
-       Octets_To_Send : in POSIX.IO_Count;
-       Address        : in XTI_Address_Pointer;
-       Options        : in Protocol_Option_List);
+      (Endpoint       : POSIX_IO.File_Descriptor;
+       User_Data      : System.Address;
+       Octets_To_Send : POSIX.IO_Count;
+       Address        : XTI_Address_Pointer;
+       Options        : Protocol_Option_List);
    procedure Send_Data_Unit
-      (Endpoint       : in POSIX_IO.File_Descriptor;
-       User_Data      : in System.Address;
-       Octets_To_Send : in POSIX.IO_Count;
-       Address        : in XTI_Address_Pointer);
+      (Endpoint       : POSIX_IO.File_Descriptor;
+       User_Data      : System.Address;
+       Octets_To_Send : POSIX.IO_Count;
+       Address        : XTI_Address_Pointer);
 
    procedure Send_Disconnect_Request
-      (Endpoint : in POSIX_IO.File_Descriptor;
-       Call     : in Connection_Info);
+      (Endpoint : POSIX_IO.File_Descriptor;
+       Call     : Connection_Info);
    procedure Send_Disconnect_Request
-      (Endpoint : in POSIX_IO.File_Descriptor);
+      (Endpoint : POSIX_IO.File_Descriptor);
    procedure Send_Disconnect_Request
-      (Endpoint        : in POSIX_IO.File_Descriptor;
-       Sequence_Number : in Natural);
+      (Endpoint        : POSIX_IO.File_Descriptor;
+       Sequence_Number : Natural);
    procedure Send_Disconnect_Request
-      (Endpoint       : in POSIX_IO.File_Descriptor;
-       User_Data      : in System.Address;
-       Octets_To_Send : in POSIX.IO_Count);
+      (Endpoint       : POSIX_IO.File_Descriptor;
+       User_Data      : System.Address;
+       Octets_To_Send : POSIX.IO_Count);
 
    function Synchronize_Endpoint
-      (Endpoint : in POSIX_IO.File_Descriptor)
+      (Endpoint : POSIX_IO.File_Descriptor)
      return Interface_State;
 
    procedure Unbind
-      (Endpoint : in POSIX_IO.File_Descriptor);
+      (Endpoint : POSIX_IO.File_Descriptor);
 
 private
 
@@ -577,9 +576,9 @@ private
 
    type XTI_Address is record
       netbuf : aliased POSIX.C.XTI.struct_netbuf :=
-        POSIX.C.XTI.struct_netbuf ' (len     => 0,
-                                     maxlen  => 0,
-                                     buf     => null);
+        POSIX.C.XTI.struct_netbuf'(len     => 0,
+                                   maxlen  => 0,
+                                   buf     => null);
       buf_ptr : aliased POSIX.C.char_ptr;
       --  .... do we still need the above?
    end record;
@@ -588,30 +587,30 @@ private
 
    type Linger_Info is record
       C : aliased POSIX.C.XTI.struct_t_linger :=
-        POSIX.C.XTI.struct_t_linger ' (l_onoff  => POSIX.C.XTI.T_NO,
-                                       l_linger => 0);
+        POSIX.C.XTI.struct_t_linger'(l_onoff  => POSIX.C.XTI.T_NO,
+                                     l_linger => 0);
    end record;
 
    type Protocol_Option_List is record
       C : aliased POSIX.C.XTI.struct_netbuf :=
-        POSIX.C.XTI.struct_netbuf ' (len    => 0,
-                                     maxlen => 0,
-                                     buf    => null);
+        POSIX.C.XTI.struct_netbuf'(len    => 0,
+                                   maxlen => 0,
+                                   buf    => null);
       buf_ptr : aliased Octet_Buffer_Pointer;
    end record;
 
    type Connection_Info is record
       C : aliased POSIX.C.XTI.struct_t_call :=
-        POSIX.C.XTI.struct_t_call ' (addr =>  (len    => 0,
-                                               maxlen => 0,
-                                               buf    => null),
-                                     opt =>   (len    => 0,
-                                               maxlen => 0,
-                                               buf    => null),
-                                     udata => (len    => 0,
-                                               maxlen => 0,
-                                               buf    => null),
-                                     sequence => 0);
+        POSIX.C.XTI.struct_t_call'(addr     =>  (len    => 0,
+                                                 maxlen => 0,
+                                                 buf    => null),
+                                   opt      =>   (len    => 0,
+                                                  maxlen => 0,
+                                                  buf    => null),
+                                   udata    => (len    => 0,
+                                                maxlen => 0,
+                                                buf    => null),
+                                   sequence => 0);
       addr_buf_ptr : aliased POSIX.C.char_ptr;
       --  .... do we still need the above?
       opt_buf_ptr : aliased Octet_Buffer_Pointer;
@@ -621,40 +620,40 @@ private
 
    type Protocol_Option is record
       C    : aliased POSIX.C.XTI.struct_t_opthdr :=
-             POSIX.C.XTI.struct_t_opthdr ' (len    => 0,
-                                            level  => 0,
-                                            name   => 0,
-                                            status => 0);
+             POSIX.C.XTI.struct_t_opthdr'(len    => 0,
+                                          level  => 0,
+                                          name   => 0,
+                                          status => 0);
       Data : aliased POSIX.Octet_Array (1 .. 100) :=
               (others => 0);
    end record;
 
    Expedited_Data :      constant XTI_Flags :=
-      XTI_Flags (POSIX.Option_Set' (Option => POSIX.C.XTI.T_EXPEDITED));
+      XTI_Flags (POSIX.Option_Set'(Option => POSIX.C.XTI.T_EXPEDITED));
    More_Data :           constant XTI_Flags :=
-      XTI_Flags (POSIX.Option_Set' (Option => POSIX.C.XTI.T_MORE));
+      XTI_Flags (POSIX.Option_Set'(Option => POSIX.C.XTI.T_MORE));
    Push_Data :           constant XTI_Flags :=
-      XTI_Flags (POSIX.Option_Set' (Option => POSIX.C.XTI.T_PUSH));
+      XTI_Flags (POSIX.Option_Set'(Option => POSIX.C.XTI.T_PUSH));
 
    Orderly_Release_Data_Supported : constant CP_Flags
      := CP_Flags (POSIX.Empty_Set);
    Zero_Length_SDU_Supported :      constant CP_Flags :=
-      CP_Flags (POSIX.Option_Set' (Option => POSIX.C.XTI.T_SENDZERO));
+      CP_Flags (POSIX.Option_Set'(Option => POSIX.C.XTI.T_SENDZERO));
 
    Connect_Request_Received :     constant XTI_Events :=
-      XTI_Events (POSIX.Option_Set' (Option => POSIX.C.XTI.T_LISTEN));
+      XTI_Events (POSIX.Option_Set'(Option => POSIX.C.XTI.T_LISTEN));
    Connect_Response_Received :    constant XTI_Events :=
-      XTI_Events (POSIX.Option_Set' (Option => POSIX.C.XTI.T_CONNECT));
+      XTI_Events (POSIX.Option_Set'(Option => POSIX.C.XTI.T_CONNECT));
    Disconnect_Request_Received :  constant XTI_Events :=
-      XTI_Events (POSIX.Option_Set' (Option => POSIX.C.XTI.T_DISCONNECT));
+      XTI_Events (POSIX.Option_Set'(Option => POSIX.C.XTI.T_DISCONNECT));
    Error_In_Previously_Sent_Datagram : constant XTI_Events :=
-      XTI_Events (POSIX.Option_Set' (Option => POSIX.C.XTI.T_UDERR));
+      XTI_Events (POSIX.Option_Set'(Option => POSIX.C.XTI.T_UDERR));
    Expedited_Data_Received :      constant XTI_Events :=
-      XTI_Events (POSIX.Option_Set' (Option => POSIX.C.XTI.T_EXDATA));
+      XTI_Events (POSIX.Option_Set'(Option => POSIX.C.XTI.T_EXDATA));
    Normal_Data_Received :         constant XTI_Events :=
-      XTI_Events (POSIX.Option_Set' (Option => POSIX.C.XTI.T_DATA));
+      XTI_Events (POSIX.Option_Set'(Option => POSIX.C.XTI.T_DATA));
    Okay_To_Send_Expedited_Data :  constant XTI_Events :=
-      XTI_Events (POSIX.Option_Set' (Option => POSIX.C.XTI.T_GODATA));
+      XTI_Events (POSIX.Option_Set'(Option => POSIX.C.XTI.T_GODATA));
    Okay_To_Send_Normal_Data :     constant XTI_Events :=
       XTI_Events (POSIX.Option_Set'(Option => POSIX.C.XTI.T_GOEXDATA));
    Orderly_Release_Request_Received : constant XTI_Events :=

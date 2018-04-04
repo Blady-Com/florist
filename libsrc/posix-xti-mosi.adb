@@ -1,5 +1,9 @@
 package body POSIX.XTI.mOSI is
 
+   pragma Warnings (Off);
+   pragma Style_Checks (Off);
+   --  Implementation needed...
+
    ---------------
    -- Get_Flags --
    ---------------

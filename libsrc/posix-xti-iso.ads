@@ -40,7 +40,6 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with POSIX.C;
 package POSIX.XTI.ISO is
 
    ISO_TP_Level :  constant Option_Level := 0;
@@ -50,9 +49,9 @@ package POSIX.XTI.ISO is
      return ISO_Option;
    procedure Set_Option
       (Option_Item : in out Protocol_Option;
-       Level       : in     Option_Level;
-       Name        : in     Option_Name;
-       To          : in     ISO_Option);
+       Level       :        Option_Level;
+       Name        :        Option_Name;
+       To          :        ISO_Option);
    Residual_Error_Rate : constant Option_Name := 0;
    Priority            : constant Option_Name := 0;
    Protection          : constant Option_Name := 0;
@@ -67,36 +66,36 @@ package POSIX.XTI.ISO is
      return Duration;
    procedure Set_Target_Rate
       (Item : in out Rate;
-       To   : in     Duration);
+       To   :        Duration);
    function Get_Minimum_Acceptable_Rate (Item : Rate)
      return Duration;
    procedure Set_Minimum_Acceptable_Rate
       (Item : in out Rate;
-       To   : in     Duration);
+       To   :        Duration);
    function Get_Value (Option_Item : Protocol_Option)
      return Rate;
    procedure Set_Option
       (Option_Item : in out Protocol_Option;
-       Level       : in     Option_Level;
-       Name        : in     Option_Name;
-       To          : in     Rate);
+       Level       :        Option_Level;
+       Name        :        Option_Name;
+       To          :        Rate);
    function Get_Value (Option_Item : Protocol_Option)
      return Priority_Level;
    procedure Set_Option
       (Option_Item : in out Protocol_Option;
-       Level       : in     Option_Level;
-       Name        : in     Option_Name;
-       To          : in     Priority_Level);
+       Level       :        Option_Level;
+       Name        :        Option_Name;
+       To          :        Priority_Level);
    function Get_Value (Option_Item : Protocol_Option)
      return Protection_Level;
    procedure Set_Option
       (Option_Item : in out Protocol_Option;
-       Level       : in     Option_Level;
-       Name        : in     Option_Name;
-       To          : in     Protection_Level);
+       Level       :        Option_Level;
+       Name        :        Option_Name;
+       To          :        Protection_Level);
    --  Dispatching operations for ISO_XTI_Address
    procedure Get_Address
-      (Info_Item : in     Connection_Info;
+      (Info_Item :        Connection_Info;
        Address   : in out ISO_XTI_Address);
 
    Throughput                   : constant Option_Name := 0;
@@ -116,46 +115,46 @@ package POSIX.XTI.ISO is
      return Rate;
    procedure Set_Called_Rate
       (Item : in out Requested_Rate;
-       To   : in     Rate);
+       To   :        Rate);
    function Get_Calling_Rate (Item : Requested_Rate)
      return Rate;
    procedure Set_Calling_Rate
       (Item : in out Requested_Rate;
-       To   : in     Rate);
+       To   :        Rate);
    function Get_Throughput_Maximum (Item : Throughput_Rate)
      return Requested_Rate;
    procedure Set_Throughput_Maximum
       (Item : in out Throughput_Rate;
-       To   : in     Requested_Rate);
+       To   :        Requested_Rate);
    function Get_Throughput_Average (Item : Throughput_Rate)
      return Requested_Rate;
    procedure Set_Throughput_Average
       (Item : in out Throughput_Rate;
-       To   : in     Requested_Rate);
+       To   :        Requested_Rate);
    function Get_Transit_Delay_Maximum (Item : Transit_Delay_Rate)
      return Requested_Rate;
    procedure Set_Transit_Delay_Maximum
       (Item : in out Transit_Delay_Rate;
-       To   : in     Requested_Rate);
+       To   :        Requested_Rate);
    function Get_Transit_Delay_Average (Item : Transit_Delay_Rate)
      return Requested_Rate;
    procedure Set_Transit_Delay_Average
       (Item : in out Transit_Delay_Rate;
-       To   : in     Requested_Rate);
+       To   :        Requested_Rate);
    function Get_Value (Option_Item : Protocol_Option)
      return Throughput_Rate;
    procedure Set_Option
       (Option_Item : in out Protocol_Option;
-       Level       : in     Option_Level;
-       Name        : in     Option_Name;
-       To          : in     Throughput_Rate);
+       Level       :        Option_Level;
+       Name        :        Option_Name;
+       To          :        Throughput_Rate);
    function Get_Value (Option_Item : Protocol_Option)
      return Transit_Delay_Rate;
    procedure Set_Option
       (Option_Item : in out Protocol_Option;
-       Level       : in     Option_Level;
-       Name        : in     Option_Name;
-       To          : in     Transit_Delay_Rate);
+       Level       :        Option_Level;
+       Name        :        Option_Name;
+       To          :        Transit_Delay_Rate);
    TPDU_Length_Maximum          : constant Option_Name := 0;
    Acknowledge_Time             : constant Option_Name := 0;
    Reassignment_Time            : constant Option_Name := 0;
@@ -176,23 +175,23 @@ package POSIX.XTI.ISO is
      return ISO_COTS_Option;
    procedure Set_Option
       (Option_Item : in out Protocol_Option;
-       Level       : in     Option_Level;
-       Name        : in     Option_Name;
-       To          : in     ISO_COTS_Option);
+       Level       :        Option_Level;
+       Name        :        Option_Name;
+       To          :        ISO_COTS_Option);
    function Get_Value (Option_Item : Protocol_Option)
      return Transport_Class;
    procedure Set_Option
       (Option_Item : in out Protocol_Option;
-       Level       : in     Option_Level;
-       Name        : in     Option_Name;
-       To          : in     Transport_Class);
+       Level       :        Option_Level;
+       Name        :        Option_Name;
+       To          :        Transport_Class);
    function Get_Value (Option_Item : Protocol_Option)
      return Duration;
    procedure Set_Option
       (Option_Item : in out Protocol_Option;
-       Level       : in     Option_Level;
-       Name        : in     Option_Name;
-       To          : in     Duration);
+       Level       :        Option_Level;
+       Name        :        Option_Name;
+       To          :        Duration);
 
    Connectionless_Transit_Delay : constant Option_Name := 0;
    Connectionless_Checksum      : constant Option_Name := 0;

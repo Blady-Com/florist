@@ -49,7 +49,7 @@ package POSIX.Sockets.Local is
      return POSIX.Pathname;
    procedure Set_Socket_Path
       (Name : in out Local_Socket_Address;
-       Path : in     POSIX.Pathname);
+       Path : POSIX.Pathname);
    --  Dispatching operations for Local_Socket_Address
    function Get_Socket_Name (Handle : Socket_Message)
      return Local_Socket_Address;
@@ -62,12 +62,10 @@ package POSIX.Sockets.Local is
 
 private
 
-   use POSIX.C.Sockets;
-
    type Local_Socket_Address is record
       C : aliased POSIX.C.Sockets.struct_sockaddr_un :=
-         struct_sockaddr_un ' (sun_family => AF_LOCAL,
-                               sun_path   => (others => NUL));
+         struct_sockaddr_un'(sun_family => AF_LOCAL,
+                             sun_path   => (others => NUL));
    end record;
 
    function Address (Name : Local_Socket_Address)

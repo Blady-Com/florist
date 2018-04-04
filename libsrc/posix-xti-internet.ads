@@ -49,9 +49,9 @@ package POSIX.XTI.Internet is
      return XTI_Option;
    procedure Set_Option
       (Option_Item : in out Protocol_Option;
-       Level       : in     Option_Level;
-       Name        : in     Option_Name;
-       To          : in     XTI_Option);
+       Level       : Option_Level;
+       Name        : Option_Name;
+       To          : XTI_Option);
    type Internet_XTI_Address is private;
 
    type Internet_XTI_Address_Pointer is
@@ -71,7 +71,7 @@ package POSIX.XTI.Internet is
      return Internet_Port;
    procedure Set_Internet_Port
       (Name       : in out Internet_XTI_Address;
-       Port_Value : in     Internet_Port);
+       Port_Value : Internet_Port);
 
    type Internet_Address is private;
    Unspecified_Internet_Address : constant Internet_Address;
@@ -82,10 +82,10 @@ package POSIX.XTI.Internet is
      return Internet_Address;
    procedure Set_Internet_Address
       (Name          : in out Internet_XTI_Address;
-       Address_Value : in     Internet_Address);
+       Address_Value : Internet_Address);
    --  Dispatching operations for Internet_XTI_Address
    procedure Get_Address
-      (Info_Item : in     Connection_Info;
+      (Info_Item : Connection_Info;
        Address   : in out Internet_XTI_Address);
 
    --  Internet Address Manipulation
@@ -108,7 +108,7 @@ package POSIX.XTI.Internet is
      return POSIX.POSIX_String;
    generic
       with procedure Action
-         (Alias_Name : in     POSIX.POSIX_String;
+         (Alias_Name : POSIX.POSIX_String;
           Quit       : in out Boolean);
    procedure For_Every_Network_Alias (Info_Item : Network_Info);
    function Get_Family (Info_Item : Network_Info)
@@ -125,7 +125,7 @@ package POSIX.XTI.Internet is
        Storage : Database_Array_Pointer)
      return Network_Info;
    procedure Open_Network_Database_Connection
-      (Stay_Open : in Boolean);
+      (Stay_Open : Boolean);
    procedure Close_Network_Database_Connection;
 
    --  Network Protocol Database Functions
@@ -135,7 +135,7 @@ package POSIX.XTI.Internet is
      return POSIX.POSIX_String;
    generic
       with procedure Action
-         (Alias_Name : in     POSIX.POSIX_String;
+         (Alias_Name : POSIX.POSIX_String;
           Quit       : in out Boolean);
    procedure For_Every_Protocol_Alias (Info_Item : Protocol_Info);
    function Get_Protocol_Number (Info_Item : Protocol_Info)
@@ -145,7 +145,7 @@ package POSIX.XTI.Internet is
    function Get_Protocol_Info_By_Name (Name : POSIX.POSIX_String)
      return Protocol_Info;
    procedure Open_Protocol_Database_Connection
-      (Stay_Open : in Boolean);
+      (Stay_Open : Boolean);
    procedure Close_Protocol_Database_Connection;
 
    TCP_Keep_Alive_Interval  : constant Option_Name
@@ -158,12 +158,12 @@ package POSIX.XTI.Internet is
      return Keep_Alive_Status;
    procedure Set_Status
       (Info_Item : in out Keep_Alive_Info;
-       To        : in     Keep_Alive_Status);
+       To        : Keep_Alive_Status);
    procedure Set_Keep_Alive_Interval_Default
       (Info_Item : in out Keep_Alive_Info);
    procedure Set_Keep_Alive_Timeout
       (Info_Item : in out Keep_Alive_Info;
-       Minutes   : in     Positive);
+       Minutes   : Positive);
    function Get_Keep_Alive_Timeout
       (Info_Item : Keep_Alive_Info)
      return Positive;
@@ -171,9 +171,9 @@ package POSIX.XTI.Internet is
      return Keep_Alive_Info;
    procedure Set_Option
       (Option_Item : in out Protocol_Option;
-       Level       : in     Option_Level;
-       Name        : in     Option_Name;
-       Value       : in     Keep_Alive_Info);
+       Level       : Option_Level;
+       Name        : Option_Name;
+       Value       : Keep_Alive_Info);
 
    UDP_Checksum : constant Option_Name := POSIX.C.XTI.UDP_CHECKSUM;
 
@@ -190,9 +190,9 @@ package POSIX.XTI.Internet is
        Count       : out Natural);
    procedure Set_Option
       (Option_Item : in out Protocol_Option;
-       Level       : in     Option_Level;
-       Name        : in     Option_Name;
-       To          : in     IP_Option_List);
+       Level       : Option_Level;
+       Name        : Option_Name;
+       To          : IP_Option_List);
    type IP_Service_Type is
       (Normal, Low_Delay, High_Throughput, High_Reliability, Low_Cost);
    type IP_Precedence_Level is
@@ -204,18 +204,18 @@ package POSIX.XTI.Internet is
      return IP_Precedence_Level;
    procedure Set_Option
       (Option_Item : in out Protocol_Option;
-       Level       : in     Option_Level;
-       Name        : in     Option_Name;
-       Service     : in     IP_Service_Type;
-       Precedence  : in     IP_Precedence_Level);
+       Level       : Option_Level;
+       Name        : Option_Name;
+       Service     : IP_Service_Type;
+       Precedence  : IP_Precedence_Level);
 
 private
 
    type Internet_XTI_Address is record
       netbuf : aliased POSIX.C.XTI.struct_netbuf :=
-        POSIX.C.XTI.struct_netbuf ' (len     => 0,
-                                     maxlen  => 0,
-                                     buf     => null);
+        POSIX.C.XTI.struct_netbuf'(len     => 0,
+                                   maxlen  => 0,
+                                   buf     => null);
       buf_ptr : aliased POSIX.C.char_ptr;
       sockaddr_in : POSIX.C.Sockets.struct_sockaddr_in :=
         POSIX.C.Sockets.struct_sockaddr_in '
@@ -227,8 +227,8 @@ private
 
    type Keep_Alive_Info is record
       C : aliased POSIX.C.XTI.struct_t_kpalive :=
-        POSIX.C.XTI.struct_t_kpalive ' (kp_onoff => POSIX.C.XTI.T_NO,
-                                        kp_timeout => 0);
+        POSIX.C.XTI.struct_t_kpalive'(kp_onoff   => POSIX.C.XTI.T_NO,
+                                      kp_timeout => 0);
    end record;
 
    type Network_Info is record

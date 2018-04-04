@@ -40,12 +40,10 @@
 
 with POSIX,
      POSIX.IO,
-     POSIX.Limits,
      POSIX.Signals;
 with POSIX.C;
 package POSIX.Event_Management is
-use POSIX.C;
-use POSIX.C.Sockets;
+   use POSIX.C;
 
    type Poll_Events is new POSIX.Option_Set;
    Read_Not_High  : constant Poll_Events;
@@ -61,25 +59,27 @@ use POSIX.C.Sockets;
       return POSIX.IO.File_Descriptor;
    procedure Set_File
       (Poll_Item : in out Poll_File_Descriptor;
-       File      : in     POSIX.IO.File_Descriptor);
+       File      : POSIX.IO.File_Descriptor);
    function Get_Events (Poll_Item : Poll_File_Descriptor)
       return Poll_Events;
    procedure Set_Events
       (Poll_Item : in out Poll_File_Descriptor;
-       Events    : in     Poll_Events);
+       Events    : Poll_Events);
    function Get_Returned_Events (Poll_Item : Poll_File_Descriptor)
       return Poll_Events;
    procedure Set_Returned_Events
       (Poll_Item : in out Poll_File_Descriptor;
-       Events    : in     Poll_Events);
+       Events    : Poll_Events);
+   pragma Warnings (Off, "*obsolescent*");
    subtype Poll_Array_Index is Positive
       range 1 .. POSIX.Open_Files_Maxima'Last;
+   pragma Warnings (On, "*obsolescent*");
    type Poll_File_Descriptor_Set is array
       (Poll_Array_Index range <>) of Poll_File_Descriptor;
    procedure Poll
       (Files          : in out Poll_File_Descriptor_Set;
        Response_Count : out    Natural;
-       Timeout        : in     Duration);
+       Timeout        : Duration);
    procedure Poll
       (Files          : in out Poll_File_Descriptor_Set;
        Response_Count : out    Natural);
@@ -91,10 +91,10 @@ use POSIX.C.Sockets;
 
    procedure Add_File_Descriptor_To_Set
       (Set  : in out File_Descriptor_Set;
-       File : in     Select_File_Descriptor);
+       File : Select_File_Descriptor);
    procedure Remove_File_Descriptor_From_Set
       (Set  : in out File_Descriptor_Set;
-       File : in     Select_File_Descriptor);
+       File : Select_File_Descriptor);
    function In_File_Descriptor_Set
       (Set  : File_Descriptor_Set;
        File : Select_File_Descriptor)
@@ -109,23 +109,23 @@ use POSIX.C.Sockets;
        Write_Files    : in out File_Descriptor_Set;
        Except_Files   : in out File_Descriptor_Set;
        Files_Selected :    out Natural;
-       Timeout        : in     Duration);
+       Timeout        : Duration);
    procedure Select_File
       (Read_Files     : in out File_Descriptor_Set;
        Write_Files    : in out File_Descriptor_Set;
        Except_Files   : in out File_Descriptor_Set;
        Files_Selected :    out Natural;
-       Signals        : in     POSIX.Signals.Signal_Set);
+       Signals        : POSIX.Signals.Signal_Set);
    procedure Select_File
       (Read_Files     : in out File_Descriptor_Set;
        Write_Files    : in out File_Descriptor_Set;
        Except_Files   : in out File_Descriptor_Set;
        Files_Selected :    out Natural;
-       Signals        : in     POSIX.Signals.Signal_Set;
-       Timeout        : in     Duration);
+       Signals        : POSIX.Signals.Signal_Set;
+       Timeout        : Duration);
    generic
       with procedure Action
-         (File : in     Select_File_Descriptor;
+         (File : Select_File_Descriptor;
           Quit : in out Boolean);
    procedure For_Every_File_In (Set : File_Descriptor_Set);
 
