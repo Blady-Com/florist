@@ -4,6 +4,51 @@ package body POSIX.XTI.mOSI is
    pragma Style_Checks (Off);
    --  Implementation needed...
 
+   ---------
+   -- "+" --
+   ---------
+
+   function "+"
+     (Pointer : mOSI_XTI_Address_Pointer)
+      return POSIX.XTI.XTI_Address_Pointer
+   is
+   begin
+      --  Generated stub: replace with real body!
+      pragma Compile_Time_Warning (Standard.True, """+"" unimplemented");
+      raise Program_Error with "Unimplemented function ""+""";
+      return "+" (Pointer => Pointer);
+   end "+";
+
+   ---------
+   -- "+" --
+   ---------
+
+   function "+"
+     (Pointer : POSIX.XTI.XTI_Address_Pointer)
+      return mOSI_XTI_Address_Pointer
+   is
+   begin
+      --  Generated stub: replace with real body!
+      pragma Compile_Time_Warning (Standard.True, """+"" unimplemented");
+      raise Program_Error with "Unimplemented function ""+""";
+      return "+" (Pointer => Pointer);
+   end "+";
+
+   -------------------------
+   -- Is_mOSI_XTI_Address --
+   -------------------------
+
+   function Is_mOSI_XTI_Address
+     (Pointer : POSIX.XTI.XTI_Address_Pointer)
+      return Boolean
+   is
+   begin
+      --  Generated stub: replace with real body!
+      pragma Compile_Time_Warning (Standard.True, "Is_mOSI_XTI_Address unimplemented");
+      raise Program_Error with "Unimplemented function Is_mOSI_XTI_Address";
+      return Is_mOSI_XTI_Address (Pointer => Pointer);
+   end Is_mOSI_XTI_Address;
+
    ---------------
    -- Get_Flags --
    ---------------
@@ -25,7 +70,7 @@ package body POSIX.XTI.mOSI is
 
    procedure Set_Flags
      (Address : in out mOSI_XTI_Address;
-      To      : in     mOSI_Address_Flags)
+      To      :        mOSI_Address_Flags)
    is
    begin
       --  Generated stub: replace with real body!
@@ -54,7 +99,7 @@ package body POSIX.XTI.mOSI is
 
    procedure Set_AP_Invocation_Id
      (Address : in out mOSI_XTI_Address;
-      To      : in     AP_Invocation_Id)
+      To      :        AP_Invocation_Id)
    is
    begin
       --  Generated stub: replace with real body!
@@ -83,7 +128,7 @@ package body POSIX.XTI.mOSI is
 
    procedure Set_AE_Invocation_Id
      (Address : in out mOSI_XTI_Address;
-      To      : in     AE_Invocation_Id)
+      To      :        AE_Invocation_Id)
    is
    begin
       --  Generated stub: replace with real body!
@@ -142,9 +187,9 @@ package body POSIX.XTI.mOSI is
 
    procedure Set_OSI_Address
      (Address : in out mOSI_XTI_Address;
-      AP      : in     AP_Title;
-      AE      : in     AE_Qualifier;
-      PA      : in     Presentation_Address)
+      AP      :        AP_Title;
+      AE      :        AE_Qualifier;
+      PA      :        Presentation_Address)
    is
    begin
       --  Generated stub: replace with real body!
@@ -157,7 +202,7 @@ package body POSIX.XTI.mOSI is
    -----------------
 
    procedure Get_Address
-     (Info_Item : in     Connection_Info;
+     (Info_Item :        Connection_Info;
       Address   : in out mOSI_XTI_Address)
    is
    begin
@@ -187,9 +232,9 @@ package body POSIX.XTI.mOSI is
 
    procedure Set_Option
      (Option_Item : in out Protocol_Option;
-      Level       : in     Option_Level;
-      Name        : in     Option_Name;
-      Value       : in     Application_Context_Name)
+      Level       :        Option_Level;
+      Name        :        Option_Name;
+      Value       :        Application_Context_Name)
    is
    begin
       --  Generated stub: replace with real body!
@@ -218,9 +263,9 @@ package body POSIX.XTI.mOSI is
 
    procedure Set_Option
      (Option_Item : in out Protocol_Option;
-      Level       : in     Option_Level;
-      Name        : in     Option_Name;
-      Value       : in     Presentation_Context_List)
+      Level       :        Option_Level;
+      Name        :        Option_Name;
+      Value       :        Presentation_Context_List)
    is
    begin
       --  Generated stub: replace with real body!
@@ -234,7 +279,7 @@ package body POSIX.XTI.mOSI is
 
    procedure Set_Presentation_Id
      (List : in out Presentation_Context_Item;
-      Item : in     Presentation_Item_Id)
+      Item :        Presentation_Item_Id)
    is
    begin
       --  Generated stub: replace with real body!
@@ -263,7 +308,7 @@ package body POSIX.XTI.mOSI is
 
    procedure Set_Negotiation_Result
      (List : in out Presentation_Context_Item;
-      Item : in     Negotiation_Result)
+      Item :        Negotiation_Result)
    is
    begin
       --  Generated stub: replace with real body!
@@ -292,7 +337,7 @@ package body POSIX.XTI.mOSI is
 
    procedure Set_Syntax_Object
      (List : in out Presentation_Context_Item;
-      Item : in     Syntax_Object_List)
+      Item :        Syntax_Object_List)
    is
    begin
       --  Generated stub: replace with real body!
@@ -326,31 +371,59 @@ package body POSIX.XTI.mOSI is
       raise Program_Error with "Unimplemented procedure Make_Empty";
    end Make_Empty;
 
-   ----------------------
-   -- Add_Item_To_List --
-   ----------------------
+   ---------
+   -- Add --
+   ---------
 
-   procedure Add_Item_To_List
+   procedure Add
      (List : in out Presentation_Context_List;
-      Item : in     Presentation_Context_Item)
+      Item :        Presentation_Context_Item)
    is
    begin
       --  Generated stub: replace with real body!
-      pragma Compile_Time_Warning (Standard.True, "Add_Item_To_List unimplemented");
-      raise Program_Error with "Unimplemented procedure Add_Item_To_List";
-   end Add_Item_To_List;
+      pragma Compile_Time_Warning (Standard.True, "Add unimplemented");
+      raise Program_Error with "Unimplemented procedure Add";
+   end Add;
 
    -----------------------------------------
    -- For_Every_Presentation_Context_Item --
    -----------------------------------------
 
-   procedure For_Every_Presentation_Context_Item (List : in Presentation_Context_List)
+   procedure For_Every_Presentation_Context_Item (List : Presentation_Context_List)
    is
    begin
       --  Generated stub: replace with real body!
       pragma Compile_Time_Warning (Standard.True, "For_Every_Presentation_Context_Item unimplemented");
       raise Program_Error with "Unimplemented procedure For_Every_Presentation_Context_Item";
    end For_Every_Presentation_Context_Item;
+
+   ------------
+   -- Length --
+   ------------
+
+   function Length (List : Presentation_Context_List) return Natural is
+   begin
+      --  Generated stub: replace with real body!
+      pragma Compile_Time_Warning (Standard.True, "Length unimplemented");
+      raise Program_Error with "Unimplemented function Length";
+      return Length (List => List);
+   end Length;
+
+   -------------
+   -- Element --
+   -------------
+
+   function Element
+     (List : Presentation_Context_List;
+      Index : Positive)
+      return Presentation_Context_Item
+   is
+   begin
+      --  Generated stub: replace with real body!
+      pragma Compile_Time_Warning (Standard.True, "Element unimplemented");
+      raise Program_Error with "Unimplemented function Element";
+      return Element (List => List, Index => Index);
+   end Element;
 
    ----------------
    -- Make_Empty --
@@ -363,29 +436,57 @@ package body POSIX.XTI.mOSI is
       raise Program_Error with "Unimplemented procedure Make_Empty";
    end Make_Empty;
 
-   ----------------------
-   -- Add_Item_To_List --
-   ----------------------
+   ---------
+   -- Add --
+   ---------
 
-   procedure Add_Item_To_List
+   procedure Add
      (List : in out Syntax_Object_List;
-      Item : in     Object_Identifier)
+      Item :        Object_Identifier)
    is
    begin
       --  Generated stub: replace with real body!
-      pragma Compile_Time_Warning (Standard.True, "Add_Item_To_List unimplemented");
-      raise Program_Error with "Unimplemented procedure Add_Item_To_List";
-   end Add_Item_To_List;
+      pragma Compile_Time_Warning (Standard.True, "Add unimplemented");
+      raise Program_Error with "Unimplemented procedure Add";
+   end Add;
 
    ---------------------------------
    -- For_Every_Object_Identifier --
    ---------------------------------
 
-   procedure For_Every_Object_Identifier (List : in Syntax_Object_List) is
+   procedure For_Every_Object_Identifier (List : Syntax_Object_List) is
    begin
       --  Generated stub: replace with real body!
       pragma Compile_Time_Warning (Standard.True, "For_Every_Object_Identifier unimplemented");
       raise Program_Error with "Unimplemented procedure For_Every_Object_Identifier";
    end For_Every_Object_Identifier;
+
+   ------------
+   -- Length --
+   ------------
+
+   function Length (List : Syntax_Object_List) return Natural is
+   begin
+      --  Generated stub: replace with real body!
+      pragma Compile_Time_Warning (Standard.True, "Length unimplemented");
+      raise Program_Error with "Unimplemented function Length";
+      return Length (List => List);
+   end Length;
+
+   -------------
+   -- Element --
+   -------------
+
+   function Element
+     (List  : Syntax_Object_List;
+      Index : Positive)
+      return Object_Identifier
+   is
+   begin
+      --  Generated stub: replace with real body!
+      pragma Compile_Time_Warning (Standard.True, "Element unimplemented");
+      raise Program_Error with "Unimplemented function Element";
+      return Element (List => List, Index => Index);
+   end Element;
 
 end POSIX.XTI.mOSI;

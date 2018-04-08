@@ -45,11 +45,19 @@ package POSIX.Sockets.Local is
 
    Local_Protocol : constant Protocol_Family := PF_LOCAL;
    type Local_Socket_Address is private;
+   type Local_Socket_Address_Pointer is access all Local_Socket_Address;
+   function "+" (Pointer : Local_Socket_Address_Pointer)
+                 return POSIX.Sockets.Socket_Address_Pointer;
+   function "+" (Pointer : POSIX.Sockets.Socket_Address_Pointer)
+                 return Local_Socket_Address_Pointer;
+   function Is_Local_Socket_Address
+     (Pointer : POSIX.Sockets.Socket_Address_Pointer)
+      return Boolean;
    function Get_Socket_Path (Name : Local_Socket_Address)
-     return POSIX.Pathname;
+                             return POSIX.Pathname;
    procedure Set_Socket_Path
-      (Name : in out Local_Socket_Address;
-       Path : POSIX.Pathname);
+     (Name : in out Local_Socket_Address;
+      Path :        POSIX.Pathname);
    --  Dispatching operations for Local_Socket_Address
    function Get_Socket_Name (Handle : Socket_Message)
      return Local_Socket_Address;

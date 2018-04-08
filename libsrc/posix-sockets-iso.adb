@@ -4,6 +4,51 @@ package body POSIX.Sockets.ISO is
    pragma Style_Checks (Off);
    --  Implementation needed...
 
+   ---------
+   -- "+" --
+   ---------
+
+   function "+"
+     (Pointer : ISO_Socket_Address_Pointer)
+      return POSIX.Sockets.Socket_Address_Pointer
+   is
+   begin
+      --  Generated stub: replace with real body!
+      pragma Compile_Time_Warning (Standard.True, """+"" unimplemented");
+      raise Program_Error with "Unimplemented function ""+""";
+      return "+" (Pointer => Pointer);
+   end "+";
+
+   ---------
+   -- "+" --
+   ---------
+
+   function "+"
+     (Pointer : POSIX.Sockets.Socket_Address_Pointer)
+      return ISO_Socket_Address_Pointer
+   is
+   begin
+      --  Generated stub: replace with real body!
+      pragma Compile_Time_Warning (Standard.True, """+"" unimplemented");
+      raise Program_Error with "Unimplemented function ""+""";
+      return "+" (Pointer => Pointer);
+   end "+";
+
+   ---------------------------
+   -- Is_ISO_Socket_Address --
+   ---------------------------
+
+   function Is_ISO_Socket_Address
+     (Pointer : POSIX.Sockets.Socket_Address_Pointer)
+      return Boolean
+   is
+   begin
+      --  Generated stub: replace with real body!
+      pragma Compile_Time_Warning (Standard.True, "Is_ISO_Socket_Address unimplemented");
+      raise Program_Error with "Unimplemented function Is_ISO_Socket_Address";
+      return Is_ISO_Socket_Address (Pointer => Pointer);
+   end Is_ISO_Socket_Address;
+
    ---------------------
    -- Get_ISO_Address --
    ---------------------
@@ -25,7 +70,7 @@ package body POSIX.Sockets.ISO is
 
    procedure Set_ISO_Address
      (Name          : in out ISO_Socket_Address;
-      Address_Value : in     ISO_Address)
+      Address_Value :        ISO_Address)
    is
    begin
       --  Generated stub: replace with real body!
@@ -54,7 +99,7 @@ package body POSIX.Sockets.ISO is
 
    procedure Set_Presentation_Selector
      (Name     : in out ISO_Socket_Address;
-      Selector : in     Presentation_Selector)
+      Selector :        Presentation_Selector)
    is
    begin
       --  Generated stub: replace with real body!
@@ -83,7 +128,7 @@ package body POSIX.Sockets.ISO is
 
    procedure Set_Session_Selector
      (Name     : in out ISO_Socket_Address;
-      Selector : in     Session_Selector)
+      Selector :        Session_Selector)
    is
    begin
       --  Generated stub: replace with real body!
@@ -112,7 +157,7 @@ package body POSIX.Sockets.ISO is
 
    procedure Set_Transport_Selector
      (Name     : in out ISO_Socket_Address;
-      Selector : in     Transport_Selector)
+      Selector :        Transport_Selector)
    is
    begin
       --  Generated stub: replace with real body!
@@ -141,7 +186,7 @@ package body POSIX.Sockets.ISO is
 
    procedure Set_GOSIP_Selector
      (Name     : in out ISO_Socket_Address;
-      Selector : in     GOSIP_Selector)
+      Selector :        GOSIP_Selector)
    is
    begin
       --  Generated stub: replace with real body!
@@ -229,8 +274,8 @@ package body POSIX.Sockets.ISO is
    --------------------
 
    procedure Set_CL_Options
-     (Socket : in POSIX.IO.File_Descriptor;
-      To     : in CL_Options)
+     (Socket : POSIX.IO.File_Descriptor;
+      To     : CL_Options)
    is
    begin
       --  Generated stub: replace with real body!
@@ -258,8 +303,8 @@ package body POSIX.Sockets.ISO is
    ------------------
 
    procedure Set_CL_Flags
-     (Socket : in POSIX.IO.File_Descriptor;
-      To     : in CL_Flags)
+     (Socket : POSIX.IO.File_Descriptor;
+      To     : CL_Flags)
    is
    begin
       --  Generated stub: replace with real body!
@@ -302,8 +347,8 @@ package body POSIX.Sockets.ISO is
    -------------------------
 
    procedure Set_Connection_Data
-     (Socket : in POSIX.IO.File_Descriptor;
-      To     : in POSIX.Octet_Array)
+     (Socket : POSIX.IO.File_Descriptor;
+      To     : POSIX.Octet_Array)
    is
    begin
       --  Generated stub: replace with real body!
@@ -331,8 +376,8 @@ package body POSIX.Sockets.ISO is
    -------------------------
 
    procedure Set_Disconnect_Data
-     (Socket : in POSIX.IO.File_Descriptor;
-      To     : in POSIX.Octet_Array)
+     (Socket : POSIX.IO.File_Descriptor;
+      To     : POSIX.Octet_Array)
    is
    begin
       --  Generated stub: replace with real body!
@@ -360,8 +405,8 @@ package body POSIX.Sockets.ISO is
    ---------------------------
 
    procedure Set_Confirmation_Data
-     (Socket : in POSIX.IO.File_Descriptor;
-      To     : in POSIX.Octet_Array)
+     (Socket : POSIX.IO.File_Descriptor;
+      To     : POSIX.Octet_Array)
    is
    begin
       --  Generated stub: replace with real body!
@@ -375,7 +420,7 @@ package body POSIX.Sockets.ISO is
 
    procedure Set_Ancillary_Data
      (Message : in out Socket_Message;
-      Object  : in     TP_Ancillary_Data)
+      Object  :        TP_Ancillary_Data)
    is
    begin
       --  Generated stub: replace with real body!
@@ -404,7 +449,7 @@ package body POSIX.Sockets.ISO is
 
    procedure Set_Ancillary_Data_Array
      (Object : in out TP_Ancillary_Data;
-      Data   : in     POSIX.Octet_Array)
+      Data   :        POSIX.Octet_Array)
    is
    begin
       --  Generated stub: replace with real body!
@@ -447,8 +492,8 @@ package body POSIX.Sockets.ISO is
    -------------------------------
 
    procedure Set_Connection_Parameters
-     (Socket : in POSIX.IO.File_Descriptor;
-      To     : in Connection_Parameters)
+     (Socket : POSIX.IO.File_Descriptor;
+      To     : Connection_Parameters)
    is
    begin
       --  Generated stub: replace with real body!
@@ -477,7 +522,7 @@ package body POSIX.Sockets.ISO is
 
    procedure Set_Retransmit_Number
      (Object : in out Connection_Parameters;
-      To     : in     Natural)
+      To     :        Natural)
    is
    begin
       --  Generated stub: replace with real body!
@@ -506,7 +551,7 @@ package body POSIX.Sockets.ISO is
 
    procedure Set_Window_Size
      (Object : in out Connection_Parameters;
-      To     : in     Window_Size)
+      To     :        Window_Size)
    is
    begin
       --  Generated stub: replace with real body!
@@ -535,7 +580,7 @@ package body POSIX.Sockets.ISO is
 
    procedure Set_TPDU_Size
      (Object : in out Connection_Parameters;
-      To     : in     TPDU_Size)
+      To     :        TPDU_Size)
    is
    begin
       --  Generated stub: replace with real body!
@@ -564,7 +609,7 @@ package body POSIX.Sockets.ISO is
 
    procedure Set_Acknowledgment_Strategy
      (Object : in out Connection_Parameters;
-      To     : in     TP_Acknowledgment_Strategy)
+      To     :        TP_Acknowledgment_Strategy)
    is
    begin
       --  Generated stub: replace with real body!
@@ -593,7 +638,7 @@ package body POSIX.Sockets.ISO is
 
    procedure Set_Retransmit_Strategy
      (Object : in out Connection_Parameters;
-      To     : in     TP_Retransmit_Strategy)
+      To     :        TP_Retransmit_Strategy)
    is
    begin
       --  Generated stub: replace with real body!
@@ -622,7 +667,7 @@ package body POSIX.Sockets.ISO is
 
    procedure Set_TP_Class
      (Object : in out Connection_Parameters;
-      To     : in     TP_Class)
+      To     :        TP_Class)
    is
    begin
       --  Generated stub: replace with real body!
@@ -651,7 +696,7 @@ package body POSIX.Sockets.ISO is
 
    procedure Set_Extended_Format
      (Object : in out Connection_Parameters;
-      To     : in     Boolean)
+      To     :        Boolean)
    is
    begin
       --  Generated stub: replace with real body!
@@ -680,7 +725,7 @@ package body POSIX.Sockets.ISO is
 
    procedure Set_Expedited_Service
      (Object : in out Connection_Parameters;
-      To     : in     Boolean)
+      To     :        Boolean)
    is
    begin
       --  Generated stub: replace with real body!
@@ -709,7 +754,7 @@ package body POSIX.Sockets.ISO is
 
    procedure Set_Negotiate_Checksums
      (Object : in out Connection_Parameters;
-      To     : in     Boolean)
+      To     :        Boolean)
    is
    begin
       --  Generated stub: replace with real body!
@@ -738,7 +783,7 @@ package body POSIX.Sockets.ISO is
 
    procedure Set_Signal_Disconnections
      (Object : in out Connection_Parameters;
-      To     : in     Boolean)
+      To     :        Boolean)
    is
    begin
       --  Generated stub: replace with real body!
@@ -767,7 +812,7 @@ package body POSIX.Sockets.ISO is
 
    procedure Set_Protect_Parameters
      (Object : in out Connection_Parameters;
-      To     : in     Boolean)
+      To     :        Boolean)
    is
    begin
       --  Generated stub: replace with real body!
@@ -796,7 +841,7 @@ package body POSIX.Sockets.ISO is
 
    procedure Set_Network_Service
      (Object : in out Connection_Parameters;
-      To     : in     TP_Network_Service)
+      To     :        TP_Network_Service)
    is
    begin
       --  Generated stub: replace with real body!

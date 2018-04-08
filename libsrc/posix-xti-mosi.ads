@@ -41,6 +41,13 @@
 package POSIX.XTI.mOSI is
 
    type mOSI_XTI_Address is private;
+   type mOSI_XTI_Address_Pointer is access all mOSI_XTI_Address;
+   function "+" (Pointer : mOSI_XTI_Address_Pointer)
+                 return POSIX.XTI.XTI_Address_Pointer;
+   function "+" (Pointer : POSIX.XTI.XTI_Address_Pointer)
+                 return mOSI_XTI_Address_Pointer;
+   function Is_mOSI_XTI_Address
+     (Pointer : POSIX.XTI.XTI_Address_Pointer) return Boolean;
    mOSI_Address_Length_Maximum : constant Natural := 0;
    type AP_Invocation_Id is new POSIX.Octet_Array;
    type AE_Invocation_Id is new POSIX.Octet_Array;
@@ -55,19 +62,19 @@ package POSIX.XTI.mOSI is
      return mOSI_Address_Flags;
    procedure Set_Flags
       (Address : in out mOSI_XTI_Address;
-       To      : mOSI_Address_Flags);
+       To      :        mOSI_Address_Flags);
    function Get_AP_Invocation_Id
       (Address : mOSI_XTI_Address)
      return AP_Invocation_Id;
    procedure Set_AP_Invocation_Id
       (Address : in out mOSI_XTI_Address;
-       To      : AP_Invocation_Id);
+       To      :        AP_Invocation_Id);
    function Get_AE_Invocation_Id
       (Address : mOSI_XTI_Address)
      return AE_Invocation_Id;
    procedure Set_AE_Invocation_Id
       (Address : in out mOSI_XTI_Address;
-       To      : AE_Invocation_Id);
+       To      :        AE_Invocation_Id);
    function Get_AP_Title
       (Address : mOSI_XTI_Address)
      return AP_Title;
@@ -79,12 +86,12 @@ package POSIX.XTI.mOSI is
      return Presentation_Address;
    procedure Set_OSI_Address
       (Address : in out mOSI_XTI_Address;
-       AP      : AP_Title;
-       AE      : AE_Qualifier;
-       PA      : Presentation_Address);
+       AP      :        AP_Title;
+       AE      :        AE_Qualifier;
+       PA      :        Presentation_Address);
    --  Dispatching operations for mOSI_XTI_Address
    procedure Get_Address
-      (Info_Item : Connection_Info;
+      (Info_Item :        Connection_Info;
        Address   : in out mOSI_XTI_Address);
 
    mOSI_Connection_Mode     : constant Option_Level := 0;
@@ -98,65 +105,78 @@ package POSIX.XTI.mOSI is
      return Application_Context_Name;
    procedure Set_Option
       (Option_Item : in out Protocol_Option;
-       Level       : Option_Level;
-       Name        : Option_Name;
-       Value       : Application_Context_Name);
+       Level       :        Option_Level;
+       Name        :        Option_Name;
+       Value       :        Application_Context_Name);
    function Get_Value (Option_Item : Protocol_Option)
      return Presentation_Context_List;
    procedure Set_Option
       (Option_Item : in out Protocol_Option;
-       Level       : Option_Level;
-       Name        : Option_Name;
-       Value       : Presentation_Context_List);
+       Level       :        Option_Level;
+       Name        :        Option_Name;
+       Value       :        Presentation_Context_List);
    --  Presentation Context Definition and Result List
    type Presentation_Context_Item is private;
    type Presentation_Item_Id is new Integer;
    procedure Set_Presentation_Id
       (List : in out Presentation_Context_Item;
-       Item : Presentation_Item_Id);
+       Item :        Presentation_Item_Id);
    function Get_Presentation_Id
       (Item : Presentation_Context_Item)
      return Presentation_Item_Id;
-   type Negotiation_Result is
-      (Presentation_Context_Accepted, Presentation_Context_Rejected,
-       Rejected_No_Reason_Specified, Abstract_Syntax_Not_Supported,
-       Transfer_Syntax_Not_Supported, Local_DCS_Limit_Exceeded);
+   type Negotiation_Result is private;
+   Presentation_Context_Accepted : constant Negotiation_Result;
+   Presentation_context_Rejected : constant Negotiation_Result;
+   Rejected_No_Reason_Specified  : constant Negotiation_Result;
+   Abstract_Syntax_not_Supported : constant Negotiation_Result;
+   Transfer_syntax_not_supported : constant Negotiation_Result;
+   Local_DCS_Limit_Exceeded      : constant Negotiation_Result;
    procedure Set_Negotiation_Result
       (List : in out Presentation_Context_Item;
-       Item : Negotiation_Result);
+       Item :        Negotiation_Result);
    function Get_Negotiation_Result
       (Item : Presentation_Context_Item)
      return Negotiation_Result;
    type Syntax_Object_List is private;
    procedure Set_Syntax_Object
       (List : in out Presentation_Context_Item;
-       Item : Syntax_Object_List);
+       Item :        Syntax_Object_List);
    function Get_Syntax_Object
       (Item : Presentation_Context_Item)
      return Syntax_Object_List;
    Empty_Presentation_Context_List : constant Presentation_Context_List;
    procedure Make_Empty (List : in out Presentation_Context_List);
-   procedure Add_Item_To_List
+   procedure Add
       (List : in out Presentation_Context_List;
-       Item : Presentation_Context_Item);
+       Item :        Presentation_Context_Item);
    pragma Warnings (Off);
    generic
        with procedure Action
-          (Id   : Presentation_Context_Item;
+          (Item : in out Presentation_Context_Item;
            Quit : in out Boolean);
    procedure For_Every_Presentation_Context_Item
       (List : Presentation_Context_List);
+   function Length (List : Presentation_Context_List) return Natural;
+   function Element
+     (List : Presentation_Context_List;
+      Index : Positive)
+      return Presentation_Context_Item;
    Empty_Syntax_Object_List : constant Syntax_Object_List;
    procedure Make_Empty (List : in out Syntax_Object_List);
-   procedure Add_Item_To_List
+   procedure Add
       (List : in out Syntax_Object_List;
-       Item : Object_Identifier);
+       Item :        Object_Identifier);
    generic
        with procedure Action
-          (Object : Object_Identifier;
+          (Object :        Object_Identifier;
            Quit   : in out Boolean);
    procedure For_Every_Object_Identifier
       (List : Syntax_Object_List);
+   function Length (List : Syntax_Object_List) return Natural;
+   function Element
+     (List  : Syntax_Object_List;
+      Index : Positive)
+      return Object_Identifier;
 
    Rejected_By_Peer          : constant Reason_Code := 0;
    AC_Name_Not_Supported     : constant Reason_Code := 0;
@@ -174,4 +194,21 @@ private
    type Syntax_Object_List is new Integer;
    Empty_Presentation_Context_List : constant Presentation_Context_List := 0;
    Empty_Syntax_Object_List : constant Syntax_Object_List := 0;
+   type Negotiation_Result is
+      (Presentation_Context_Accepted_Enum, Presentation_Context_Rejected_Enum,
+       Rejected_No_Reason_Specified_Enum, Abstract_Syntax_Not_Supported_Enum,
+       Transfer_Syntax_Not_Supported_Enum, Local_DCS_Limit_Exceeded_Enum);
+   Presentation_Context_Accepted : constant Negotiation_Result :=
+     Presentation_Context_Accepted_Enum;
+   Presentation_context_Rejected : constant Negotiation_Result :=
+     Presentation_Context_Rejected_Enum;
+   Rejected_No_Reason_Specified  : constant Negotiation_Result :=
+     Rejected_No_Reason_Specified_Enum;
+   Abstract_Syntax_not_Supported : constant Negotiation_Result :=
+     Abstract_Syntax_Not_Supported_Enum;
+   Transfer_syntax_not_supported : constant Negotiation_Result :=
+     Transfer_Syntax_Not_Supported_Enum;
+   Local_DCS_Limit_Exceeded      : constant Negotiation_Result :=
+     Local_DCS_Limit_Exceeded_Enum;
+
 end POSIX.XTI.mOSI;

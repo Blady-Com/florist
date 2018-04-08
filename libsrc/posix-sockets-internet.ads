@@ -56,12 +56,12 @@ package POSIX.Sockets.Internet is
    type Internet_Socket_Address_Pointer is
      access all Internet_Socket_Address;
 
-   function "+" (Ptr : Internet_Socket_Address_Pointer)
+   function "+" (Pointer : Internet_Socket_Address_Pointer)
      return Socket_Address_Pointer;
-   function "+" (Ptr : Socket_Address_Pointer)
+   function "+" (Pointer : Socket_Address_Pointer)
      return Internet_Socket_Address_Pointer;
    function Is_Internet_Socket_Address
-     (Ptr : Socket_Address_Pointer)
+     (Pointer : Socket_Address_Pointer)
      return Boolean;
 
    type Internet_Port is new in_port_t;
@@ -71,7 +71,7 @@ package POSIX.Sockets.Internet is
      return Internet_Port;
    procedure Set_Internet_Port
       (Name  : in out Internet_Socket_Address;
-       Port  : Internet_Port);
+       Port  :        Internet_Port);
 
    type Internet_Address is private;
    Unspecified_Internet_Address : constant Internet_Address;
@@ -82,7 +82,7 @@ package POSIX.Sockets.Internet is
      return Internet_Address;
    procedure Set_Internet_Address
       (Name    : in out Internet_Socket_Address;
-       Address : Internet_Address);
+       Address :        Internet_Address);
    function Get_Socket_Name (Handle : Socket_Message)
      return Internet_Socket_Address;
    function Get_Address (Info_Item : Socket_Address_Info)
@@ -109,7 +109,7 @@ package POSIX.Sockets.Internet is
      return POSIX.POSIX_String;
    generic
       with procedure Action
-         (Alias_Name : POSIX.POSIX_String;
+         (Alias_Name :        POSIX.POSIX_String;
           Quit       : in out Boolean);
    procedure For_Every_Network_Alias (Info_Item : Network_Info);
    function Get_Family (Info_Item : Network_Info)
@@ -134,7 +134,7 @@ package POSIX.Sockets.Internet is
      return POSIX.POSIX_String;
    generic
       with procedure Action
-         (Alias_Name : POSIX.POSIX_String;
+         (Alias_Name :        POSIX.POSIX_String;
           Quit       : in out Boolean);
    procedure For_Every_Protocol_Alias (Info_Item : Protocol_Info);
    function Get_Protocol_Number (Info_Item : Protocol_Info)
@@ -201,13 +201,13 @@ package POSIX.Sockets.Internet is
      return Internet_Address;
    procedure Set_First_Hop
       (Options : in out IP_Options_Buffer;
-       Address : Internet_Address);
+       Address :        Internet_Address);
    function Get_IP_Options
       (Options : IP_Options_Buffer)
      return POSIX.Octet_Array;
    procedure Set_IP_Options
       (Options : in out IP_Options_Buffer;
-       Buffer  : POSIX.Octet_Array);
+       Buffer  :        POSIX.Octet_Array);
    type IP_Type_Of_Service is private;
    Low_Delay        : constant IP_Type_Of_Service;
    High_Throughput  : constant IP_Type_Of_Service;
@@ -237,7 +237,7 @@ package POSIX.Sockets.Internet is
    type IP_Ancillary_Data_Pointer is access all IP_Ancillary_Data;
    procedure Set_Ancillary_Data
       (Message : in out Socket_Message;
-       Data    : IP_Ancillary_Data_Pointer);
+       Data    :        IP_Ancillary_Data_Pointer);
    function Get_Destination_Address
       (Data : IP_Ancillary_Data)
      return Internet_Address;

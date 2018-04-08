@@ -145,14 +145,13 @@ package body POSIX.XTI.Internet is
    end Get_Internet_Port;
 
    procedure Set_Internet_Port
-      (Name       : in out Internet_XTI_Address;
-       Port_Value : Internet_Port) is
+      (Name : in out Internet_XTI_Address;
+       Port : Internet_Port) is
    begin
-      Name.sockaddr_in.sin_port := POSIX.C.Sockets.in_port_t (Port_Value);
+      Name.sockaddr_in.sin_port := POSIX.C.Sockets.in_port_t (Port);
       Name.netbuf.maxlen := Name.sockaddr_in'Size / char'Size;
       Name.netbuf.len    := Name.sockaddr_in'Size / char'Size;
       Name.netbuf.buf    := To_char_ptr (Name.sockaddr_in'Address);
-
    end Set_Internet_Port;
 
    function Get_Internet_Address (Name : Internet_XTI_Address)
@@ -362,8 +361,11 @@ package body POSIX.XTI.Internet is
       return Protocol_Number (Info_Item.C.p_proto);
    end Get_Protocol_Number;
 
-   function Get_Protocol_Info_By_Number (Number : Protocol_Number)
+   function Get_Protocol_Info_By_Number
+      (Number  : Protocol_Number;
+       Storage : Database_Array_Pointer)
      return Protocol_Info is
+      pragma Unreferenced (Storage);
       protoent : aliased POSIX.C.NetDB.struct_protoent;
       buffer : char_array (0 .. 1023);
       Result : POSIX.C.NetDB.protoent_ptr;
@@ -380,8 +382,11 @@ package body POSIX.XTI.Internet is
       end if;
    end Get_Protocol_Info_By_Number;
 
-   function Get_Protocol_Info_By_Name (Name : POSIX.POSIX_String)
+   function Get_Protocol_Info_By_Name
+      (Name    : POSIX.POSIX_String;
+       Storage : Database_Array_Pointer)
      return Protocol_Info is
+      pragma Unreferenced (Storage);
       protoent : aliased POSIX.C.NetDB.struct_protoent;
       buffer : char_array (0 .. 1023);
       Result : POSIX.C.NetDB.protoent_ptr;
@@ -448,16 +453,16 @@ package body POSIX.XTI.Internet is
 
    procedure Set_Keep_Alive_Timeout
       (Info_Item : in out Keep_Alive_Info;
-       Minutes   : Positive) is
+       To        : Keep_Alive_Time) is
    begin
-      Info_Item.C.kp_timeout := long (Minutes);
+      Info_Item.C.kp_timeout := long (To);
    end Set_Keep_Alive_Timeout;
 
    function Get_Keep_Alive_Timeout
         (Info_Item : Keep_Alive_Info)
-      return Positive is
+      return Keep_Alive_Time is
    begin
-      return Positive (Info_Item.C.kp_timeout);
+      return Keep_Alive_Time (Info_Item.C.kp_timeout);
    end Get_Keep_Alive_Timeout;
 
    function Get_Value (Option_Item : Protocol_Option)
@@ -678,22 +683,22 @@ package body POSIX.XTI.Internet is
 
    function To_XTI_Address is new Unchecked_Conversion
       (Internet_XTI_Address_Pointer, XTI_Address_Pointer);
-   function "+" (Ptr : Internet_XTI_Address_Pointer)
+   function "+" (Pointer : Internet_XTI_Address_Pointer)
      return XTI_Address_Pointer is
    begin
-      Ptr.netbuf.maxlen := Ptr.sockaddr_in'Size / char'Size;
-      Ptr.netbuf.len    := Ptr.sockaddr_in'Size / char'Size;
-      Ptr.netbuf.buf    := To_char_ptr (Ptr.sockaddr_in'Address);
-      return To_XTI_Address (Ptr);
+      Pointer.netbuf.maxlen := Pointer.sockaddr_in'Size / char'Size;
+      Pointer.netbuf.len    := Pointer.sockaddr_in'Size / char'Size;
+      Pointer.netbuf.buf    := To_char_ptr (Pointer.sockaddr_in'Address);
+      return To_XTI_Address (Pointer);
    end "+";
 
    function To_Internet_XTI_Address is new Unchecked_Conversion
       (XTI_Address_Pointer, Internet_XTI_Address_Pointer);
-   function "+" (Ptr : XTI_Address_Pointer)
+   function "+" (Pointer : XTI_Address_Pointer)
      return Internet_XTI_Address_Pointer is
       in_XTI_Addr_ptr : Internet_XTI_Address_Pointer;
    begin
-      in_XTI_Addr_ptr := To_Internet_XTI_Address (Ptr);
+      in_XTI_Addr_ptr := To_Internet_XTI_Address (Pointer);
       if in_XTI_Addr_ptr.sockaddr_in.sin_family = POSIX.C.Sockets.AF_INET then
          return in_XTI_Addr_ptr;
       else
@@ -703,10 +708,10 @@ package body POSIX.XTI.Internet is
       end if;
    end "+";
 
-   function Is_Internet_XTI_Address (Ptr : XTI_Address_Pointer)
+   function Is_Internet_XTI_Address (Pointer : XTI_Address_Pointer)
      return Boolean is
       in_XTI_Addr_ptr : constant Internet_XTI_Address_Pointer
-        := To_Internet_XTI_Address (Ptr);
+        := To_Internet_XTI_Address (Pointer);
    begin
       if in_XTI_Addr_ptr.sockaddr_in.sin_family = POSIX.C.Sockets.AF_INET then
          return True;

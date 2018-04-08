@@ -53,6 +53,29 @@ package body POSIX.Sockets.Local is
    function "+" is
      new Unchecked_Conversion (sockaddr_un_ptr, sockaddr_var_ptr);
 
+   function "+" (Pointer : Local_Socket_Address_Pointer)
+                 return POSIX.Sockets.Socket_Address_Pointer is
+      function Convert is new Unchecked_Conversion
+        (Local_Socket_Address_Pointer, POSIX.Sockets.Socket_Address_Pointer);
+   begin
+      return Convert (Pointer);
+   end "+";
+
+   function "+" (Pointer : POSIX.Sockets.Socket_Address_Pointer)
+                 return Local_Socket_Address_Pointer is
+      function Convert is new Unchecked_Conversion
+        (POSIX.Sockets.Socket_Address_Pointer, Local_Socket_Address_Pointer);
+   begin
+      return Convert (Pointer);
+   end "+";
+
+   function Is_Local_Socket_Address
+     (Pointer : POSIX.Sockets.Socket_Address_Pointer)
+      return Boolean is
+   begin
+      return Pointer /= null;
+   end Is_Local_Socket_Address;
+
    ----------------------------------
    --  Local IPC Socket Addresses  --
    ----------------------------------

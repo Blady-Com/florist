@@ -1025,14 +1025,14 @@ package body POSIX.XTI is
    end Get_User_Data_Length;
 
    function Get_Sequence_Number (Info_Item : Connection_Info)
-     return Natural is
+     return Integer is
    begin
-      return Natural (Info_Item.C.sequence);
+      return Integer (Info_Item.C.sequence);
    end Get_Sequence_Number;
 
    procedure Set_Sequence_Number
      (Info_Item : in out Connection_Info;
-      Number    : Natural) is
+      Number    : Integer) is
    begin
       Info_Item.C.sequence := int (Number);
    end Set_Sequence_Number;
@@ -1153,7 +1153,7 @@ package body POSIX.XTI is
 
    procedure Confirm_Connection
      (Endpoint : POSIX.IO.File_Descriptor;
-      Call     : Connection_Info_Pointer) is
+      Call     : in out Connection_Info) is
    begin
       if c_t_rcvconnect (int (Endpoint), To_ptr (Call.C'Address)) < 0 then
          --  Error
@@ -1177,7 +1177,7 @@ package body POSIX.XTI is
    procedure Connect
      (Endpoint : POSIX.IO.File_Descriptor;
       Send     : Connection_Info;
-      Receive  : Connection_Info_Pointer) is
+      Receive  : in out Connection_Info) is
    begin
       if c_t_connect (int (Endpoint),
                       To_ptr (Send.C'Address),
@@ -1328,7 +1328,7 @@ package body POSIX.XTI is
 
    procedure Get_Info
      (Endpoint : POSIX.IO.File_Descriptor;
-      Info     : Communications_Provider_Info_Pointer) is
+      Info     : out Communications_Provider_Info) is
    begin
       if c_t_getinfo (int (Endpoint), To_ptr (Info.C'Address)) < 0 then
          --  Error
@@ -1419,7 +1419,7 @@ package body POSIX.XTI is
 
    procedure Listen
      (Endpoint : POSIX.IO.File_Descriptor;
-      Call     : Connection_Info_Pointer) is
+      Call     : in out Connection_Info) is
    begin
       if c_t_listen (int (Endpoint),
                      To_ptr (Call.C'Address)) < 0
@@ -1446,7 +1446,7 @@ package body POSIX.XTI is
      (Endpoint       : POSIX.IO.File_Descriptor;
       Request        : Protocol_Option_List;
       Request_Flag   : Options_Flags;
-      Response       : Protocol_Option_List_Pointer;
+      Response       : in out Protocol_Option_List;
       Response_Flags : out Option_Status)
    is
       c_req :  POSIX.C.XTI.struct_t_optmgmt;
@@ -1499,7 +1499,7 @@ package body POSIX.XTI is
       Name     : POSIX.POSIX_String;
       Mode     : POSIX.IO.File_Mode;
       Options  : POSIX.IO.Open_Option_Set;
-      Info     : Communications_Provider_Info_Pointer)
+      Info     : in out Communications_Provider_Info)
    is
       c_endpoint : int;
       c_oflags   : int;
@@ -1605,7 +1605,7 @@ package body POSIX.XTI is
    procedure Receive_And_Scatter_Data_Unit
      (Endpoint          : POSIX.IO.File_Descriptor;
       Address           : XTI_Address_Pointer;
-      Options           : Protocol_Option_List_Pointer;
+      Options           : in out Protocol_Option_List;
       Vector            : IO_Vector_Array;
       Octets_Received   : out POSIX.IO_Count;
       Flags             : out XTI_Flags)
@@ -1638,8 +1638,9 @@ package body POSIX.XTI is
      (Endpoint         : POSIX.IO.File_Descriptor;
       User_Data        : System.Address;
       Octets_Requested : POSIX.IO_Count;
+      Octets_Received  : out    POSIX.IO_Count;
       Address          : XTI_Address_Pointer;
-      Options          : Protocol_Option_List_Pointer;
+      Options          : in out Protocol_Option_List;
       Flags            : out XTI_Flags)
    is
       Data    : POSIX.C.XTI.struct_t_unitdata;
@@ -1654,9 +1655,11 @@ package body POSIX.XTI is
       Data.opt.maxlen   := Options.C.maxlen;
       Data.opt.buf      := Options.C.buf;
 
-      if c_t_rcvudata (int (Endpoint),
+      Octets_Received := POSIX.IO_Count (
+         c_t_rcvudata (int (Endpoint),
                        To_ptr (Data'Address),
-                       To_int_ptr (Flags'Address)) < 0
+                       To_int_ptr (Flags'Address)));
+      if Octets_Received < 0
       then
          --  Error
          Raise_XTI_Error;
@@ -1667,6 +1670,7 @@ package body POSIX.XTI is
      (Endpoint         : POSIX.IO.File_Descriptor;
       User_Data        : System.Address;
       Octets_Requested : POSIX.IO_Count;
+      Octets_Received  : out POSIX.IO_Count;
       Address          : XTI_Address_Pointer;
       Flags            : out XTI_Flags)
    is
@@ -1682,9 +1686,11 @@ package body POSIX.XTI is
       Data.opt.maxlen   := 0;
       Data.opt.buf      := null;
 
-      if c_t_rcvudata (int (Endpoint),
+      Octets_Received := POSIX.IO_Count (
+         c_t_rcvudata (int (Endpoint),
                        To_ptr (Data'Address),
-                       To_int_ptr (Flags'Address)) < 0
+                       To_int_ptr (Flags'Address)));
+      if Octets_Received < 0
       then
          --  Error
          Raise_XTI_Error;
@@ -1725,7 +1731,7 @@ package body POSIX.XTI is
    procedure Retrieve_Data_Unit_Error
        (Endpoint : POSIX.IO.File_Descriptor;
         Address  : XTI_Address_Pointer;
-        Options  : Protocol_Option_List_Pointer;
+        Options  : in out Protocol_Option_List;
         Error    : out Unit_Data_Error_Code)
    is
       Error_Data : POSIX.C.XTI.struct_t_uderr;
@@ -1769,7 +1775,7 @@ package body POSIX.XTI is
 
    procedure Retrieve_Data_Unit_Error
      (Endpoint : POSIX.IO.File_Descriptor;
-      Options  : Protocol_Option_List_Pointer;
+      Options  : in out Protocol_Option_List;
       Error    : out Unit_Data_Error_Code)
    is
       Error_Data : POSIX.C.XTI.struct_t_uderr;
@@ -1824,6 +1830,7 @@ package body POSIX.XTI is
      (Endpoint         : POSIX.IO.File_Descriptor;
       User_Data        : System.Address;
       Octets_Requested : POSIX.IO_Count;
+      Octets_Retrieved : out POSIX.IO_Count;
       Reason           : out Reason_Code;
       Sequence_Number  : out Natural)
    is
@@ -1833,7 +1840,9 @@ package body POSIX.XTI is
       Info.udata.maxlen := unsigned_int (Octets_Requested);
       Info.udata.buf    := To_char_ptr (User_Data);
 
-      if c_t_rcvdis (int (Endpoint), To_ptr (Info'Address)) < 0 then
+      Octets_Retrieved := POSIX.IO_Count (c_t_rcvdis (int (Endpoint),
+                                                      To_ptr (Info'Address)));
+      if Octets_Retrieved < 0 then
          --  Error
          Raise_XTI_Error;
       end if;

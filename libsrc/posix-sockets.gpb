@@ -147,11 +147,11 @@ package body POSIX.Sockets is
 
    procedure Set_IO_Vector_Array
       (Message : in out Socket_Message;
-       Ptr     : IO_Vector_Array_Pointer) is
+       Pointer     : IO_Vector_Array_Pointer) is
    begin
-      Message.C.msg_iov := To_iovec_ptr (Ptr (Ptr'First)'Address);
-      Message.C.msg_iovlen := size_t (Ptr.all'Length);
-      Message.io_vector_array_ptr := Ptr;
+      Message.C.msg_iov := To_iovec_ptr (Pointer (Pointer'First)'Address);
+      Message.C.msg_iovlen := size_t (Pointer.all'Length);
+      Message.io_vector_array_ptr := Pointer;
    end Set_IO_Vector_Array;
 
    function Get_IO_Vector_Array (Message : Socket_Message)
@@ -1085,8 +1085,7 @@ package body POSIX.Sockets is
        Octets_Requested : POSIX.IO_Count;
        Octets_Received  : out POSIX.IO_Count;
        Masked_Signals   : POSIX.Signal_Masking;
-       Options          : Message_Option_Set
-         := Message_Option_Set (POSIX.Empty_Set)) is
+       Options          : Message_Option_Set := Empty_Set) is
       Result   : ssize_t;
       Old_Mask : aliased Signal_Mask;
    begin
@@ -1119,8 +1118,7 @@ package body POSIX.Sockets is
        Buffer           : System.Address;
        Octets_Requested : POSIX.IO_Count;
        Octets_Received  : out POSIX.IO_Count;
-       Options          : Message_Option_Set
-         := Message_Option_Set (POSIX.Empty_Set)) is
+       Options          : Message_Option_Set := Empty_Set) is
       Result : ssize_t;
    begin
       if Octets_Requested <= 0 then
@@ -1164,8 +1162,7 @@ package body POSIX.Sockets is
        Octets_Received  : out POSIX.IO_Count;
        From             : Socket_Address_Pointer;
        Masked_Signals   : POSIX.Signal_Masking;
-       Options          : Message_Option_Set
-         := Message_Option_Set (POSIX.Empty_Set)) is
+       Options          : Message_Option_Set := Empty_Set) is
       Result : ssize_t;
       Old_Mask : aliased Signal_Mask;
       Address_Length : aliased size_t := 0;
@@ -1204,8 +1201,7 @@ package body POSIX.Sockets is
        Octets_Requested : POSIX.IO_Count;
        Octets_Received  : out POSIX.IO_Count;
        From             : Socket_Address_Pointer;
-       Options          : Message_Option_Set
-         := Message_Option_Set (POSIX.Empty_Set)) is
+       Options          : Message_Option_Set := Empty_Set) is
       Result : ssize_t;
       Address_Length : aliased size_t;
    begin
@@ -1248,8 +1244,7 @@ package body POSIX.Sockets is
        Message         : in out Socket_Message;
        Octets_Received : out    POSIX.IO_Count;
        Masked_Signals  : POSIX.Signal_Masking;
-       Options         : Message_Option_Set
-         := Message_Option_Set (POSIX.Empty_Set)) is
+       Options         : Message_Option_Set := Empty_Set) is
       Result : ssize_t;
       Old_Mask : aliased Signal_Mask;
    begin
@@ -1270,8 +1265,7 @@ package body POSIX.Sockets is
       (Socket          : POSIX.IO.File_Descriptor;
        Message         : in out Socket_Message;
        Octets_Received : out    POSIX.IO_Count;
-       Options         : Message_Option_Set
-         := Message_Option_Set (POSIX.Empty_Set)) is
+       Options         : Message_Option_Set := Empty_Set) is
       Result : ssize_t;
    begin
       Result := c_recvmsg
@@ -1303,8 +1297,7 @@ package body POSIX.Sockets is
        Octets_To_Send : POSIX.IO_Count;
        Octets_Sent    : out POSIX.IO_Count;
        Masked_Signals : POSIX.Signal_Masking;
-       Options        : Message_Option_Set
-         := Message_Option_Set (POSIX.Empty_Set)) is
+       Options        : Message_Option_Set := Empty_Set) is
       Result : ssize_t;
       Old_Mask : aliased Signal_Mask;
    begin
@@ -1330,8 +1323,7 @@ package body POSIX.Sockets is
        Buffer         : System.Address;
        Octets_To_Send : POSIX.IO_Count;
        Octets_Sent    : out POSIX.IO_Count;
-       Options        : Message_Option_Set
-         := Message_Option_Set (POSIX.Empty_Set)) is
+       Options        : Message_Option_Set := Empty_Set) is
       Result : ssize_t;
    begin
       if Octets_To_Send <= 0 then
@@ -1369,8 +1361,7 @@ package body POSIX.Sockets is
        Octets_Sent    : out POSIX.IO_Count;
        To             : Socket_Address_Pointer;
        Masked_Signals : POSIX.Signal_Masking;
-       Options        : Message_Option_Set
-         := Message_Option_Set (POSIX.Empty_Set)) is
+       Options        : Message_Option_Set := Empty_Set) is
       Result : ssize_t;
       Old_Mask : aliased Signal_Mask;
    begin
@@ -1399,8 +1390,7 @@ package body POSIX.Sockets is
        Octets_To_Send : POSIX.IO_Count;
        Octets_Sent    : out POSIX.IO_Count;
        To             : Socket_Address_Pointer;
-       Options        : Message_Option_Set
-         := Message_Option_Set (POSIX.Empty_Set)) is
+       Options        : Message_Option_Set := Empty_Set) is
       Result : ssize_t;
    begin
       if Octets_To_Send <= 0 then
@@ -1433,8 +1423,7 @@ package body POSIX.Sockets is
        Message        : Socket_Message;
        Octets_Sent    : out POSIX.IO_Count;
        Masked_Signals : POSIX.Signal_Masking;
-       Options        : Message_Option_Set
-         := Message_Option_Set (POSIX.Empty_Set)) is
+       Options        : Message_Option_Set := Empty_Set) is
       Result : ssize_t;
       Old_Mask : aliased Signal_Mask;
    begin
@@ -1455,8 +1444,7 @@ package body POSIX.Sockets is
       (Socket      : POSIX.IO.File_Descriptor;
        Message     : Socket_Message;
        Octets_Sent : out POSIX.IO_Count;
-       Options     : Message_Option_Set
-         := Message_Option_Set (POSIX.Empty_Set)) is
+       Options     : Message_Option_Set := Empty_Set) is
       Result : ssize_t;
    begin
       Result := c_sendmsg

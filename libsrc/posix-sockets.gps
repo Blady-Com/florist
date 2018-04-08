@@ -75,7 +75,7 @@ package POSIX.Sockets is
    type IO_Vector_Array_Pointer is access all IO_Vector_Array;
    procedure Set_IO_Vector_Array
      (Message : in out Socket_Message;
-      Ptr     : IO_Vector_Array_Pointer);
+      Pointer : IO_Vector_Array_Pointer);
    function Get_IO_Vector_Array (Message : Socket_Message)
      return IO_Vector_Array_Pointer;
 
@@ -273,15 +273,13 @@ package POSIX.Sockets is
       Octets_Requested : POSIX.IO_Count;
       Octets_Received  : out POSIX.IO_Count;
       Masked_Signals   : POSIX.Signal_Masking;
-      Options          : Message_Option_Set
-        := Message_Option_Set (POSIX.Empty_Set));
+      Options          : Message_Option_Set := Empty_Set);
    procedure Receive
      (Socket           : POSIX.IO.File_Descriptor;
       Buffer           : System.Address;
       Octets_Requested : POSIX.IO_Count;
       Octets_Received  : out POSIX.IO_Count;
-      Options          : Message_Option_Set
-        := Message_Option_Set (POSIX.Empty_Set));
+      Options          : Message_Option_Set := Empty_Set);
    procedure Receive
      (Socket           : POSIX.IO.File_Descriptor;
       Buffer           : System.Address;
@@ -289,29 +287,25 @@ package POSIX.Sockets is
       Octets_Received  : out POSIX.IO_Count;
       From             : Socket_Address_Pointer;
       Masked_Signals   : POSIX.Signal_Masking;
-      Options          : Message_Option_Set
-        := Message_Option_Set (POSIX.Empty_Set));
+      Options          : Message_Option_Set := Empty_Set);
    procedure Receive
      (Socket           : POSIX.IO.File_Descriptor;
       Buffer           : System.Address;
       Octets_Requested : POSIX.IO_Count;
       Octets_Received  : out POSIX.IO_Count;
       From             : Socket_Address_Pointer;
-      Options          : Message_Option_Set
-        := Message_Option_Set (POSIX.Empty_Set));
+      Options          : Message_Option_Set := Empty_Set);
    procedure Receive_Message
      (Socket          : POSIX.IO.File_Descriptor;
       Message         : in out Socket_Message;
       Octets_Received : out    POSIX.IO_Count;
       Masked_Signals  : POSIX.Signal_Masking;
-      Options         : Message_Option_Set
-        := Message_Option_Set (POSIX.Empty_Set));
+      Options         : Message_Option_Set := Empty_Set);
    procedure Receive_Message
      (Socket          : POSIX.IO.File_Descriptor;
       Message         : in out Socket_Message;
       Octets_Received : out    POSIX.IO_Count;
-      Options         : Message_Option_Set
-        := Message_Option_Set (POSIX.Empty_Set));
+      Options         : Message_Option_Set := Empty_Set);
 
    procedure Send
      (Socket         : POSIX.IO.File_Descriptor;
@@ -319,15 +313,13 @@ package POSIX.Sockets is
       Octets_To_Send : POSIX.IO_Count;
       Octets_Sent    : out POSIX.IO_Count;
       Masked_Signals : POSIX.Signal_Masking;
-      Options        : Message_Option_Set
-        := Message_Option_Set (POSIX.Empty_Set));
+      Options        : Message_Option_Set := Empty_Set);
    procedure Send
      (Socket         : POSIX.IO.File_Descriptor;
       Buffer         : System.Address;
       Octets_To_Send : POSIX.IO_Count;
       Octets_Sent    : out POSIX.IO_Count;
-      Options        : Message_Option_Set
-        := Message_Option_Set (POSIX.Empty_Set));
+      Options        : Message_Option_Set := Empty_Set);
    procedure Send
      (Socket         : POSIX.IO.File_Descriptor;
       Buffer         : System.Address;
@@ -335,29 +327,25 @@ package POSIX.Sockets is
       Octets_Sent    : out POSIX.IO_Count;
       To             : Socket_Address_Pointer;
       Masked_Signals : POSIX.Signal_Masking;
-      Options        : Message_Option_Set
-        := Message_Option_Set (POSIX.Empty_Set));
+      Options        : Message_Option_Set := Empty_Set);
    procedure Send
      (Socket         : POSIX.IO.File_Descriptor;
       Buffer         : System.Address;
       Octets_To_Send : POSIX.IO_Count;
       Octets_Sent    : out POSIX.IO_Count;
       To             : Socket_Address_Pointer;
-      Options        : Message_Option_Set
-        := Message_Option_Set (POSIX.Empty_Set));
+      Options        : Message_Option_Set := Empty_Set);
    procedure Send_Message
      (Socket         : POSIX.IO.File_Descriptor;
       Message        : Socket_Message;
       Octets_Sent    : out POSIX.IO_Count;
       Masked_Signals : POSIX.Signal_Masking;
-      Options        : Message_Option_Set
-        := Message_Option_Set (POSIX.Empty_Set));
+      Options        : Message_Option_Set := Empty_Set);
    procedure Send_Message
      (Socket      : POSIX.IO.File_Descriptor;
       Message     : Socket_Message;
       Octets_Sent : out POSIX.IO_Count;
-      Options     : Message_Option_Set
-        := Message_Option_Set (POSIX.Empty_Set));
+      Options     : Message_Option_Set := Empty_Set);
 
    type Shutdown_Mode is
      (Further_Receives_Disallowed,

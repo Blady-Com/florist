@@ -50,6 +50,13 @@ package POSIX.Sockets.ISO is
    Connectionless_Mode_Network_Protocol
                           : constant Protocol_Number := 0;
    type ISO_Socket_Address is private;
+   type ISO_Socket_Address_Pointer is access all ISO_Socket_Address;
+   function "+" (Pointer : ISO_Socket_Address_Pointer)
+              return POSIX.Sockets.Socket_Address_Pointer;
+   function "+" (Pointer : POSIX.Sockets.Socket_Address_Pointer)
+                 return ISO_Socket_Address_Pointer;
+   function Is_ISO_Socket_Address
+     (Pointer : POSIX.Sockets.Socket_Address_Pointer) return Boolean;
    type ISO_Address is new POSIX.Octet_Array;
    type Presentation_Selector is new POSIX.Octet_Array;
    type Session_Selector is new POSIX.Octet_Array;
@@ -109,10 +116,9 @@ package POSIX.Sockets.ISO is
        To     : CL_Flags);
 
    type TP_Flags is new POSIX.Option_Set;
-   Public_Data_Network_Quality_Of_Service
-                               : constant TP_Flags := Empty_Set;
-   Peer_On_Same_Network        : constant TP_Flags := Empty_Set;
-   Expedited_Data_Present      : constant TP_Flags := Empty_Set;
+   Public_Data_Network_QOS : constant TP_Flags := Empty_Set;
+   Peer_On_Same_Network    : constant TP_Flags := Empty_Set;
+   Expedited_Data_Present  : constant TP_Flags := Empty_Set;
    function Get_TP_Flags
       (Socket : POSIX.IO.File_Descriptor)
      return TP_Flags;

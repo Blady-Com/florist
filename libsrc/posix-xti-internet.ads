@@ -49,19 +49,19 @@ package POSIX.XTI.Internet is
      return XTI_Option;
    procedure Set_Option
       (Option_Item : in out Protocol_Option;
-       Level       : Option_Level;
-       Name        : Option_Name;
-       To          : XTI_Option);
+       Level       :        Option_Level;
+       Name        :        Option_Name;
+       To          :        XTI_Option);
    type Internet_XTI_Address is private;
 
    type Internet_XTI_Address_Pointer is
      access all Internet_XTI_Address;
 
-   function "+" (Ptr : Internet_XTI_Address_Pointer)
+   function "+" (Pointer : Internet_XTI_Address_Pointer)
      return XTI_Address_Pointer;
-   function "+" (Ptr : XTI_Address_Pointer)
+   function "+" (Pointer : XTI_Address_Pointer)
      return Internet_XTI_Address_Pointer;
-   function Is_Internet_XTI_Address (Ptr : XTI_Address_Pointer)
+   function Is_Internet_XTI_Address (Pointer : XTI_Address_Pointer)
      return Boolean;
 
    type Internet_Port is mod 2 ** 16;
@@ -70,8 +70,8 @@ package POSIX.XTI.Internet is
    function Get_Internet_Port (Name : Internet_XTI_Address)
      return Internet_Port;
    procedure Set_Internet_Port
-      (Name       : in out Internet_XTI_Address;
-       Port_Value : Internet_Port);
+      (Name : in out Internet_XTI_Address;
+       Port :        Internet_Port);
 
    type Internet_Address is private;
    Unspecified_Internet_Address : constant Internet_Address;
@@ -82,10 +82,10 @@ package POSIX.XTI.Internet is
      return Internet_Address;
    procedure Set_Internet_Address
       (Name          : in out Internet_XTI_Address;
-       Address_Value : Internet_Address);
+       Address_Value :        Internet_Address);
    --  Dispatching operations for Internet_XTI_Address
    procedure Get_Address
-      (Info_Item : Connection_Info;
+      (Info_Item :        Connection_Info;
        Address   : in out Internet_XTI_Address);
 
    --  Internet Address Manipulation
@@ -108,7 +108,7 @@ package POSIX.XTI.Internet is
      return POSIX.POSIX_String;
    generic
       with procedure Action
-         (Alias_Name : POSIX.POSIX_String;
+         (Alias_Name :        POSIX.POSIX_String;
           Quit       : in out Boolean);
    procedure For_Every_Network_Alias (Info_Item : Network_Info);
    function Get_Family (Info_Item : Network_Info)
@@ -135,14 +135,18 @@ package POSIX.XTI.Internet is
      return POSIX.POSIX_String;
    generic
       with procedure Action
-         (Alias_Name : POSIX.POSIX_String;
+         (Alias_Name :        POSIX.POSIX_String;
           Quit       : in out Boolean);
    procedure For_Every_Protocol_Alias (Info_Item : Protocol_Info);
    function Get_Protocol_Number (Info_Item : Protocol_Info)
      return Protocol_Number;
-   function Get_Protocol_Info_By_Number (Number : Protocol_Number)
+   function Get_Protocol_Info_By_Number
+      (Number  : Protocol_Number;
+       Storage : Database_Array_Pointer)
      return Protocol_Info;
-   function Get_Protocol_Info_By_Name (Name : POSIX.POSIX_String)
+   function Get_Protocol_Info_By_Name
+      (Name    : POSIX.POSIX_String;
+       Storage : Database_Array_Pointer)
      return Protocol_Info;
    procedure Open_Protocol_Database_Connection
       (Stay_Open : Boolean);
@@ -153,27 +157,31 @@ package POSIX.XTI.Internet is
    TCP_Segment_Size_Maximum : constant Option_Name := POSIX.C.XTI.TCP_MAXSEG;
    TCP_No_Delay             : constant Option_Name := POSIX.C.XTI.TCP_NODELAY;
    type Keep_Alive_Info is private;
-   type Keep_Alive_Status is (Keep_Alive_On, Keep_Alive_Off, Send_Garbage);
+   type Keep_Alive_Status is private;
+   subtype Keep_Alive_Time is POSIX.Minutes range 1 .. POSIX.Minutes'Last;
+   Keep_Alive_On  : constant Keep_Alive_Status;
+   Keep_Alive_Off : constant Keep_Alive_Status;
+   Send_Garbage   : constant Keep_Alive_Status;
    function Get_Status (Info_Item : Keep_Alive_Info)
      return Keep_Alive_Status;
    procedure Set_Status
       (Info_Item : in out Keep_Alive_Info;
-       To        : Keep_Alive_Status);
+       To        :        Keep_Alive_Status);
    procedure Set_Keep_Alive_Interval_Default
       (Info_Item : in out Keep_Alive_Info);
    procedure Set_Keep_Alive_Timeout
       (Info_Item : in out Keep_Alive_Info;
-       Minutes   : Positive);
+       To        :        Keep_Alive_Time);
    function Get_Keep_Alive_Timeout
       (Info_Item : Keep_Alive_Info)
-     return Positive;
+     return Keep_Alive_Time;
    function Get_Value (Option_Item : Protocol_Option)
      return Keep_Alive_Info;
    procedure Set_Option
       (Option_Item : in out Protocol_Option;
-       Level       : Option_Level;
-       Name        : Option_Name;
-       Value       : Keep_Alive_Info);
+       Level       :        Option_Level;
+       Name        :        Option_Name;
+       Value       :        Keep_Alive_Info);
 
    UDP_Checksum : constant Option_Name := POSIX.C.XTI.UDP_CHECKSUM;
 
@@ -181,33 +189,43 @@ package POSIX.XTI.Internet is
    IP_Type_Of_Service  : constant Option_Name := POSIX.C.XTI.IP_TOS;
    IP_Time_To_Live     : constant Option_Name := POSIX.C.XTI.IP_TTL;
    IP_Reuse_Address    : constant Option_Name := POSIX.C.XTI.IP_REUSEADDR;
-   IP_Dont_Route       : constant Option_Name := POSIX.C.XTI.IP_DONTROUTE;
+   IP_Do_Not_Route     : constant Option_Name := POSIX.C.XTI.IP_DONTROUTE;
    IP_Permit_Broadcast : constant Option_Name := POSIX.C.XTI.IP_BROADCAST;
    type IP_Option_List is new POSIX.Octet_Array;
    procedure Get_Value
-      (Option_Item : Protocol_Option;
+      (Option_Item :     Protocol_Option;
        IP_Option   : out IP_Option_List;
        Count       : out Natural);
    procedure Set_Option
       (Option_Item : in out Protocol_Option;
-       Level       : Option_Level;
-       Name        : Option_Name;
-       To          : IP_Option_List);
-   type IP_Service_Type is
-      (Normal, Low_Delay, High_Throughput, High_Reliability, Low_Cost);
-   type IP_Precedence_Level is
-      (Routine, Priority, Immediate, Flash, Flash_Override,
-       Critic_ECP, Internetwork_Control, Network_Control);
+       Level       :        Option_Level;
+       Name        :        Option_Name;
+       To          :        IP_Option_List);
+   type IP_Service_Type is private;
+   Normal           : constant IP_Service_Type;
+   Low_Delay        : constant IP_Service_Type;
+   High_Throughput  : constant IP_Service_Type;
+   High_Reliability : constant IP_Service_Type;
+   Low_Cost         : constant IP_Service_Type;
+   type IP_Precedence_Level is private;
+   Routine              : constant IP_Precedence_Level;
+   Priority             : constant IP_Precedence_Level;
+   Immediate            : constant IP_Precedence_Level;
+   Flash                : constant IP_Precedence_Level;
+   Flash_Override       : constant IP_Precedence_Level;
+   Critic_ECP           : constant IP_Precedence_Level;
+   Internetwork_Control : constant IP_Precedence_Level;
+   Network_Control      : constant IP_Precedence_Level;
    function Get_Value (Option_Item : Protocol_Option)
      return IP_Service_Type;
    function Get_Value (Option_Item : Protocol_Option)
      return IP_Precedence_Level;
    procedure Set_Option
       (Option_Item : in out Protocol_Option;
-       Level       : Option_Level;
-       Name        : Option_Name;
-       Service     : IP_Service_Type;
-       Precedence  : IP_Precedence_Level);
+       Level       :        Option_Level;
+       Name        :        Option_Name;
+       Service     :        IP_Service_Type;
+       Precedence  :        IP_Precedence_Level);
 
 private
 
@@ -231,6 +249,12 @@ private
                                       kp_timeout => 0);
    end record;
 
+   type Keep_Alive_Status is (Keep_Alive_On_Enum, Keep_Alive_Off_Enum,
+                              Send_Garbage_Enum);
+   Keep_Alive_On  : constant Keep_Alive_Status := Keep_Alive_On_Enum;
+   Keep_Alive_Off : constant Keep_Alive_Status := Keep_Alive_Off_Enum;
+   Send_Garbage   : constant Keep_Alive_Status := Send_Garbage_Enum;
+
    type Network_Info is record
       C : aliased POSIX.C.NetDB.struct_netent;
    end record;
@@ -251,5 +275,27 @@ private
 
    Unspecified_Network_Number : constant Network_Number := 0;
    Unspecified_Internet_Port : constant Internet_Port := 0;
+
+   type IP_Service_Type is
+     (Normal_Enum, Low_Delay_Enum, High_Throughput_Enum,
+      High_Reliability_Enum, Low_Cost_Enum);
+   Normal           : constant IP_Service_Type := Normal_Enum;
+   Low_Delay        : constant IP_Service_Type := Low_Delay_Enum;
+   High_Throughput  : constant IP_Service_Type := High_Throughput_Enum;
+   High_Reliability : constant IP_Service_Type := High_Reliability_Enum;
+   Low_Cost         : constant IP_Service_Type := Low_Cost_Enum;
+   type IP_Precedence_Level is
+     (Routine_Enum, Priority_Enum, Immediate_Enum, Flash_Enum,
+      Flash_Override_Enum,
+      Critic_ECP_Enum, Internetwork_Control_Enum, Network_Control_Enum);
+   Routine              : constant IP_Precedence_Level := Routine_Enum;
+   Priority             : constant IP_Precedence_Level := Priority_Enum;
+   Immediate            : constant IP_Precedence_Level := Immediate_Enum;
+   Flash                : constant IP_Precedence_Level := Flash_Enum;
+   Flash_Override       : constant IP_Precedence_Level := Flash_Override_Enum;
+   Critic_ECP           : constant IP_Precedence_Level := Critic_ECP_Enum;
+   Internetwork_Control : constant IP_Precedence_Level :=
+     Internetwork_Control_Enum;
+   Network_Control      : constant IP_Precedence_Level := Network_Control_Enum;
 
 end POSIX.XTI.Internet;

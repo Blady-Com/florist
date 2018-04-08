@@ -866,21 +866,21 @@ package body POSIX.Sockets.Internet is
 
    function To_Socket_Address is new Unchecked_Conversion
       (Internet_Socket_Address_Pointer, Socket_Address_Pointer);
-   function "+" (Ptr : Internet_Socket_Address_Pointer)
+   function "+" (Pointer : Internet_Socket_Address_Pointer)
      return Socket_Address_Pointer is
    begin
-      return To_Socket_Address (Ptr);
+      return To_Socket_Address (Pointer);
    end "+";
 
    function To_Internet_Socket_Address is new Unchecked_Conversion
       (Socket_Address_Pointer, Internet_Socket_Address_Pointer);
-   function "+" (Ptr : Socket_Address_Pointer)
+   function "+" (Pointer : Socket_Address_Pointer)
      return Internet_Socket_Address_Pointer is
    begin
-      if Ptr = null then
+      if Pointer = null then
          return null;
-      elsif Ptr.C.sa_family = POSIX.C.Sockets.AF_INET then
-         return To_Internet_Socket_Address (Ptr);
+      elsif Pointer.C.sa_family = POSIX.C.Sockets.AF_INET then
+         return To_Internet_Socket_Address (Pointer);
       else
          --  Need to find out exact error ??
          return null;
@@ -888,12 +888,12 @@ package body POSIX.Sockets.Internet is
       end if;
    end "+";
 
-   function Is_Internet_Socket_Address (Ptr : Socket_Address_Pointer)
+   function Is_Internet_Socket_Address (Pointer : Socket_Address_Pointer)
      return Boolean is
    begin
-      if Ptr = null then
+      if Pointer = null then
          return False;
-      elsif Ptr.C.sa_family = POSIX.C.Sockets.AF_INET then
+      elsif Pointer.C.sa_family = POSIX.C.Sockets.AF_INET then
          return True;
       else
          return False;

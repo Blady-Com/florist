@@ -3269,7 +3269,7 @@ void create_posix() {
 #endif
   ifprintf(fp,"   pragma Obsolescent;\n");
 #ifdef OPEN_MAX
-  gmaxnn("Open_Files", OPEN_MAX);
+  gmaxn("Open_Files", OPEN_MAX);
 #else
 #ifdef _POSIX_OPEN_MAX
   gmaxn("Open_Files", _POSIX_OPEN_MAX);

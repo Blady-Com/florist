@@ -74,20 +74,20 @@ package body POSIX.Event_Management is
    --  Poll  --
    ------------
 
-   function Get_File (Poll_Item : Poll_File_Descriptor)
+   function Get_File (Poll_Item : Poll_FD)
       return POSIX.IO.File_Descriptor is
    begin
       return POSIX.IO.File_Descriptor (Poll_Item.C.fd);
    end Get_File;
 
    procedure Set_File
-      (Poll_Item : in out Poll_File_Descriptor;
+      (Poll_Item : in out Poll_FD;
        File      : POSIX.IO.File_Descriptor) is
    begin
       Poll_Item.C.fd := int (File);
    end Set_File;
 
-   function Get_Events (Poll_Item : Poll_File_Descriptor)
+   function Get_Events (Poll_Item : Poll_FD)
       return Poll_Events is
    begin
       return Poll_Events (Option_Set'
@@ -95,13 +95,13 @@ package body POSIX.Event_Management is
    end Get_Events;
 
    procedure Set_Events
-      (Poll_Item : in out Poll_File_Descriptor;
+      (Poll_Item : in out Poll_FD;
        Events    : Poll_Events) is
    begin
       Poll_Item.C.events := short (To_Int (Option_Set (Events).Option));
    end Set_Events;
 
-   function Get_Returned_Events (Poll_Item : Poll_File_Descriptor)
+   function Get_Returned_Events (Poll_Item : Poll_FD)
       return Poll_Events is
    begin
       return Poll_Events (Option_Set'
@@ -109,31 +109,21 @@ package body POSIX.Event_Management is
    end Get_Returned_Events;
 
    procedure Set_Returned_Events
-      (Poll_Item : in out Poll_File_Descriptor;
+      (Poll_Item : in out Poll_FD;
        Events    : Poll_Events) is
    begin
       Poll_Item.C.revents := short (To_Int (Option_Set (Events).Option));
    end Set_Returned_Events;
 
    procedure Poll
-      (Files          : in out Poll_File_Descriptor_Set;
+      (Files          : in out Poll_FD_Array;
        Response_Count : out    Natural;
-       Timeout        : Duration) is
+       Timeout        : Duration := Wait_Indefinitely) is
    begin
       Response_Count := Natural (Check_NNeg (c_poll (
          fds     => Files (Files'First).C'Unchecked_Access,
          nfds    => unsigned (Files'Length),
          timeout => int (Long_Long_Integer (Timeout * 1000)))));
-   end Poll;
-
-   procedure Poll
-      (Files          : in out Poll_File_Descriptor_Set;
-       Response_Count : out    Natural) is
-   begin
-      Response_Count := Natural (Check_NNeg (c_poll (
-         fds     => Files (Files'First).C'Unchecked_Access,
-         nfds    => unsigned (Files'Length),
-         timeout => INFTIM)));
    end Poll;
 
    -------------------
@@ -145,21 +135,21 @@ package body POSIX.Event_Management is
       c_fd_zero (Set.C'Unchecked_Access);
    end Make_Empty;
 
-   procedure Add_File_Descriptor_To_Set
+   procedure Add
       (Set  : in out File_Descriptor_Set;
        File : Select_File_Descriptor) is
    begin
       c_fd_set (int (File), Set.C'Unchecked_Access);
-   end Add_File_Descriptor_To_Set;
+   end Add;
 
-   procedure Remove_File_Descriptor_From_Set
+   procedure Remove
       (Set  : in out File_Descriptor_Set;
        File : Select_File_Descriptor) is
    begin
       c_fd_clr (int (File), Set.C'Unchecked_Access);
-   end Remove_File_Descriptor_From_Set;
+   end Remove;
 
-   function In_File_Descriptor_Set
+   function In_Set
       (Set  : File_Descriptor_Set;
        File : Select_File_Descriptor)
       return Boolean is
@@ -169,55 +159,28 @@ package body POSIX.Event_Management is
       else
          return True;
       end if;
-   end In_File_Descriptor_Set;
-
-   procedure Select_File
-      (Read_Files     : in out File_Descriptor_Set;
-       Write_Files    : in out File_Descriptor_Set;
-       Except_Files   : in out File_Descriptor_Set;
-       Files_Selected :    out Natural) is
-   begin
-      Files_Selected := Natural (Check_NNeg (c_select (
-         nfds      => int (FD_SETSIZE),
-         readfds   => Read_Files.C'Unchecked_Access,
-         writefds  => Write_Files.C'Unchecked_Access,
-         exceptfds => Except_Files.C'Unchecked_Access,
-         timeout   => To_ptr (System.Null_Address))));
-   end Select_File;
+   end In_Set;
 
    procedure Select_File
       (Read_Files     : in out File_Descriptor_Set;
        Write_Files    : in out File_Descriptor_Set;
        Except_Files   : in out File_Descriptor_Set;
        Files_Selected :    out Natural;
-       Timeout        : Duration) is
-      Timeval : aliased struct_timeval;
+       Timeout        : Duration := Wait_Indefinitely) is
+      Timeval : aliased struct_timeval := To_Struct_Timeval (Timeout);
+      Timeout_Ptr : timeval_ptr;
    begin
-      Timeval := To_Struct_Timeval (Timeout);
+      if Timeout /= Wait_Indefinitely then
+         Timeout_Ptr := Timeval'Unchecked_Access;
+      else
+         Timeout_Ptr := To_ptr (System.Null_Address);
+      end if;
       Files_Selected := Natural (Check_NNeg (c_select (
          nfds      => int (FD_SETSIZE),
          readfds   => Read_Files.C'Unchecked_Access,
          writefds  => Write_Files.C'Unchecked_Access,
          exceptfds => Except_Files.C'Unchecked_Access,
-         timeout   => Timeval'Unchecked_Access)));
-   end Select_File;
-
-   procedure Select_File
-      (Read_Files     : in out File_Descriptor_Set;
-       Write_Files    : in out File_Descriptor_Set;
-       Except_Files   : in out File_Descriptor_Set;
-       Files_Selected :    out Natural;
-       Signals        : POSIX.Signals.Signal_Set) is
-      Discard_Old_Mask : POSIX.Signals.Signal_Set;
-   begin
-      POSIX.Signals.Set_Blocked_Signals (Signals, Discard_Old_Mask);
-      Files_Selected := Natural (Check_NNeg (c_select (
-         nfds      => int (FD_SETSIZE),
-         readfds   => Read_Files.C'Unchecked_Access,
-         writefds  => Write_Files.C'Unchecked_Access,
-         exceptfds => Except_Files.C'Unchecked_Access,
-         timeout   => To_ptr (System.Null_Address))));
-      POSIX.Signals.Set_Blocked_Signals (Discard_Old_Mask, Discard_Old_Mask);
+         timeout   => Timeout_Ptr)));
    end Select_File;
 
    procedure Select_File
@@ -226,18 +189,23 @@ package body POSIX.Event_Management is
        Except_Files   : in out File_Descriptor_Set;
        Files_Selected :    out Natural;
        Signals        : POSIX.Signals.Signal_Set;
-       Timeout        : Duration) is
-      Timeval  : aliased struct_timeval;
+       Timeout        : Duration := Wait_Indefinitely) is
+      Timeval : aliased struct_timeval := To_Struct_Timeval (Timeout);
+      Timeout_Ptr : timeval_ptr;
       Discard_Old_Mask : POSIX.Signals.Signal_Set;
    begin
-      Timeval := To_Struct_Timeval (Timeout);
+      if Timeout /= Wait_Indefinitely then
+         Timeout_Ptr := Timeval'Unchecked_Access;
+      else
+         Timeout_Ptr := To_ptr (System.Null_Address);
+      end if;
       POSIX.Signals.Set_Blocked_Signals (Signals, Discard_Old_Mask);
       Files_Selected := Natural (Check_NNeg (c_select (
          nfds      => int (FD_SETSIZE),
          readfds   => Read_Files.C'Unchecked_Access,
          writefds  => Write_Files.C'Unchecked_Access,
          exceptfds => Except_Files.C'Unchecked_Access,
-         timeout   => Timeval'Unchecked_Access)));
+         timeout   => Timeout_Ptr)));
       POSIX.Signals.Set_Blocked_Signals (Discard_Old_Mask, Discard_Old_Mask);
    end Select_File;
 

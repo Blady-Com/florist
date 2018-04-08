@@ -44,6 +44,13 @@ package POSIX.XTI.ISO is
 
    ISO_TP_Level :  constant Option_Level := 0;
    type ISO_XTI_Address is private;
+   type ISO_XTI_Address_Pointer is access all ISO_XTI_Address;
+   function "+" (Pointer : ISO_XTI_Address_Pointer)
+              return POSIX.XTI.XTI_Address_Pointer;
+   function "+" (Pointer : POSIX.XTI.XTI_Address_Pointer)
+              return ISO_XTI_Address_Pointer;
+   function Is_ISO_XTI_Address
+     (Pointer : POSIX.XTI.XTI_Address_Pointer) return Boolean;
    type ISO_Option is (Enabled, Disabled);
    function Get_Value (Option_Item : Protocol_Option)
      return ISO_Option;
@@ -56,7 +63,14 @@ package POSIX.XTI.ISO is
    Priority            : constant Option_Name := 0;
    Protection          : constant Option_Name := 0;
    type Rate is private;
-   type Priority_Level is (Top, High, Medium, Low, Default);
+   subtype Error_Rate is Positive range 1 .. Positive'Last;
+   Unspecified_Rate : constant Duration := 0.0;
+   type Priority_Level is private;
+   Top     : constant Priority_Level;
+   High    : constant Priority_Level;
+   Medium  : constant Priority_Level;
+   Low     : constant Priority_Level;
+   Default : constant Priority_Level;
    type Protection_Level is new POSIX.Option_Set;
    No_Protection        : constant Protection_Level := Empty_Set;
    Passive_Protection   : constant Protection_Level := Empty_Set;
@@ -72,6 +86,16 @@ package POSIX.XTI.ISO is
    procedure Set_Minimum_Acceptable_Rate
       (Item : in out Rate;
        To   :        Duration);
+   function Get_Target_Rate (Item : Rate)
+     return Error_Rate;
+   procedure Set_Target_Rate
+      (Item : in out Rate;
+       To   :        Error_Rate);
+   function Get_Minimum_Acceptable_Rate (Item : Rate)
+     return Error_Rate;
+   procedure Set_Minimum_Acceptable_Rate
+      (Item : in out Rate;
+       To   :        Error_Rate);
    function Get_Value (Option_Item : Protocol_Option)
      return Rate;
    procedure Set_Option
@@ -169,8 +193,13 @@ package POSIX.XTI.ISO is
    Network_Expedited_Data       : constant Option_Name := 0;
    Network_Receipt_Confirmation : constant Option_Name := 0;
    type ISO_COTS_Option is (Enabled, Disabled, Unspecified);
-   type Transport_Class is
-      (Class_0, Class_1, Class_2, Class_3, Class_4, Unspecified);
+   type Transport_Class is private;
+   Class_0           : constant Transport_Class;
+   Class_l           : constant Transport_Class;
+   Class_2           : constant Transport_Class;
+   Class_3           : constant Transport_Class;
+   Class_4           : constant Transport_Class;
+   Class_Unspecified : constant Transport_Class;
    function Get_Value (Option_Item : Protocol_Option)
      return ISO_COTS_Option;
    procedure Set_Option
@@ -203,4 +232,21 @@ private
    type Requested_Rate is new Integer;
    type Throughput_Rate is new Integer;
    type Transit_Delay_Rate is new Integer;
+   type Priority_Level is (Top_Enum, High_Enum, Medium_Enum,
+                           Low_Enum, Default_Enum);
+   Top     : constant Priority_Level := Top_Enum;
+   High    : constant Priority_Level := High_Enum;
+   Medium  : constant Priority_Level := Medium_Enum;
+   Low     : constant Priority_Level := Low_Enum;
+   Default : constant Priority_Level := Default_Enum;
+   type Transport_Class is
+     (Class_0_Enum, Class_1_Enum, Class_2_Enum, Class_3_Enum,
+      Class_4_Enum, Unspecified_Enum);
+   Class_0           : constant Transport_Class := Class_0_Enum;
+   Class_l           : constant Transport_Class := Class_1_Enum;
+   Class_2           : constant Transport_Class := Class_2_Enum;
+   Class_3           : constant Transport_Class := Class_3_Enum;
+   Class_4           : constant Transport_Class := Class_4_Enum;
+   Class_Unspecified : constant Transport_Class := Unspecified_Enum;
+
 end POSIX.XTI.ISO;
