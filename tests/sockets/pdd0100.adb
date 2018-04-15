@@ -196,7 +196,7 @@ begin
          No_Error, E1, "A008");
    when E2 : others => Unexpected_Exception (E2, "A009");
    end;
-  
+
    -----------------------------------------------------------------------
    --  Internet Port consants are correct and the Get/Set Internet_Port
    --  methods are consistent.
@@ -269,7 +269,7 @@ begin
          No_Error, E1, "A020");
    when E2 : others => Unexpected_Exception (E2, "A021");
    end;
-  
+
    -----------------------------------------------------------------------
    --  Is_Internet_Socket_Address returns true if the object is an
    --  Internet_Socket_Address.  The false case cannot be tested without
@@ -290,7 +290,7 @@ begin
          No_Error, E1, "A023");
    when E2 : others => Unexpected_Exception (E2, "A024");
    end;
-  
+
    -----------------------------------------------------------------------
    --  Get_Socket_Name return the correct value.
 
@@ -316,7 +316,7 @@ begin
          No_Error, E1, "A026");
    when E2 : others => Unexpected_Exception (E2, "A027");
    end;
-  
+
    -----------------------------------------------------------------------
    --  Get_Address return the correct value.
 
@@ -354,7 +354,7 @@ begin
          No_Error, E1, "A030");
    when E2 : others => Unexpected_Exception (E2, "A031");
    end;
-  
+
    -----------------------------------------------------------------------
    --  String_To_Internet_Address accepts all the proper dot notations
    --  and raises the appropriate error messages when an inproper
@@ -440,7 +440,7 @@ begin
          E1, "A049");
    when E2 : others => Unexpected_Exception (E2, "A050");
    end;
-         
+
 
    -----------------------------------------------------------------------
    --  Open/Close_Network_Database_Connection open and closes a
@@ -528,7 +528,7 @@ begin
          E1, "A066");
    when E2 : others => Unexpected_Exception (E2, "A067");
    end;
-         
+
 
    -----------------------------------------------------------------------
    --  Open/Close_Protocol_Database_Connection open and closes a
@@ -732,7 +732,7 @@ begin
       Socket := Create (PF_INET, Datagram_Socket, IPPROTO_IP);
       --  Default value is Unspecified
       Assert (Get_Type_Of_Service (Socket) =
-         Unspecified, "A110");
+         POSIX_Sockets_Internet.Unspecified, "A110");
       Set_Type_Of_Service (Socket, High_Throughput);
       Comment ("Socket's Type_Of_Service has been set");
       Result := Get_Type_Of_Service (Socket);

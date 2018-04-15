@@ -1,16 +1,14 @@
 with POSIX; use POSIX;
 with POSIX.IO; use POSIX.IO;
-with POSIX.Files; use POSIX.Files;
 with POSIX.Sockets; use POSIX.Sockets;
 with POSIX.Sockets.Internet; use POSIX.Sockets.Internet;
-with Test_Pkg; use Test_Pkg;
+with POSIX_Report; use POSIX_Report;
 with GNAT.IO; use GNAT.IO;
-with Ada.Streams; use Ada.Streams;
 
 procedure Test_TCP_Listen is
    Listening_Socket : File_Descriptor;
    Accepting_Socket : File_Descriptor;
-   Socket_Name      : Internet_Socket_Address;
+   Socket_Name      : aliased Internet_Socket_Address;
    Test_Name        : Internet_Socket_Address;
    Test_Address     : Internet_Address;
    Buffer           : string (1 .. 80);
@@ -33,7 +31,7 @@ begin
    Set_Internet_Port (Socket_Name, 16#FF00#);
 
    Comment ("Bind the address to the file descriptor");
-   Bind (Listening_Socket, Socket_Name);
+   Bind (Listening_Socket, +(Socket_Name'Unchecked_Access));
 
    Comment ("Get the Port Number bound to the address");
    Socket_Name := Get_Socket_Name (Listening_Socket);
@@ -79,7 +77,7 @@ begin
 
    Comment ("Receive data from the connection until it stops sending");
    loop
-      Receive (Accepting_Socket, Buffer (Buffer'First)'Address, 
+      Receive (Accepting_Socket, Buffer (Buffer'First)'Address,
 	       POSIX.IO_Count (Buffer'Length), Last);
       exit when Last = 0;
       Comment ("Received:" &
@@ -88,6 +86,6 @@ begin
 
    Done;
 
-   exception when E : others => Fail (E);
+   exception when E : others => Fatal_Exception (E, "A001");
 
 end Test_TCP_Listen;

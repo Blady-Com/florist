@@ -385,16 +385,14 @@ begin
 
    -----------------------------------------------------------------------
    --  Trying to bind to a socket with a different type of object results
-   --  in the Inappropriate_Family error code.  This error is not in the
-   --  the standard but I get it in what I think is the place of
-   --  Incorrect_Address_Type.
+   --  in the Incorrect_Address_Type error code.
 
-   Test ("Inappropriate_Family [18.4.3.3]");
+   Test ("Incorrect_Address_Type [18.4.3.3]");
    declare
       Socket  : POSIX_IO.File_Descriptor := 0;
    begin
       Socket := Create (PF_UNIX, Stream_Socket, IPPROTO_IP);
-      Bind_Tests (Socket, Expected => Inappropriate_Family,
+      Bind_Tests (Socket, Expected => Incorrect_Address_Type,
          Error1 => "A020", Error2 => "A021", Error3 => "A022");
    end;
 
@@ -514,16 +512,14 @@ begin
 
    -----------------------------------------------------------------------
    --  Trying to connect to a socket with a different type of object
-   --  results in the Inappropriate_Family error code.  This error is not
-   --  in the the standard but I get it in what I think is the place of
-   --  Incorrect_Address_Type.
+   --  results in the Incorrect_Address_Type error code.
 
-   Test ("Inappropriate_Family [18.4.4.3]");
+   Test ("Incorrect_Address_Type [18.4.4.3]");
    declare
       Socket  : POSIX_IO.File_Descriptor := 0;
    begin
       Socket := Create (PF_UNIX, Stream_Socket, IPPROTO_IP);
-      Connect_Tests (Socket, Expected => Inappropriate_Family,
+      Connect_Tests (Socket, Expected => Incorrect_Address_Type,
          Error1 => "A042", Error2 => "A043", Error3 => "A044");
    end;
 
@@ -679,16 +675,14 @@ begin
 
    -----------------------------------------------------------------------
    --  Trying to specify a peer useing a socket with a different type of
-   --  object results in the Inappropriate_Family error code.  This error
-   --  is not in the the standard but I get it in what I think is the
-   --  place of Incorrect_Address_Type.
+   --  object results in the Incorrect_Address_Type error code.
 
-   Test ("Inappropriate_Family [18.4.4.3]");
+   Test ("Incorrect_Address_Type [18.4.4.3]");
    declare
       Socket  : POSIX_IO.File_Descriptor := 0;
    begin
       Socket := Create (PF_UNIX, Stream_Socket, IPPROTO_IP);
-      Specify_Peer_Tests (Socket, Expected => Inappropriate_Family,
+      Specify_Peer_Tests (Socket, Expected => Incorrect_Address_Type,
          Error1 => "A065", Error2 => "A066", Error3 => "A067");
    end;
 

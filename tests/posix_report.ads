@@ -89,6 +89,8 @@ package POSIX_Report is
       Change_Owner_Restriction_Option,
       Filename_Truncation_Option,
       File_Synchronization_Option,
+      Internet_Stream_Option,
+      Internet_Protocol_Option,
       Memory_Mapped_Files_Option,
       Memory_Locking_Option,
       Memory_Range_Locking_Option,
@@ -97,6 +99,7 @@ package POSIX_Report is
       Mutex_Priority_Ceiling_Option,
       Mutex_Priority_Inheritance_Option,
       Mutex_Option,
+      Network_Management_Option,
       Prioritized_IO_Option,
       Priority_Process_Scheduling_Option,
       Priority_Task_Scheduling_Option,
@@ -107,6 +110,7 @@ package POSIX_Report is
       Semaphores_Option,
       Shared_Memory_Objects_Option,
       Signal_Entries_Option,
+      Sockets_DNI_Option,
       Synchronized_IO_Option,
       Timers_Option);
 

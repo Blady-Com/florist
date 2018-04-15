@@ -3,16 +3,14 @@ with POSIX.IO; use POSIX.IO;
 with POSIX.Files; use POSIX.Files;
 with POSIX.Sockets; use POSIX.Sockets;
 with POSIX.Sockets.Local; use POSIX.Sockets.Local;
-with test_pkg; use test_pkg;
-with Gnat.IO; use Gnat.IO;
-with Ada.Streams; use Ada.Streams;
+with POSIX_Report; use POSIX_Report;
 
 Procedure Test_Local_Listen is
    Listening_Socket: File_Descriptor;
    Accepting_Socket: File_Descriptor;
-   Socket_Name:      Local_Socket_Address;
+   Socket_Name:      aliased Local_Socket_Address;
    Test_Name:        Local_Socket_Address;
-   Socket_Path:      Pathname:="a_local_socket";
+   Socket_Path:      constant Pathname:="a_local_socket";
    Buffer:           string (1 .. 80);
    Last:             POSIX.IO_Count;
 begin
@@ -31,7 +29,7 @@ begin
    Comment ("socket path:" & To_String(Get_Socket_Path (Socket_Name)));
 
    Comment ("Bind the address to the file descriptor");
-   Bind (Listening_Socket, Socket_Name);
+   Bind (Listening_Socket, +(Socket_Name'Unchecked_Access));
 
    Comment ("Listen for connections on the socket");
    Listen (Listening_Socket, 1);
@@ -49,7 +47,7 @@ begin
 
    Comment ("Receive data from the connection until it stops sending");
    loop
-      Receive (Accepting_Socket, Buffer (Buffer'First)'Address, 
+      Receive (Accepting_Socket, Buffer (Buffer'First)'Address,
 	       POSIX.IO_Count (Buffer'Length), Last);
       exit when Last = 0;
       Comment ("Received:" & Buffer(1..integer(Last)));
@@ -60,6 +58,6 @@ begin
 
    Done;
 
-   exception when E : others => Fail (E);
+   exception when E : others => Fatal_Exception (E, "A001");
 
 end Test_Local_Listen;

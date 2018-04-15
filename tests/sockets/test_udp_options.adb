@@ -1,19 +1,16 @@
 with POSIX; use POSIX;
 with POSIX.IO; use POSIX.IO;
-with POSIX.Files; use POSIX.Files;
 with POSIX.Sockets; use POSIX.Sockets;
 with POSIX.Sockets.Internet; use POSIX.Sockets.Internet;
-with Test_Pkg; use Test_Pkg;
+with POSIX_Report; use POSIX_Report;
 with GNAT.IO; use GNAT.IO;
-with Ada.Streams; use Ada.Streams;
 
 Procedure Test_UDP_Options is
 
    UDP_Socket:  File_Descriptor;
-   Socket_Name: Internet_Socket_Address;
-   Err:         Error_Code := No_Error;
-   
-   procedure Option_Status (on_off:Socket_Option) is
+   Socket_Name: aliased Internet_Socket_Address;
+
+   procedure Option_Status (on_off:Socket_Option_Value) is
    begin
       if on_off = Enabled then
          if Verbose then Put_Line ("Enabled"); end if;
@@ -21,7 +18,7 @@ Procedure Test_UDP_Options is
          if Verbose then Put_Line ("Disabled"); end if;
       end if;
    end;
-   
+
    procedure Option_Status (op_val:Natural) is
    begin
       if Verbose then Put (op_val); New_Line; end if;
@@ -42,9 +39,9 @@ Procedure Test_UDP_Options is
          Option_Status (Get_Header_Included (Socket));
          exception when POSIX_Error => Put_Line (Image(Get_Error_Code));
       end;
-         
+
    end;
-   
+
 begin
 
    ---------------------------
@@ -57,9 +54,9 @@ begin
    UDP_Socket := Create (Internet_Protocol, Datagram_Socket);
    Set_Internet_Address (Socket_Name, Unspecified_Internet_Address);
    Set_Internet_Port (Socket_Name, 2000);
-   Bind (UDP_Socket, Socket_Name);
+   Bind (UDP_Socket, +(Socket_Name'Unchecked_Access));
    Display_Socket_Options (UDP_Socket);
-   
+
    Comment ("Test Set Options...");
    Set_Receive_Destination_Address (UDP_Socket, Enabled);
    Set_Header_Included (UDP_Socket, Enabled);
@@ -71,5 +68,7 @@ begin
    Display_Socket_Options (UDP_Socket);
 
    Done;
+
+   exception when E : others => Fatal_Exception (E, "A001");
 
 end Test_UDP_Options;

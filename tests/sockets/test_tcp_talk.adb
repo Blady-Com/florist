@@ -1,18 +1,16 @@
 with POSIX; use POSIX;
 with POSIX.IO; use POSIX.IO;
-with POSIX.Files; use POSIX.Files;
 with POSIX.Sockets; use POSIX.Sockets;
 with POSIX.Sockets.Internet; use POSIX.Sockets.Internet;
-with test_pkg; use test_pkg;
+with POSIX_Report; use POSIX_Report;
 with Gnat.IO; use Gnat.IO;
-with Ada.Streams; use Ada.Streams;
 with Ada.Command_Line; use Ada.Command_Line;
 with Ada.Text_IO;
 with Text_IO;
 
 Procedure Test_TCP_Talk is
    Talking_Socket:   File_Descriptor;
-   Socket_Name:      Internet_Socket_Address;
+   Socket_Name:      aliased Internet_Socket_Address;
    Test_Name:        Internet_Socket_Address;
    Test_Address:     Internet_Address;
    Last:             POSIX.IO_Count;
@@ -47,13 +45,13 @@ begin
    if not Is_Internet_Address (To_POSIX_String (Argument (Arg_Host))) then
       Text_IO.Put_Line ("Bad Internet Address");
    end if;
-      
-   Test_Address := String_To_Internet_Address ( 
+
+   Test_Address := String_To_Internet_Address (
 	    To_POSIX_String (Argument (Arg_Host)));
 
    Set_Internet_Address (
 	 Name => Socket_Name,
-	 Address_Value => Test_Address );
+	 Address => Test_Address );
    Text_IO.Put ("  Remote Host: ");
    Text_IO.Put (Argument (Arg_Host));
    Port_IO.Get (Argument (Arg_Port), Port_Num, Arg_Last);
@@ -61,13 +59,13 @@ begin
    Port_IO.Put (Port_Num);
    Text_IO.Put (" IP ");
 --   Text_IO.Put (To_String (Internet_Address_To_String (Test_Address)));
-   Text_IO.Put (To_String (Internet_Address_To_String 
+   Text_IO.Put (To_String (Internet_Address_To_String
 			   (Get_Internet_Address (Socket_Name))));
    Text_IO.New_Line;
    Set_Internet_Port (Socket_Name, Port_Num);
 
    Comment ("Connect to the socket (which should be listening)");
-   Connect (Talking_Socket, Socket_Name);
+   Connect (Talking_Socket, +(Socket_Name'Unchecked_Access));
 
    Comment ("Get connected socket name");
    Test_Name := Get_Socket_Name (Talking_Socket);
@@ -75,7 +73,7 @@ begin
    Test_Address := Get_Internet_Address (Test_Name);
    Put ("  ===>Test_TCP_Talk: Connecting on (");
    declare
-      Dot_Address: constant POSIX_String := 
+      Dot_Address: constant POSIX_String :=
          Internet_Address_To_String (Test_Address);
    begin
       Put (To_String (Dot_Address));
@@ -90,7 +88,7 @@ begin
    Test_Address := Get_Internet_Address (Test_Name);
    Put ("  ===>Test_TCP_Talk: Connecting from (");
    declare
-      Dot_Address: constant POSIX_String := 
+      Dot_Address: constant POSIX_String :=
          Internet_Address_To_String (Test_Address);
    begin
       Put (To_String (Dot_Address));
@@ -107,6 +105,6 @@ begin
 
    Done;
 
-   exception when E : others => Fail (E);
+   exception when E : others => Fatal_Exception (E, "A001");
 
 end Test_TCP_Talk;

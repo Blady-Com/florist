@@ -1,24 +1,21 @@
 with POSIX; use POSIX;
 with POSIX.IO; use POSIX.IO;
-with POSIX.Files; use POSIX.Files;
 with POSIX.Event_Management; use POSIX.Event_Management;
 with POSIX.Sockets; use POSIX.Sockets;
 with POSIX.Sockets.Internet; use POSIX.Sockets.Internet;
-with Test_Pkg; use Test_Pkg;
-with GNAT.IO; use GNAT.IO;
-with Ada.Streams; use Ada.Streams;
+with POSIX_Report; use POSIX_Report;
 
 procedure Test_Poll_Listen is
    Listening_Socket1 : File_Descriptor;
    Listening_Socket2 : File_Descriptor;
    Listening_Socket3 : File_Descriptor;
    Accepting_Socket  : File_Descriptor;
-   Socket_Name1      : Internet_Socket_Address;
-   Socket_Name2      : Internet_Socket_Address;
-   Socket_Name3      : Internet_Socket_Address;
+   Socket_Name1      : aliased Internet_Socket_Address;
+   Socket_Name2      : aliased Internet_Socket_Address;
+   Socket_Name3      : aliased Internet_Socket_Address;
    Events            : Poll_Events := Empty_Set;
    Returned_Events   : Poll_Events := Empty_Set;
-   Files             : Poll_File_Descriptor_Set (1..3);
+   Files             : Poll_FD_Array (1..3);
    Response_Count    : Natural := 0;
    Buffer            : string (1 .. 80);
    Last              : POSIX.IO_Count;
@@ -39,9 +36,9 @@ begin
    Set_Internet_Port (Socket_Name1, 2000);
    Set_Internet_Port (Socket_Name2, 2001);
    Set_Internet_Port (Socket_Name3, 2002);
-   Bind (Listening_Socket1, Socket_Name1);
-   Bind (Listening_Socket2, Socket_Name2);
-   Bind (Listening_Socket3, Socket_Name3);
+   Bind (Listening_Socket1, +(Socket_Name1'Unchecked_Access));
+   Bind (Listening_Socket2, +(Socket_Name2'Unchecked_Access));
+   Bind (Listening_Socket3, +(Socket_Name3'Unchecked_Access));
    Listen (Listening_Socket1, 3);
    Listen (Listening_Socket2, 3);
    Listen (Listening_Socket3, 3);
@@ -80,5 +77,5 @@ begin
       end if;
    end loop;
 
-   exception when E : others => Fail (E);
+   exception when E : others => Fatal_Exception (E, "A001");
 end Test_Poll_Listen;

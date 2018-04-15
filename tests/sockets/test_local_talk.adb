@@ -1,16 +1,13 @@
 with POSIX; use POSIX;
 with POSIX.IO; use POSIX.IO;
-with POSIX.Files; use POSIX.Files;
 with POSIX.Sockets; use POSIX.Sockets;
 with POSIX.Sockets.Local; use POSIX.Sockets.Local;
-with test_pkg; use test_pkg;
-with Gnat.IO; use Gnat.IO;
-with Ada.Streams; use Ada.Streams;
+with POSIX_Report; use POSIX_Report;
 Procedure Test_Local_Talk is
    Talking_Socket:   File_Descriptor;
-   Socket_Name:      Local_Socket_Address;
+   Socket_Name:      aliased Local_Socket_Address;
    Test_Name:        Local_Socket_Address;
-   Socket_Path:      Pathname:="a_local_socket";
+   Socket_Path:      constant Pathname:="a_local_socket";
    Last:             POSIX.IO_Count;
    Message :         string (1 .. 11) := "Hello World";
 
@@ -30,7 +27,7 @@ begin
    Comment ("socket path:" & To_String(Get_Socket_Path (Socket_Name)));
 
    Comment ("Connect to the socket (which should be listening)");
-   Connect (Talking_Socket, Socket_Name);
+   Connect (Talking_Socket, +(Socket_Name'Unchecked_Access));
 
    Comment ("Get connected socket name");
    Test_Name := Get_Socket_Name (Talking_Socket);
@@ -48,6 +45,6 @@ begin
 
    Done;
 
-   exception when E : others => Fail (E);
+   exception when E : others => Fatal_Exception (E, "A001");
 
 end Test_Local_Talk;

@@ -1,7 +1,4 @@
-include ../../Config
-
-GNATMAKEFLAGS1 = -g -a -A../../floristlib -L../../floristlib
-GNATMAKEFLAGS2= -cargs -gnatga -largs -lresolv -lflorist
+GNATMAKEFLAGS= -p -P ../test.gpr
 
 TEST_FILES=\
  p180400.adb\
@@ -56,9 +53,9 @@ TESTS=\
 
 all: $(TESTS)
 posix_report.ads:
-	ln -s ../posix_report.ads
+#	ln -s ../posix_report.ads
 posix_report.adb:
-	ln -s ../posix_report.adb
+#	ln -s ../posix_report.adb
 test_parameters.ads:
 #	ln -s ../test_parameters.ads
 test_parameters.adb:
@@ -90,8 +87,8 @@ test_udp_tal: test_udp_tal.adb
 tcp: test_tcp_listen test_tcp_talk
 
 $(TESTS):  posix_report.ads posix_report.adb\
-  ../../floristlib/libflorist.a test_parameters.ads test_parameters.adb
-	gnatmake  $(GNATMAKEFLAGS1) $@ $(GNATMAKEFLAGS2)
+  test_parameters.ads test_parameters.adb
+	gnatmake  $(GNATMAKEFLAGS) $@
 clean:
 	rm -f *.o *.ali $(TESTS)
 

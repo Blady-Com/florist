@@ -45,7 +45,6 @@ with Ada.Command_Line,
      POSIX_Configurable_System_Limits,
      POSIX_Options,
      POSIX_Process_Identification,
-     POSIX_Process_Primitives,
      POSIX_Signals;
 
 pragma Elaborate_All (POSIX_Process_Identification);
@@ -110,6 +109,10 @@ package body POSIX_Report is
          return "Filename Truncation";
       when File_Synchronization_Option =>
          return "File Synchronization";
+      when Internet_Stream_Option =>
+         return "Internet Stream";
+      when Internet_Protocol_Option =>
+         return "Internet Protocol";
       when Memory_Mapped_Files_Option =>
          return "Memory Mapped Files";
       when Memory_Locking_Option =>
@@ -126,6 +129,8 @@ package body POSIX_Report is
          return "Mutex Priority Inheritance";
       when Mutex_Option =>
          return "Mutexes";
+      when Network_Management_Option =>
+         return "Network Management";
       when Prioritized_IO_Option =>
          return "Prioritized IO";
       when Priority_Process_Scheduling_Option =>
@@ -146,6 +151,8 @@ package body POSIX_Report is
          return "Shared Memory";
       when Signal_Entries_Option =>
          return "Signal Entries";
+      when Sockets_DNI_Option =>
+         return "Sockets DNI";
       when Synchronized_IO_Option =>
          return "Synchronized IO";
       when Timers_Option =>
@@ -333,7 +340,6 @@ package body POSIX_Report is
    end Comment;
 
    function Is_Supported (Option : POSIX_Option) return Boolean is
-      use POSIX_Configurable_System_Limits;
    begin
       case Option is
       when Asynchronous_IO_Option =>
@@ -352,6 +358,22 @@ package body POSIX_Report is
          if True in File_Synchronization_Support then
             if False in File_Synchronization_Support then
                return File_Synchronization_Is_Supported;
+            end if;
+         else
+            return False;
+         end if;
+      when Internet_Stream_Option =>
+         if True in Internet_Stream_Support then
+            if False in Internet_Stream_Support then
+               return Internet_Stream_Is_Supported;
+            end if;
+         else
+            return False;
+         end if;
+      when Internet_Protocol_Option =>
+         if True in Internet_Protocol_Support then
+            if False in Internet_Protocol_Support then
+               return Internet_Protocol_Is_Supported;
             end if;
          else
             return False;
@@ -410,6 +432,13 @@ package body POSIX_Report is
          if True in Mutexes_Support then
             if False in Mutexes_Support then
                return Mutexes_Are_Supported;
+            end if;
+         else return False;
+         end if;
+      when Network_Management_Option =>
+         if True in Network_Management_Support then
+            if False in Network_Management_Support then
+               return Network_Management_Is_Supported;
             end if;
          else return False;
          end if;
@@ -480,6 +509,13 @@ package body POSIX_Report is
          if True in Signal_Entries_Support then
             if False in Signal_Entries_Support then
                return True;
+            end if;
+         else return False;
+         end if;
+      when Sockets_DNI_Option =>
+         if True in Sockets_DNI_Support then
+            if False in Sockets_DNI_Support then
+               return Sockets_DNI_Is_Supported;
             end if;
          else return False;
          end if;
