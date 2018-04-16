@@ -5,7 +5,6 @@ TEST_FILES=\
  p180401.adb\
  p180402.adb\
  p180402a.adb\
- p180402b.adb\
  p180402c.adb\
  p180402d.adb\
  pdd0100.adb\
@@ -30,7 +29,6 @@ TESTS=\
  p180401\
  p180402\
  p180402a\
- p180402b\
  p180402c\
  p180402d\
  pdd0100\
@@ -64,7 +62,6 @@ p180400: p180400.adb
 p180401: p180401.adb
 p180402: p180402.adb
 p180402a: p180402a.adb
-p180402b: p180402b.adb
 p180402c: p180402c.adb
 p180402d: p180402d.adb
 pdd0100: pdd0100.adb test_parameters.adb

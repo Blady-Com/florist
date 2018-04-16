@@ -128,13 +128,17 @@ int  max_GCST2;
   ifprintf(fp,"   %s : constant %s := %d;\n", name2, type, value); \
   if (value > max_GCST2) max_GCST2 = value;
 
+/* Define an unique value even non supported to avoid case duplication choices */
+int cnt_non_supported = 99000;
 #define GDFLT(name, value) \
   NON_SUPPORT_MESSAGE(name)\
-  ifprintf(fp,"   %s : constant := %d;\n", name, value);
+  ifprintf(fp,"   %s : constant := %d;\n", name, cnt_non_supported);\
+  cnt_non_supported++;
 
 #define GUFLT(name, value) \
   NON_SUPPORT_MESSAGE(name)\
-  ifprintf(fp,"   %s : constant := %u;\n", name, value);
+  ifprintf(fp,"   %s : constant := %u;\n", name, cnt_non_supported);\
+  cnt_non_supported++;
 
 #define GDFLT2(name, name2, type) \
   NON_SUPPORT_MESSAGE(name)\

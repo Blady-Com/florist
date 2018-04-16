@@ -7,7 +7,7 @@ with Text_IO;
 with Ada.Calendar;                 use Ada.Calendar;
 with POSIX.Process_Environment;
 
-procedure Test_TCP_Connect is
+procedure Test_XTI_TCP_Connect is
 
    type Test_Buffer_Type is record
       int : integer;
@@ -17,12 +17,7 @@ procedure Test_TCP_Connect is
    Test_Buffer        : aliased Test_Buffer_Type;
    Test_Buffer_Return : aliased Test_Buffer_Type;
 
-   function To_Buffer_Pointer is new POSIX.XTI.To_Buffer_Pointer 
-          (Test_Buffer_Type);
-   function To_Buffer_Pointer is new POSIX.XTI.To_Buffer_Pointer 
-          (POSIX.Octet);
-
-   Internet_Addr        : POSIX.XTI.Internet.Internet_XTI_Address;
+   Internet_Addr        : aliased POSIX.XTI.Internet.Internet_XTI_Address;
    Response_Addr        : aliased POSIX.XTI.Internet.Internet_XTI_Address;
 
    Endpoint             : POSIX.IO.File_Descriptor;
@@ -30,8 +25,8 @@ procedure Test_TCP_Connect is
 
    Response_INET_Addr   : POSIX.XTI.Internet.Internet_Address;
 
-   Connect_Send_Info    : POSIX.XTI.Connection_Information;
-   Connect_Receive_Info : POSIX.XTI.Connection_Information;
+   Connect_Send_Info    : POSIX.XTI.Connection_Info;
+   Connect_Receive_Info : POSIX.XTI.Connection_Info;
 
    Buffer               : aliased POSIX.Octet_Array (1 .. 4000);
    Bytes                : POSIX.IO_Count;
@@ -43,11 +38,11 @@ procedure Test_TCP_Connect is
 
    Option               : POSIX.XTI.Protocol_Option;
    Option_List          : aliased POSIX.XTI.Protocol_Option_List;
-   Option_Buffer        : POSIX.XTI.Octet_Buffer_Pointer :=
+   Option_Buffer        : constant POSIX.XTI.Octet_Buffer_Pointer :=
                new POSIX.Octet_Array (1 .. 256);
    Option_Result        : POSIX.XTI.Option_Status;
 
-   Linger               : POSIX.XTI.Linger_Information;
+   Linger               : POSIX.XTI.Linger_Info;
 
    Remote_INET_Addr     : POSIX.XTI.Internet.Internet_Address :=
                POSIX.XTI.Internet.Loopback_Internet_Address; --  by default
@@ -86,8 +81,8 @@ procedure Test_TCP_Connect is
       Level     : POSIX.XTI.Option_Level;
       Value     : POSIX.XTI.Option_Value;
       No_Delay  : POSIX.XTI.Internet.XTI_Option;
-      Linger    : POSIX.XTI.Linger_Information;
-      Keep_Alive : POSIX.XTI.Internet.Keep_Alive_Information;
+      Linger    : POSIX.XTI.Linger_Info;
+      Keep_Alive : POSIX.XTI.Internet.Keep_Alive_Info;
       IP_Ops    : POSIX.XTI.Internet.IP_Option_List (0 .. 1023);
       Count     : Natural;
    begin
@@ -145,7 +140,7 @@ procedure Test_TCP_Connect is
                Value := POSIX.XTI.Get_Value (Info);
                Int_IO.Put (integer (Value));
                Text_IO.Put_Line (" Bytes");
-           
+
             when others =>
                Text_IO.Put_Line ("UNKNOWN XTI Level Option");
          end case;
@@ -190,7 +185,7 @@ procedure Test_TCP_Connect is
                Text_IO.Put ("IP_Options,          Value is ");
                POSIX.XTI.Internet.Get_Value (Info, IP_Ops, Count);
                if Count > 0 then
-                  for i in IP_Ops'First .. 
+                  for i in IP_Ops'First ..
                                       (integer (IP_Ops'First) + Count)
                   loop
                      Int_IO.Put (integer (IP_Ops (i)));
@@ -214,7 +209,7 @@ procedure Test_TCP_Connect is
                Value := POSIX.XTI.Get_Value (Info);
                Int_IO.Put (integer (Value));
                Text_IO.New_Line;
-            when IP_Dont_Route =>
+            when IP_Do_Not_Route =>
                Text_IO.Put ("IP_Dont_Route,       Value is ");
                Value := POSIX.XTI.Get_Value (Info);
                Int_IO.Put (integer (Value));
@@ -260,7 +255,7 @@ begin
    ------------------------------------------------------------------------
 
    POSIX.XTI.Bind (Endpoint,
-                   Response_Addr'access);
+                   +(Response_Addr'Unchecked_Access));
    Text_IO.Put_Line ("Completed Bind");
 
    Text_IO.Put ("   Port: ");
@@ -283,8 +278,8 @@ begin
    POSIX.XTI.Internet.Set_Internet_Port (Internet_Addr, 16#FF00#);
    POSIX.XTI.Internet.Set_Internet_Address (Internet_Addr, Remote_INET_Addr);
 
-   POSIX.XTI.Set_Address (Connect_Send_Info, Internet_Addr);
-   POSIX.XTI.Set_Address (Connect_Receive_Info, Response_Addr);
+   POSIX.XTI.Set_Address (Connect_Send_Info, +(Internet_Addr'Unchecked_Access));
+   POSIX.XTI.Set_Address (Connect_Receive_Info, +(Response_Addr'Unchecked_Access));
 
    Text_IO.Put_Line ("Calling Connect, expect to be REJECTED");
 
@@ -318,7 +313,7 @@ begin
    POSIX.XTI.Bind (Endpoint);
    POSIX.XTI.Internet.Set_Internet_Port (Internet_Addr, 16#FF00#);
    POSIX.XTI.Internet.Set_Internet_Address (Internet_Addr, Remote_INET_Addr);
-   POSIX.XTI.Set_Address (Connect_Send_Info, Internet_Addr);
+   POSIX.XTI.Set_Address (Connect_Send_Info, +(Internet_Addr'Unchecked_Access));
    POSIX.XTI.Connect (Endpoint, Connect_Send_Info);
    Text_IO.Put_Line ("Connected");
 
@@ -340,7 +335,7 @@ begin
 --   POSIX.XTI.Set_Name (Option, POSIX.XTI.Internet.TCP_No_Delay);
 --   POSIX.XTI.Internet.Set_Value (Option, POSIX.XTI.Internet.Enabled);
 
-   POSIX.XTI.Internet.Set_Option (Option, 
+   POSIX.XTI.Internet.Set_Option (Option,
                                   POSIX.XTI.Internet.TCP_Level,
                                   POSIX.XTI.Internet.TCP_No_Delay,
                                   POSIX.XTI.Internet.Enabled);
@@ -350,7 +345,7 @@ begin
    POSIX.XTI.Manage_Options (Endpoint,
                              Option_List,
                              POSIX.XTI.Negotiate_Options,
-                             Option_List'access,
+                             Option_List,
                              Option_Result);
    Text_IO.Put ("The Result of Manage Options (Set TCP NODELAY) was ");
    if (Option_Result = Success) then
@@ -378,7 +373,7 @@ begin
 --   POSIX.XTI.Set_Name (Option, POSIX.XTI.Receive_Buffer_Size);
 --   POSIX.XTI.Set_Value (Option, (255 * 1024));
 
-   POSIX.XTI.Set_Option (Option, 
+   POSIX.XTI.Set_Option (Option,
                          POSIX.XTI.XTI_Protocol_Level,
                          POSIX.XTI.Receive_Buffer_Size,
                          (255 * 1024));
@@ -390,7 +385,7 @@ begin
 --   POSIX.XTI.Set_Level (Option, POSIX.XTI.XTI_Protocol_Level);
 --   POSIX.XTI.Set_Name (Option, POSIX.XTI.Send_Buffer_Size);
 --   POSIX.XTI.Set_Value (Option, (255 * 1024));
-   POSIX.XTI.Set_Option (Option, 
+   POSIX.XTI.Set_Option (Option,
                          POSIX.XTI.XTI_Protocol_Level,
                          POSIX.XTI.Send_Buffer_Size,
                          (255 * 1024));
@@ -405,7 +400,7 @@ begin
 --   POSIX.XTI.Set_Status (Linger, POSIX.XTI.Linger_On);
 --   POSIX.XTI.Set_Period (Linger, 10);
 --   POSIX.XTI.Set_Value (Option, Linger);
-   POSIX.XTI.Set_Option (Option, 
+   POSIX.XTI.Set_Option (Option,
                          POSIX.XTI.XTI_Protocol_Level,
                          POSIX.XTI.Linger_On_Close_If_Data_Present,
                          Linger);
@@ -417,7 +412,7 @@ begin
    POSIX.XTI.Manage_Options (Endpoint,
                              Option_List,
                              POSIX.XTI.Negotiate_Options,
-                             Option_List'access,
+                             Option_List,
                              Option_Result);
    Text_IO.Put (
     "The Result of Manage Options (Set RCV & SND BUF and LINGER) was ");
@@ -444,7 +439,7 @@ begin
 --   POSIX.XTI.Set_Level (Option, POSIX.XTI.XTI_Protocol_Level);
 --   POSIX.XTI.Set_Name (Option, POSIX.XTI.All_Options);
 --   POSIX.XTI.Set_Value (Option, Unspecified);
-   POSIX.XTI.Set_Option (Option, 
+   POSIX.XTI.Set_Option (Option,
                          POSIX.XTI.XTI_Protocol_Level,
                          POSIX.XTI.All_Options,
                          Unspecified);
@@ -454,7 +449,7 @@ begin
       POSIX.XTI.Manage_Options (Endpoint,
                                 Option_List,
                                 POSIX.XTI.Get_Current_Options,
-                                Option_List'access,
+                                Option_List,
                                 Option_Result);
       Text_IO.Put ("The Result of Manage Options (Get_Current_Options) was ");
       if (Option_Result = Success) then
@@ -475,7 +470,7 @@ begin
       Text_IO.Put ("There are ");
       Int_IO.Put (POSIX.XTI.Number_Of_Options (Option_List), 2);
       Text_IO.Put_Line (" XTI Level Options, They are:");
-    
+
       --
       --  Iterate the Option List
       --
@@ -506,7 +501,7 @@ begin
 --   POSIX.XTI.Set_Level (Option, POSIX.XTI.Internet.IP_Level);
 --   POSIX.XTI.Set_Name (Option, POSIX.XTI.All_Options);
 --   POSIX.XTI.Set_Value (Option, Unspecified);
-   POSIX.XTI.Set_Option (Option, 
+   POSIX.XTI.Set_Option (Option,
                          POSIX.XTI.Internet.IP_Level,
                          POSIX.XTI.All_Options,
                          Unspecified);
@@ -516,7 +511,7 @@ begin
       POSIX.XTI.Manage_Options (Endpoint,
                                 Option_List,
                                 POSIX.XTI.Get_Current_Options,
-                                Option_List'access,
+                                Option_List,
                                 Option_Result);
       Text_IO.Put ("The Result of Manage Options (Get_Current_Options) was ");
       if (Option_Result = Success) then
@@ -537,7 +532,7 @@ begin
       Text_IO.Put ("There are ");
       Int_IO.Put (POSIX.XTI.Number_Of_Options (Option_List), 2);
       Text_IO.Put_Line (" IP Level Options, They are:");
-    
+
       --
       --  Iterate the Option List
       --
@@ -559,7 +554,7 @@ begin
 --   POSIX.XTI.Set_Level (Option, POSIX.XTI.Internet.TCP_Level);
 --   POSIX.XTI.Set_Name (Option, POSIX.XTI.All_Options);
 --   POSIX.XTI.Set_Value (Option, Unspecified);
-   POSIX.XTI.Set_Option (Option, 
+   POSIX.XTI.Set_Option (Option,
                          POSIX.XTI.Internet.TCP_Level,
                          POSIX.XTI.All_Options,
                          Unspecified);
@@ -569,7 +564,7 @@ begin
       POSIX.XTI.Manage_Options (Endpoint,
                                 Option_List,
                                 POSIX.XTI.Get_Current_Options,
-                                Option_List'access,
+                                Option_List,
                                 Option_Result);
       Text_IO.Put ("The Result of Manage Options (Get_Current_Options) was ");
       if (Option_Result = Success) then
@@ -590,7 +585,7 @@ begin
       Text_IO.Put ("There are ");
       Int_IO.Put (POSIX.XTI.Number_Of_Options (Option_List), 2);
       Text_IO.Put_Line (" TCP Level Options, They are:");
-    
+
       --
       --  Iterate the Option List
       --
@@ -615,7 +610,7 @@ begin
    --  Send data and wait for wrap back
    --
    POSIX.XTI.Send (Endpoint,
-                   To_Buffer_Pointer (Test_Buffer'Access),
+                   Test_Buffer'Address,
                    POSIX.IO_Count (Test_Buffer'Size / POSIX.Octet'Size),
                    Flags,
 		   Bytes);
@@ -624,9 +619,9 @@ begin
       --
       --  Wait for data to come back
       --
-      POSIX.XTI.Receive 
+      POSIX.XTI.Receive
             (Endpoint,
-               To_Buffer_Pointer (Test_Buffer_Return'Access),
+               Test_Buffer_Return'Address,
                POSIX.IO_Count (Test_Buffer_Return'Size / POSIX.Octet'Size),
                Bytes,
                Flags);
@@ -646,7 +641,7 @@ begin
       end if;
       for i in Test_Buffer_Return.arr'First .. Test_Buffer_Return.arr'Last
       loop
-         if not (Integer (Test_Buffer.arr (i)) = 
+         if not (Integer (Test_Buffer.arr (i)) =
              Integer (Test_Buffer_Return.arr (i))) then
             Text_IO.Put ("Data is not the same as sent, was ");
             Int_IO.Put (Integer (Test_Buffer_Return.arr (i)));
@@ -665,11 +660,11 @@ begin
 
    Text_IO.Put_Line ("Starting Send Timing...");
    Total := 0;
-   
+
    Start_Time := Seconds (Clock);
    for i in 1 .. 100000 loop
       POSIX.XTI.Send (Endpoint,
-                      To_Buffer_Pointer (Buffer (Buffer'First)'Access),
+                      Buffer (Buffer'First)'Address,
                       POSIX.IO_Count (Buffer'Last),
                       Flags,
 		      Bytes);
@@ -719,4 +714,4 @@ exception
          Text_IO.Put_Line ("Some other event");
       end if;
 
-end Test_TCP_Connect;
+end Test_XTI_TCP_Connect;

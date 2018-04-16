@@ -2,11 +2,10 @@ with POSIX;
 with POSIX.Files;
 with POSIX.IO;
 with POSIX.XTI;                use POSIX.XTI;
-with POSIX.XTI.Internet;
+with POSIX.XTI.Internet;       use POSIX.XTI.Internet;
 with Text_IO;
-with Ada_Streams;              use Ada_Streams;
 
-procedure Test_TCP_Listen is
+procedure Test_XTI_TCP_Listen is
 
    type Test_Buffer_Type is record
       Item1 : integer;
@@ -15,12 +14,7 @@ procedure Test_TCP_Listen is
    end record;
    Test_Buffer : aliased Test_Buffer_Type;
 
-   function To_Buffer_Pointer is new POSIX.XTI.To_Buffer_Pointer 
-	  (Test_Buffer_Type);
-   function To_Buffer_Pointer is new POSIX.XTI.To_Buffer_Pointer
-          (POSIX.Octet);
-
-   Comm_Provider_Info  : aliased POSIX.XTI.Communications_Provider_Information;
+   Comm_Provider_Info  : aliased POSIX.XTI.Communications_Provider_Info;
    Internet_Addr       : aliased POSIX.XTI.Internet.Internet_XTI_Address;
    Response_Addr       : aliased POSIX.XTI.Internet.Internet_XTI_Address;
    Connection_Addr     : aliased POSIX.XTI.Internet.Internet_XTI_Address;
@@ -32,7 +26,7 @@ procedure Test_TCP_Listen is
    Response_Qlen       : integer;
    Response_INET_Addr  : POSIX.XTI.Internet.Internet_Address;
 
-   Connect_Info        : aliased POSIX.XTI.Connection_Information;
+   Connect_Info        : aliased POSIX.XTI.Connection_Info;
 
    Buffer              : POSIX.Octet_Array (1 .. 4000);
    Bytes               : POSIX.IO_Count;
@@ -41,7 +35,7 @@ procedure Test_TCP_Listen is
 
    Option              : POSIX.XTI.Protocol_Option;
    Option_List         : aliased POSIX.XTI.Protocol_Option_List;
-   Option_Buffer       : POSIX.XTI.Octet_Buffer_Pointer :=
+   Option_Buffer       : constant POSIX.XTI.Octet_Buffer_Pointer :=
                     new POSIX.Octet_Array (1 .. 256);
    Option_Result       : POSIX.XTI.Option_Status;
 
@@ -67,7 +61,7 @@ begin
    --
    --  Let's get some Info about the Communications Provider
    --
-   POSIX.XTI.Get_Information (Endpoint, Comm_Provider_Info'access);
+   POSIX.XTI.Get_Info (Endpoint, Comm_Provider_Info);
 
    Text_IO.Put_Line ("Some Info on the Communications Provider:");
    Text_IO.Put ("   Protocol Addresses are ");
@@ -111,7 +105,7 @@ begin
    else
       Text_IO.Put_Line ("NOT Supported");
    end if;
-   
+
    Text_IO.Put ("   SEDU is ");
    if (POSIX.XTI.SEDU_Is_Supported (Comm_Provider_Info) = True) then
       Text_IO.Put ("Supported,");
@@ -131,7 +125,7 @@ begin
    else
       Text_IO.Put_Line ("NOT Supported");
    end if;
-   
+
    Text_IO.Put ("   Connect Data is ");
    if (POSIX.XTI.Connect_Data_Is_Valid (Comm_Provider_Info) = True) then
       Text_IO.Put_Line ("Valid, Max Size is ");
@@ -176,9 +170,9 @@ begin
    POSIX.XTI.Internet.Set_Internet_Port (Response_Addr, 16#00#);
 
    POSIX.XTI.Bind (Endpoint,
-                   Internet_Addr,
+                   +(Internet_Addr'Unchecked_Access),
                    5,
-                   Response_Addr'access,
+                   +(Response_Addr'Unchecked_Access),
                    Response_Qlen);
    Text_IO.Put_Line ("Completed Bind");
 
@@ -197,9 +191,9 @@ begin
    (POSIX.XTI.Internet.Internet_Address_To_String (Response_INET_Addr))));
    Text_IO.New_Line;
 
-   POSIX.XTI.Set_Address (Connect_Info, Internet_Addr);
+   POSIX.XTI.Set_Address (Connect_Info, +(Internet_Addr'Unchecked_Access));
 
-   POSIX.XTI.Listen (Endpoint, Connect_Info'access);
+   POSIX.XTI.Listen (Endpoint, Connect_Info);
 
    Text_IO.Put ("Got a Connection Request from ");
    Response_INET_Addr := POSIX.XTI.Internet.Get_Internet_Address
@@ -221,7 +215,7 @@ begin
    --
    --  Do some more Listening
    --
-   POSIX.XTI.Listen (Endpoint, Connect_Info'access);
+   POSIX.XTI.Listen (Endpoint, Connect_Info);
 
    Text_IO.Put ("Got a Connection Request from ");
    Response_INET_Addr := POSIX.XTI.Internet.Get_Internet_Address
@@ -237,7 +231,7 @@ begin
                   POSIX.IO.Read_Write,
                   Options);
    Text_IO.Put_Line ("Opened Connection endpoint");
-   POSIX.XTI.Bind (Connected_Endpoint, Response_Addr'access);
+   POSIX.XTI.Bind (Connected_Endpoint, +(Response_Addr'Unchecked_Access));
 
    Text_IO.Put_Line ("Completed Bind on Connection endpoint");
 
@@ -245,7 +239,7 @@ begin
    POSIX.XTI.Internet.Set_Internet_Address (Connection_Addr,
                   POSIX.XTI.Internet.Unspecified_Internet_Address);
 
-   POSIX.XTI.Set_Address (Connect_Info, Connection_Addr);
+   POSIX.XTI.Set_Address (Connect_Info, +(Connection_Addr'Unchecked_Access));
 
    POSIX.XTI.Accept_Connection (Endpoint,
                                 Connected_Endpoint,
@@ -294,7 +288,7 @@ begin
    POSIX.XTI.Manage_Options (Connected_Endpoint,
                              Option_List,
                              POSIX.XTI.Negotiate_Options,
-                             Option_List'access,
+                             Option_List,
                              Option_Result);
    Text_IO.Put ("The Result of Manage Options (Set SND & RCV buf) was ");
    if (Option_Result = Success) then
@@ -313,16 +307,16 @@ begin
    --  Test wrap message first
    --
 
-   POSIX.XTI.Receive 
+   POSIX.XTI.Receive
 	     (Connected_Endpoint,
-              To_Buffer_Pointer (Test_Buffer'Access),
+              Test_Buffer'Address,
               POSIX.IO_Count (Test_Buffer'Size / POSIX.Octet'Size),
               Bytes,
               Flags);
- 
+
    --  Send it back
    POSIX.XTI.Send (Connected_Endpoint,
-                   To_Buffer_Pointer (Test_Buffer'Access),
+                   Test_Buffer'Address,
                    Bytes,
                    Flags,
 		   Bytes);
@@ -331,11 +325,12 @@ begin
    Total := 0;
    loop
       POSIX.XTI.Receive (Connected_Endpoint,
-                         To_Buffer_Pointer (Buffer (Buffer'First)'Access),
+                         Buffer (Buffer'First)'Address,
                          POSIX.IO_Count (Buffer'Last),
                          Bytes,
                          Flags);
       Total := POSIX.IO_Count (Integer (Total) + Integer (Bytes));
+      exit when Flags /= More_Data;
    end loop;
 
    Text_IO.Put ("Received ");
@@ -385,4 +380,4 @@ exception
       POSIX.XTI.Close (Endpoint);
 
 
-end Test_TCP_Listen;
+end Test_XTI_TCP_Listen;

@@ -1,22 +1,19 @@
-include ../../Config
-
-GNATMAKEFLAGS = -c -gnatg -largs -L$(FLORISTLIBSDIR) $(LIBS)
-GNATMAKEFLAGS2 = -largs -L$(FLORISTLIBSDIR) $(LIBS)
+GNATMAKEFLAGS= -p -P ../test.gpr
 
 TEST_FILES=\
- test_tcp_listen.adb\
- test_tcp_connect.adb
+ test_xti_tcp_listen.adb\
+ test_xti_tcp_connect.adb
 
 TESTS=\
- test_tcp_listen\
- test_tcp_connect
-   
+ test_xti_tcp_listen\
+ test_xti_tcp_connect
+
 all: $(TESTS)
 
-tcp: test_tcp_listen test_tcp_connect
+tcp: test_xti_tcp_listen test_xti_tcp_connect
 
 $(TESTS): $(TEST_FILES) $(POSIX_FILES)
-	gnatmake $@ $(GNATMAKEFLAGS2)
+	gnatmake $@ $(GNATMAKEFLAGS)
 
 neat:
 	co -l RCS/*
