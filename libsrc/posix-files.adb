@@ -42,8 +42,7 @@ with POSIX.Implementation,
      Unchecked_Conversion;
 package body POSIX.Files is
 
-   use POSIX,
-       POSIX.C,
+   use POSIX.C,
        POSIX.Implementation,
        POSIX.Permissions.Implementation;
 

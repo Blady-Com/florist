@@ -456,7 +456,6 @@ package body POSIX is
    ----------------------
 
    function Is_POSIX_Error (Error : Error_Code) return Boolean is
-      use Bogus_Error_Codes;
    begin
       for I in Error_Array'Range loop
          if Error = Error_Array (I) then

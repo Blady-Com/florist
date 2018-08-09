@@ -40,19 +40,14 @@
 
 with POSIX.Implementation,
      POSIX.IO,
-     Text_IO,
      System.Storage_Elements,
      Unchecked_Conversion;
 package body POSIX.XTI is
 
-   use Ada.Streams;
    use POSIX.C;
    use POSIX.C.XTI;
    use POSIX.Implementation;
    use System.Storage_Elements;
-
-   package Integer_IO is new Text_IO.Integer_IO (Integer);
-   use Integer_IO;
 
    --  unchecked conversions
 

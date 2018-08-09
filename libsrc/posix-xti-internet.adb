@@ -11,13 +11,11 @@
 
 with POSIX.Implementation,
      System,
-     Text_IO,
      Unchecked_Conversion;
 
 package body POSIX.XTI.Internet is
 
-   use Ada.Streams,
-       POSIX.Implementation,
+   use POSIX.Implementation,
        POSIX.C.Sockets,
        POSIX.C.NetDB;
 
@@ -79,9 +77,6 @@ package body POSIX.XTI.Internet is
    pragma Import (C, c_setprotoent, POSIX.C.NetDB.setprotoent_LINKNAME);
    function c_endprotoent return int;
    pragma Import (C, c_endprotoent, POSIX.C.NetDB.endprotoent_LINKNAME);
-
-   package Integer_IO is new Text_IO.Integer_IO (Integer);
-   use Integer_IO;
 
    function Get_Value (Option_Item : Protocol_Option)
       return XTI_Option is
