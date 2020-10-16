@@ -5192,12 +5192,8 @@ void create_c() {
        is reserved by the Ada runtime system.
  */
 
-#if defined(__APPLE__)
-/* The sigismember() function returns 1 if the signal is a member of the set, 0 otherwise. */
-# define RET_BADSIG 0
-#else
-# define RET_BADSIG (-1)
-#endif
+// Take care: similar code in c-posix-signals.c
+
 {sigset_t set;
   int sig;
   int result;
@@ -5206,8 +5202,11 @@ void create_c() {
   sigfillset (&set);
   for (sig = 0; sig < 1024; sig++) {
     result = sigismember (&set, sig);
-    if (result == 1) last_good = sig;
-    else if ((result == RET_BADSIG) && (first_bad == -1)) first_bad = sig;
+    if (result == 1) {
+      last_good = sig;
+      first_bad = -1;
+      }
+    else if (first_bad == -1) first_bad = sig;
   }
   if (last_good == 1023)
     printf("c-posix: WARNING: signal range estimate probably too small\n");
@@ -5215,6 +5214,10 @@ void create_c() {
     printf("c-posix: WARNING: signal range estimate may be invalid\n");
     last_good = first_bad - 1;
   }
+
+#if defined(NSIG)
+   if (last_good >= NSIG) last_good = NSIG - 1;
+#endif
 
 #ifdef SIGRTMAX
 #ifdef SIGRTMIN

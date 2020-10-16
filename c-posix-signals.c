@@ -403,7 +403,7 @@ void print_package
    }
    fprintf (fp, "package POSIX.Implementation.OK_Signals is\n");
    fprintf (fp, "\n");
-   fprintf (fp, "   --  OK (Sig) = True iff we can use Sig"
+   fprintf (fp, "   --  OK (Sig) = True if we can use Sig"
      " with sigwait ().\n\n");
    fprintf (fp, "   OK : constant array (0 .. %d) of Boolean :=\n",
      nsigs - 1);
@@ -416,7 +416,7 @@ void print_package
       else fprintf (fp, ", ");
    }
    fprintf (fp, "\n");
-   fprintf (fp, "   --  Default_Is_Ignore (Sig) = True iff we need to"
+   fprintf (fp, "   --  Default_Is_Ignore (Sig) = True if we need to"
      " override the default\n");
    fprintf (fp, "   --  treatment of Sig with a do-nothing handler"
      " before we try to\n");
@@ -433,7 +433,7 @@ void print_package
       else if (sig % 10 == 9) fprintf (fp, ",\n      ");
       else fprintf (fp, ", ");
    }
-   fprintf (fp, "\n   --  Default_Is_Stop (Sig) = True iff the default"
+   fprintf (fp, "\n   --  Default_Is_Stop (Sig) = True if the default"
      " action of Sig\n   --  is to stop the process.\n\n");
    fprintf (fp, "   Default_Is_Stop : constant array (0 .. %d)"
      " of Boolean :=\n",
@@ -467,11 +467,7 @@ int guess_nsigs () {
        is reserved by the Ada runtime system.
  */
 
-#if defined(__APPLE__)
-# define BADSIG (0)
-#else
-# define BADSIG (-1)
-#endif
+// Take care: similar code in c-posix.c
 
    sigset_t set;
    int sig;
@@ -484,7 +480,8 @@ int guess_nsigs () {
       result = sigismember (&set, sig);
       if (result == 1) {
          last_good = sig;
-      } else if ((result == BADSIG) && (first_bad == -1)) {
+         first_bad = -1;
+      } else if (first_bad == -1) {
          if (sig == 0) {
             fprintf (stderr, "WARNING: C library problem? "
              "sigfillset does not include zero\n");
@@ -498,15 +495,9 @@ int guess_nsigs () {
       last_good = first_bad - 1;
    }
 
-#if defined(__APPLE__)
-
-  /* On Darwin, the above mechanism fails to make a reasonable guess
-     as to the number of available signals. In the test loop
-     sigismember returns true for every value of sig, including zero,
-     and no first_bad is ever set. For now, hard code a reasonable
-     value. */
-
-   return 32;
+#if defined(NSIG)
+   if (last_good >= NSIG) return NSIG;
+   else return last_good + 1;
 #else
    return last_good + 1;
 #endif
