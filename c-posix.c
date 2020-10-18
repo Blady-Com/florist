@@ -128,17 +128,13 @@ int  max_GCST2;
   ifprintf(fp,"   %s : constant %s := %d;\n", name2, type, value); \
   if (value > max_GCST2) max_GCST2 = value;
 
-/* Define an unique value even non supported to avoid case duplication choices */
-int cnt_non_supported = 99000;
 #define GDFLT(name, value) \
   NON_SUPPORT_MESSAGE(name)\
-  ifprintf(fp,"   %s : constant := %d;\n", name, cnt_non_supported);\
-  cnt_non_supported++;
+  ifprintf(fp,"   %s : constant := %d;\n", name, value);
 
 #define GUFLT(name, value) \
   NON_SUPPORT_MESSAGE(name)\
-  ifprintf(fp,"   %s : constant := %u;\n", name, cnt_non_supported);\
-  cnt_non_supported++;
+  ifprintf(fp,"   %s : constant := %u;\n", name, value);
 
 #define GDFLT2(name, name2, type) \
   NON_SUPPORT_MESSAGE(name)\
@@ -147,6 +143,13 @@ int cnt_non_supported = 99000;
 /* We use -1 for value above because this may be a missing
    errno value, for which 0 may mean no error.
  */
+
+/* Define an unique value even non supported to avoid case duplication choices */
+int cnt_non_supported = 99000;
+#define GDFLT3(name) \
+  NON_SUPPORT_MESSAGE(name)\
+  ifprintf(fp,"   %s : constant := %d;\n", name, cnt_non_supported);\
+  cnt_non_supported++;
 
 /* struct type definitions
    -----------------------
@@ -7098,7 +7101,7 @@ void create_c() {
 #  if defined(_TLI_)
       GCST("XTI_GENERIC", 0xffff);
 #  else
-      GDFLT("XTI_GENERIC", 0);
+      GDFLT3("XTI_GENERIC");
 #  endif
 #endif
 
@@ -7108,7 +7111,7 @@ void create_c() {
 #  if defined(_TLI_) && defined(SO_DEBUG)
       GCST("XTI_DEBUG", SO_DEBUG);
 #  else
-      GDFLT("XTI_DEBUG", 0);
+      GDFLT3("XTI_DEBUG");
 #  endif
 #endif
 
@@ -7118,7 +7121,7 @@ void create_c() {
 #  if defined(_TLI_) && defined(SO_LINGER)
       GCST("XTI_LINGER", SO_LINGER);
 #  else
-      GDFLT("XTI_LINGER", 0);
+      GDFLT3("XTI_LINGER");
 #  endif
 #endif
 
@@ -7128,7 +7131,7 @@ void create_c() {
 #  if defined(_TLI_) && defined(SO_RCVBUF)
       GCST("XTI_RCVBUF", SO_RCVBUF);
 #  else
-      GDFLT("XTI_RCVBUF", 0);
+      GDFLT3("XTI_RCVBUF");
 #  endif
 #endif
 
@@ -7138,7 +7141,7 @@ void create_c() {
 #  if defined(_TLI_) && defined(SO_RCVLOWAT)
       GCST("XTI_RCVLOWAT", SO_RCVLOWAT);
 #  else
-      GDFLT("XTI_RCVLOWAT", 0);
+      GDFLT3("XTI_RCVLOWAT");
 #  endif
 #endif
 
@@ -7148,7 +7151,7 @@ void create_c() {
 #  if defined(_TLI_) && defined(SO_SNDBUF)
       GCST("XTI_SNDBUF", SO_SNDBUF);
 #  else
-      GDFLT("XTI_SNDBUF", 0);
+      GDFLT3("XTI_SNDBUF");
 #  endif
 #endif
 
@@ -7158,7 +7161,7 @@ void create_c() {
 #  if defined(_TLI_) && defined(SO_SNDLOWAT)
       GCST("XTI_SNDLOWAT", SO_SNDLOWAT);
 #  else
-      GDFLT("XTI_SNDLOWAT", 0);
+      GDFLT3("XTI_SNDLOWAT");
 #  endif
 #endif
 
@@ -7193,18 +7196,18 @@ void create_c() {
 #ifdef INET_TCP
   GCST("INET_TCP", INET_TCP);
 #else
-  GDFLT("INET_TCP",0);
+  GDFLT3("INET_TCP");
 #endif
 
 #ifdef TCP_NODELAY
   GCST("TCP_NODELAY", TCP_NODELAY);
 #else
-  GDFLT("TCP_NODELAY",0);
+  GDFLT3("TCP_NODELAY");
 #endif
 #ifdef TCP_MAXSEG
   GCST("TCP_MAXSEG", TCP_MAXSEG);
 #else
-  GDFLT("TCP_MAXSEG",0);
+  GDFLT3("TCP_MAXSEG");
 #endif
 #ifdef TCP_KEEPALIVE
   GCST("TCP_KEEPALIVE", TCP_KEEPALIVE);
@@ -7212,7 +7215,7 @@ void create_c() {
 #  if defined(_TLI_) && defined (SO_KEEPALIVE)
       GCST("TCP_KEEPALIVE", SO_KEEPALIVE);
 #  else
-      GDFLT("TCP_KEEPALIVE",0);
+      GDFLT3("TCP_KEEPALIVE");
 #  endif
 #endif
 
@@ -7222,7 +7225,7 @@ void create_c() {
 #  if defined(_TLI_)
       GCST("T_GARBAGE", 2);
 #  else
-      GDFLT("T_GARBAGE",0);
+      GDFLT3("T_GARBAGE");
 #  endif
 #endif
 
@@ -7232,13 +7235,13 @@ void create_c() {
 #ifdef INET_UDP
   GCST("INET_UDP", INET_UDP);
 #else
-  GDFLT("INET_UDP",0);
+  GDFLT3("INET_UDP");
 #endif
 
 #ifdef UDP_CHECKSUM
   GCST("UDP_CHECKSUM", UDP_CHECKSUM);
 #else
-  GDFLT("UDP_CHECKSUM",0);
+  GDFLT3("UDP_CHECKSUM");
 #endif
 
   /* IP Level and Options */
@@ -7247,25 +7250,25 @@ void create_c() {
 #ifdef INET_IP
   GCST("INET_IP", INET_IP);
 #else
-  GDFLT("INET_IP",0);
+  GDFLT3("INET_IP");
 #endif
 
 #ifdef IP_OPTIONS
   GCST("IP_OPTIONS", IP_OPTIONS);
 #else
-  GDFLT("IP_OPTIONS",0);
+  GDFLT3("IP_OPTIONS");
 #endif
 
 #ifdef IP_TOS
   GCST("IP_TOS", IP_TOS);
 #else
-  GDFLT("IP_TOS",0);
+  GDFLT3("IP_TOS");
 #endif
 
 #ifdef IP_TTL
   GCST("IP_TTL", IP_TTL);
 #else
-  GDFLT("IP_TTL",0);
+  GDFLT3("IP_TTL");
 #endif
 
 #ifdef IP_REUSEADDR
@@ -7274,7 +7277,7 @@ void create_c() {
 #  if defined(_TLI_)
       GCST("IP_REUSEADDR", SO_REUSEADDR);
 #  else
-      GDFLT("IP_REUSEADDR",0);
+      GDFLT3("IP_REUSEADDR");
 #  endif
 #endif
 
@@ -7284,7 +7287,7 @@ void create_c() {
 #  if defined(_TLI_)
       GCST("IP_DONTROUTE", SO_DONTROUTE);
 #  else
-      GDFLT("IP_DONTROUTE",0);
+      GDFLT3("IP_DONTROUTE");
 #  endif
 #endif
 
@@ -7294,7 +7297,7 @@ void create_c() {
 #  if defined(_TLI_)
       GCST("IP_BROADCAST", SO_BROADCAST);
 #  else
-      GDFLT("IP_BROADCAST",0);
+      GDFLT3("IP_BROADCAST");
 #  endif
 #endif
 
