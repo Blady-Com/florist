@@ -81,7 +81,7 @@ package body POSIX.File_Locking is
       if Lock.Whole_File then
          T.l_whence := SEEK_SET;
          T.l_start := 0;
-         T.l_len := off_t (POSIX.IO.File_Size (File));
+         T.l_len := 0;
       else
          T.l_whence := C_Whence (Lock.Starting_Point);
          T.l_start := off_t (Lock.Start);
@@ -126,7 +126,7 @@ package body POSIX.File_Locking is
       if Lock.Whole_File then
          T.l_whence := SEEK_SET;
          T.l_start := 0;
-         T.l_len := off_t (POSIX.IO.File_Size (File));
+         T.l_len := 0;
       else
          T.l_whence := C_Whence (Lock.Starting_Point);
          T.l_start := off_t (Lock.Start);
@@ -152,7 +152,7 @@ package body POSIX.File_Locking is
       if Lock.Whole_File then
          T.l_whence := SEEK_SET;
          T.l_start := 0;
-         T.l_len := off_t (POSIX.IO.File_Size (File));
+         T.l_len := 0;
       else
          T.l_whence := C_Whence (Lock.Starting_Point);
          T.l_start := off_t (Lock.Start);
