@@ -7631,7 +7631,7 @@ void create_c() {
 #ifdef INFTIM
   GCST("INFTIM", INFTIM);
 #else
-  GDFLT("INFTIM",0);
+  GDFLT("INFTIM",-1);
 #endif
 
 #ifdef POLLIN

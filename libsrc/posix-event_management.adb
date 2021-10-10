@@ -116,14 +116,21 @@ package body POSIX.Event_Management is
    end Set_Returned_Events;
 
    procedure Poll
-      (Files          : in out Poll_FD_Array;
-       Response_Count : out    Natural;
-       Timeout        : Duration := Wait_Indefinitely) is
+     (Files          : in out Poll_FD_Array;
+      Response_Count : out    Natural;
+      Timeout        : Duration := Wait_Indefinitely) is
    begin
-      Response_Count := Natural (Check_NNeg (c_poll (
-         fds     => Files (Files'First).C'Unchecked_Access,
-         nfds    => unsigned (Files'Length),
-         timeout => int (Long_Long_Integer (Timeout * 1000)))));
+      if Timeout /= Wait_Indefinitely then
+         Response_Count := Natural (Check_NNeg (c_poll (
+            fds     => Files (Files'First).C'Unchecked_Access,
+            nfds    => unsigned (Files'Length),
+            timeout => int (Long_Long_Integer (Timeout * 1000)))));
+      else
+         Response_Count := Natural (Check_NNeg (c_poll (
+            fds     => Files (Files'First).C'Unchecked_Access,
+            nfds    => unsigned (Files'Length),
+            timeout => -1)));
+      end if;
    end Poll;
 
    -------------------

@@ -149,6 +149,6 @@ private
    File_Not_Open  : constant Poll_Events :=
       Poll_Events (POSIX.Option_Set'(Option => POLLNVAL));
 
-   Wait_Indefinitely : constant Duration := Duration (INFTIM);
+   Wait_Indefinitely : constant Duration := -1.0;  --  Don't rely on non standard INFTIM
 
 end POSIX.Event_Management;
