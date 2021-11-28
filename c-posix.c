@@ -7,7 +7,7 @@
 --                                                                          --
 --                                                                          --
 --             Copyright (C) 1991-1994, Florida State University            --
---                     Copyright (C) 1995-2014, AdaCore                     --
+--                     Copyright (C) 1995-2019, AdaCore                     --
 --                                                                          --
 --  This file is a component of FLORIST, an  implementation of an  Ada API  --
 --  for the POSIX OS services, for use with  the  GNAT  Ada  compiler  and  --
@@ -3468,7 +3468,7 @@ void create_posix() {
 
   ifprintf(fp,"\n   --  Characters and Strings\n");
 
-  ifprintf(fp,"   type POSIX_Character is new Standard.Character;\n");
+  ifprintf(fp,"   subtype POSIX_Character is Standard.Character;\n");
 
   ifprintf(fp,"   --  We rely here on the fact that the GNAT"
     " type Character\n");
@@ -4569,7 +4569,15 @@ void create_c() {
   GDFLT("CLOCAL", 0);
 #endif
 #ifdef CLOCK_REALTIME
-  GCST("CLOCK_REALTIME", CLOCK_REALTIME);
+  /* Generate the value of CLOCK_REALTIME with a cast to int,
+     as the GCST uses printf's %d to print it. Otherwise, if
+     the CLOCK_REALTIME macro corresponds to a value whose type
+     is larger than int (as is the case on ppc-aix, for instance),
+     the printf might print the macro's value incorrectly.
+
+     We allow ourselves to do that because it is unlikely that
+     this macro be assigned a value that would overflow.  */
+  GCST("CLOCK_REALTIME", (int) CLOCK_REALTIME);
 #else
   GDFLT("CLOCK_REALTIME", 1);
 #endif
@@ -5230,7 +5238,10 @@ void create_c() {
     } else {
       GCST("SIGRTMAX", SIGRTMAX);
     }
-    GCST("SIGRTMIN", SIGRTMIN);
+    ifprintf(fp,"   function SIGRTMIN\n");
+    ifprintf(fp,"      return int;\n");
+    ifprintf(fp,"      pragma Import (C, SIGRTMIN, \""
+                "__gnat_florist_sigrtmin\");\n");
   } else {
     GDFLT("SIGRTMAX", 0);
     GDFLT("SIGRTMIN", 1);

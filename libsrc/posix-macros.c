@@ -6,7 +6,7 @@
 --                       P O S I X - M A C R O S . C                        --
 --                                                                          --
 --  Copyright (c) 1996 Florida State University (FSU), All Rights Reserved. --
---                     Copyright (C) 1997-2010, AdaCore                     --
+--                     Copyright (C) 1997-2019, AdaCore                     --
 --                                                                          --
 --  This file is a component of FLORIST, an  implementation of an  Ada API  --
 --  for the POSIX OS services, for use with  the  GNAT  Ada  compiler  and  --
@@ -49,6 +49,12 @@
 #include <sys/types.h>
 #include <sys/utsname.h>
 #include <errno.h>
+
+#ifdef SIGRTMIN
+int __gnat_florist_sigrtmin(void) {
+  return SIGRTMIN;
+}
+#endif /* SIGRTMIN */
 
 /* This definition is need for multi-threaded error codes on Solaris */
 
