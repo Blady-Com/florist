@@ -591,9 +591,10 @@ CPP
 RTS_OPTION
 BUILD_TYPE_OPTION
 LIBRARY_TYPE_OPTION
-DEPS
 THREADS_OPTION
 SIGNALS_GENERATED
+UNAME_SYSTEM
+ADAFLAGS
 OBJEXT
 EXEEXT
 ac_ct_CC
@@ -655,6 +656,8 @@ CFLAGS
 LDFLAGS
 LIBS
 CPPFLAGS
+ADAFLAGS
+UNAME_SYSTEM
 CPP'
 
 
@@ -1280,6 +1283,9 @@ Some influential environment variables:
   LIBS        libraries to pass to the linker, e.g. -l<library>
   CPPFLAGS    (Objective) C/C++ preprocessor flags, e.g. -I<include dir> if
               you have headers in a nonstandard directory <include dir>
+  ADAFLAGS    Debugging and optimization options for the Ada compiler.
+  UNAME_SYSTEM
+              System name for the GNAT project builder.
   CPP         C preprocessor
 
 Use these variables to override the choices made by `configure' or to help
@@ -2681,6 +2687,9 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 rm -f pconfig.h
 
+
+
+
 # Check whether --enable-threads was given.
 if test "${enable_threads+set}" = set; then :
   enableval=$enable_threads;
@@ -2689,18 +2698,15 @@ else
 fi
 
 if test "x$use_pthread" = "xyes" ; then
-  DEPS=deps
   SIGNALS_GENERATED=posix-implementation-ok_signals.ads
   THREADS_BOOL=True
 else
   { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: No pthread support." >&5
 $as_echo "$as_me: WARNING: No pthread support." >&2;}
-  DEPS=deps_no_thread
   SIGNALS_GENERATED=
   THREADS_BOOL=False
 fi
 THREADS_OPTION=-XTHREADS=${THREADS_BOOL}
-
 
 
 
@@ -2810,7 +2816,7 @@ case ${UNAME_SYSTEM} in
      *) cp ./configs/pconfig.SunOS5.6 ./pconfig.h.in ;;
    esac
    ;;
- Linux)
+ Linux|GNU/kFreeBSD|GNU)
 # .... need to add cases here for different thread and C libraries
    echo "Using Configuration for" ${UNAME_SYSTEM} ${UNAME_RELEASE};
    cp ./configs/pconfig.Linux ./pconfig.h.in;

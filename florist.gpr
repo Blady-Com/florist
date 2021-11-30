@@ -2,6 +2,7 @@ library project Florist is
 
    for Library_Name use "florist";
    for Languages use ("C", "Ada");
+   for Create_Missing_Dirs use "True";
 
    type Boolean is ("False", "True");
    Threads : Boolean := external ("THREADS", "True");
@@ -15,21 +16,40 @@ library project Florist is
           for Source_Dirs use Common_Source_Dirs & Threads_Source_Dirs;
    end case;
 
-   for Object_Dir   use "obj";
-   for Library_Dir  use "lib";
+   Target_OS := external ("TARGET_OS", "Linux");
+   So_Ext := "";
+   case Target_OS is
+      when "Darwin" =>
+         So_Ext := ".dylib";
+      when others =>
+         So_Ext := ".so";
+   end case;
 
-   Version := "1";
-   for Library_version use "libflorist.so." & Version;
+   Version := External ("florist_shared_object_version", "1");
+
+   for Library_Version use "lib" & Project'Library_Name & So_Ext & "." & Version;
 
    type Library_Type_Type is ("relocatable", "static");
    Library_Type : Library_Type_Type := external ("LIBRARY_TYPE", "static");
    for Library_Kind use Library_Type;
 
+   for Object_Dir  use "obj/" & Library_Type;
+   for Library_Dir use "lib/" & Library_Type;
+
+   case Library_Type is
+      when "relocatable" =>
+         for Leading_Library_Options use External_As_List ("LDFLAGS", " ");
+         for Library_Options use External_As_List ("LIBS", " ");
+      when "static" =>
+         null;
+   end case;
+
    type Build_Type is ("Debug", "Production");
    Build : Build_Type := External ("Build", "Production");
 
    package Compiler is
-      GNAT_Flags := ("-g", "-gnatpg", "-gnatU", "-gnatf");
+      Adaflags := External_As_List ("ADAFLAGS", " ");
+      GNAT_Flags := ("-g", "-gnatpg", "-gnatU", "-gnatf") & Adaflags;
 
       for Switches ("posix-signals.adb") use GNAT_Flags;
       for Switches ("posix-implementation.adb") use GNAT_Flags;
@@ -40,11 +60,15 @@ library project Florist is
          when "Debug" =>
             for Default_Switches ("Ada") use ("-g", "-gnatw.eH.YD", "-gnatyg", "-Wall",
                      "-gnata", "-gnatq", "-gnatQ", "-gnatVaep", "-gnato", "-gnatU",
-                     "-fstack-check", "-gnatf", "-gnateA", "-gnateE", "-gnateF");
-            for Default_Switches ("C") use ("-g");
+                     "-fstack-check", "-gnatf", "-gnateA", "-gnateE", "-gnateF") & Adaflags;
+            for Default_Switches ("C") use ("-g")
+              & External_As_List ("CFLAGS", " ")
+              & External_As_List ("CPPFLAGS", " ");
          when "Production" =>
-            for Default_Switches ("Ada") use ("-O2", "-gnatp", "-gnatU", "-gnatf");
-            for Default_Switches ("C") use ("-O2");
+            for Default_Switches ("Ada") use ("-O2", "-gnatp", "-gnatU", "-gnatf") & Adaflags;
+            for Default_Switches ("C") use ("-O2")
+              & External_As_List ("CFLAGS", " ")
+              & External_As_List ("CPPFLAGS", " ");
       end case;
    end Compiler;
 

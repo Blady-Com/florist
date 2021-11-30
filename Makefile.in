@@ -7,8 +7,8 @@
 
 VERSION=Florist-2021a (20211010)
 GNATPREPFLAGS = -c -r
-GCCFLAGS = -g
 TARGET=@host_alias@
+TARGET_OS=@UNAME_SYSTEM@
 
 ifneq ($(TARGET),)
 TARGET_OPTION=--target=$(TARGET)
@@ -20,18 +20,23 @@ TARGET_RUNNER=run-cross --target=ppc-elinos,5.1,qemu
 endif
 
 # configure substitutions
+ADAFLAGS                                := @ADAFLAGS@
+CFLAGS                                  := @CFLAGS@
+CPPFLAGS                                := @CPPFLAGS@
+LDFLAGS                                 := @LDFLAGS@
+LIBRARY_TYPE_OPTION                     := @LIBRARY_TYPE_OPTION@
 CC = @CC@
 LIBS = @LIBS@
 SIGNALS_GENERATED = @SIGNALS_GENERATED@
 PREFIX = @prefix@
 
-PROJECT_FLAGS = @LIBRARY_TYPE_OPTION@ @BUILD_TYPE_OPTION@ @THREADS_OPTION@ @RTS_OPTION@ $(TARGET_OPTION)
+PROJECT_FLAGS = $(LIBRARY_TYPE_OPTION) @BUILD_TYPE_OPTION@ @THREADS_OPTION@ @RTS_OPTION@ $(TARGET_OPTION)
 # Scenario variables and RTS selection must be passed consistently to
 # project-aware tools gprbuild, gprinstall, and gprclean.
 
 GNATPREP = $(TARGET_PREFIX)gnatprep
 GPRBUILD = gprbuild
-GPRBUILD_FLAGS = $(GCCFLAGS) $(LIBRARY_TYPE_OPTION) $(PROJECT_FLAGS)
+GPRBUILD_FLAGS = -XTARGET_OS=$(TARGET_OS)
 
 GENDIR = gensrc
 GENDIR_ON_TARGET=$(GENDIR)
@@ -108,12 +113,14 @@ configure: configure.in aclocal.m4
 # If you are unlucky, it will require fixes to c-posix.c.
 #
 c-posix: c-posix.c confsrc/config.h confsrc/pconfig.h
-	$(CC) $(GCCFLAGS) -DVERSION="\"$(VERSION)\"" -DLIBS="\"$(LIBS)\"" -DGENDIR="\"$(GENDIR_ON_TARGET)\"" -o c-posix c-posix.c $(LIBS)
+	$(CC) -DVERSION="\"$(VERSION)\"" -DLIBS="\"$(LIBS)\"" -DGENDIR="\"$(GENDIR_ON_TARGET)\"" -o c-posix c-posix.c $(LIBS) \
+	  -O2 $(CFLAGS) $(CPPFLAGS) $(LDFLAGS)
 #
 # Program c-posix-signals generates another Ada package spec.
 #
 c-posix-signals: c-posix-signals.c
-	$(CC) $(GCCFLAGS) -DGENDIR="\"$(GENDIR_ON_TARGET)\"" -o c-posix-signals c-posix-signals.c $(LIBS)
+	$(CC) -DGENDIR="\"$(GENDIR_ON_TARGET)\"" -o c-posix-signals c-posix-signals.c $(LIBS) \
+	  -O2 $(CFLAGS) $(CPPFLAGS) $(LDFLAGS)
 #
 # generate Ada source files using "c-posix" program
 #
@@ -134,13 +141,11 @@ $(C-POSIX-SIGNALS_GENERATED): c-posix-signals
 # particular OS using the "gnatprep" program.
 # The sources for these end in ".gpb" and ".gps".
 #
-.SUFFIXES: .gps .gpb .ads .adb .o .c
+.SUFFIXES: .gps .gpb .ads .adb
 $(GENDIR)/%.ads: libsrc/%.gps gnatprep.config
 	mkdir -p `dirname $@` && $(GNATPREP) $< $@ gnatprep.config $(GNATPREPFLAGS)
 $(GENDIR)/%.adb: libsrc/%.gpb gnatprep.config
 	mkdir -p `dirname $@` && $(GNATPREP) $< $@ gnatprep.config $(GNATPREPFLAGS)
-.c.o:
-	$(CC) -c $(GCCFLAGS) $<
 
 #
 # ------------------------------------
@@ -150,7 +155,8 @@ $(GENDIR)/%.adb: libsrc/%.gpb gnatprep.config
 force:
 
 floristlib: $(GENERATED) force
-	$(GPRBUILD) -p $(GPRBUILD_FLAGS) -Pflorist
+	$(GPRBUILD) $(GPRBUILD_FLAGS) $(PROJECT_FLAGS) -Pflorist \
+	  $(foreach v,ADAFLAGS CFLAGS CPPFLAGS LDFLAGS LIBS,'-X$(v)=$($(v))')
 #
 # -----------------------------------
 # Maintenance targets
