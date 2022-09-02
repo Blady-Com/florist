@@ -1,0 +1,48 @@
+with "config/florist_config.gpr";
+project Lib_Florist is
+
+   So_Ext := "";
+   case Florist_Config.Alire_Host_OS is
+      when "macos" =>
+         So_Ext := ".dylib";
+      when others =>
+         So_Ext := ".so";
+   end case;
+
+   for Library_Name use "florist";
+   for Languages use ("C", "Ada");
+   for Library_Version use "lib" & Project'Library_Name & So_Ext & "." & Florist_Config.Crate_Version;
+
+   type Boolean is ("False", "True");
+   Threads : Boolean := external ("THREADS", "True");
+
+   Common_Source_Dirs := ("libsrc", "gensrc", "confsrc");
+   Threads_Source_Dirs := ("libsrc/threads", "gensrc/threads");
+   case Threads is
+      when "False" =>
+          for Source_Dirs use Common_Source_Dirs;
+      when "True" =>
+          for Source_Dirs use Common_Source_Dirs & Threads_Source_Dirs;
+   end case;
+   for Object_Dir use "obj/" & Florist_Config.Build_Profile;
+   for Create_Missing_Dirs use "True";
+   for Library_Dir use "lib";
+
+   type Library_Type_Type is ("relocatable", "static", "static-pic");
+   Library_Type : Library_Type_Type :=
+     external ("FLORIST_LIBRARY_TYPE", external ("LIBRARY_TYPE", "static"));
+   for Library_Kind use Library_Type;
+
+   package Compiler is
+      for Default_Switches ("Ada") use Florist_Config.Ada_Compiler_Switches;
+   end Compiler;
+
+   package Binder is
+      for Switches ("Ada") use ("-Es"); --  Symbolic traceback
+   end Binder;
+
+   package Install is
+      for Artifacts (".") use ("share");
+   end Install;
+
+end Lib_Florist;

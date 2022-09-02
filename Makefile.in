@@ -5,7 +5,7 @@
 #
 .POSIX:
 
-VERSION=Florist-2021a (20211010)
+VERSION=Florist-2022a (20220901)
 GNATPREPFLAGS = -c -r
 TARGET=@host_alias@
 TARGET_OS=@UNAME_SYSTEM@
@@ -162,6 +162,9 @@ floristlib: $(GENERATED) force
 # Maintenance targets
 # -----------------------------------
 #
+# generate all
+gen: $(GENERATED) force
+
 # remove all c-posix and gnatprep generated files
 regen:
 	rm -f $(GENERATED)
