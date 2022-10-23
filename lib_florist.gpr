@@ -1,8 +1,9 @@
-with "config/florist_config.gpr";
+with "config/florist_blady_config.gpr";
+
 project Lib_Florist is
 
    So_Ext := "";
-   case Florist_Config.Alire_Host_OS is
+   case Florist_Blady_Config.Alire_Host_OS is
       when "macos" =>
          So_Ext := ".dylib";
       when others =>
@@ -11,7 +12,7 @@ project Lib_Florist is
 
    for Library_Name use "florist";
    for Languages use ("C", "Ada");
-   for Library_Version use "lib" & Project'Library_Name & So_Ext & "." & Florist_Config.Crate_Version;
+   for Library_Version use "lib" & Project'Library_Name & So_Ext & "." & Florist_Blady_Config.Crate_Version;
 
    type Boolean is ("False", "True");
    Threads : Boolean := external ("THREADS", "True");
@@ -24,7 +25,7 @@ project Lib_Florist is
       when "True" =>
           for Source_Dirs use Common_Source_Dirs & Threads_Source_Dirs;
    end case;
-   for Object_Dir use "obj/" & Florist_Config.Build_Profile;
+   for Object_Dir use "obj/" & Florist_Blady_Config.Build_Profile;
    for Create_Missing_Dirs use "True";
    for Library_Dir use "lib";
 
@@ -34,7 +35,7 @@ project Lib_Florist is
    for Library_Kind use Library_Type;
 
    package Compiler is
-      for Default_Switches ("Ada") use Florist_Config.Ada_Compiler_Switches;
+      for Default_Switches ("Ada") use Florist_Blady_Config.Ada_Compiler_Switches;
    end Compiler;
 
    package Binder is

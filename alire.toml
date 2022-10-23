@@ -1,6 +1,7 @@
-name = "florist"
+name = "florist_blady"
 description = "POSIX Ada Bindings"
 version = "6.0.0"
+provides = ["florist=22.0"]
 tags = ["florist", "posix", "bindings"]
 
 authors = ["Florida State University (FSU)", "AdaCore"]
@@ -11,6 +12,12 @@ website = "https://github.com/Blady-Com/florist"
 licenses = "GPL-3.0-only"
 
 project-files = ["lib_florist.gpr"]
+
+[available.'case(os)']
+linux   = true
+macos   = true
+windows = false
+'...'   = false
 
 [[actions]]
 type = "post-fetch"
