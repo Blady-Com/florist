@@ -2091,8 +2091,11 @@ void gbrg(char name[], char lb[], char ub[]) {
 void gptrtp(char const ptrname[], char const desname[]) {
   ifprintf(fp,"   type %s_ptr is access constant %s;\n", ptrname, desname);
   ifprintf(fp,"   pragma Convention (C, %s_ptr);\n", ptrname);
+  ifprintf(fp,"   pragma No_Strict_Aliasing (%s_ptr);\n", ptrname);
+
   ifprintf(fp,"   type %s_var_ptr is access all %s;\n", ptrname, desname);
   ifprintf(fp,"   pragma Convention (C, %s_var_ptr);\n", ptrname);
+  ifprintf(fp,"   pragma No_Strict_Aliasing (%s_var_ptr);\n", ptrname);
 }
 
 /* gsitp
@@ -6640,8 +6643,12 @@ void create_c() {
    */
   gcmnt("generic socket address");
   g_struct_sockaddr();
+  ifprintf(fp,"   pragma No_Strict_Aliasing (sockaddr_ptr);\n");
+
   gcmnt("struct addrinfo...");
   g_struct_addrinfo();
+  ifprintf(fp,"   pragma No_Strict_Aliasing (addrinfo_ptr);\n");
+
   gcmnt("message option header");
   g_struct_cmsghdr();
   gcmnt("host database entry");
@@ -6656,8 +6663,11 @@ void create_c() {
   g_struct_in_addr();
   gcmnt("linger option structure");
   g_struct_linger();
+
   gcmnt("I/O vector");
   g_struct_iovec();
+  ifprintf(fp,"   pragma No_Strict_Aliasing (iovec_ptr);\n");
+
   gcmnt("message header");
   g_struct_msghdr();
   gcmnt("local socket address");
@@ -6711,30 +6721,38 @@ void create_c() {
 
   gcmnt("t_info structure");
   g_struct_t_info();
+  ifprintf(fp,"   pragma No_Strict_Aliasing (t_info_ptr);\n");
 
   gcmnt("t_opthdr structure");
   g_struct_t_opthdr();
 
   gcmnt("t_bind structure");
   g_struct_t_bind();
+  ifprintf(fp,"   pragma No_Strict_Aliasing (t_bind_ptr);\n");
 
   gcmnt("t_optmgmt structure");
   g_struct_t_optmgmt();
+  ifprintf(fp,"   pragma No_Strict_Aliasing (t_optmgmt_ptr);\n");
 
   gcmnt("t_discon structure");
   g_struct_t_discon();
+  ifprintf(fp,"   pragma No_Strict_Aliasing (t_discon_ptr);\n");
 
   gcmnt("t_call structure");
   g_struct_t_call();
+  ifprintf(fp,"   pragma No_Strict_Aliasing (t_call_ptr);\n");
 
   gcmnt("t_unitdata structure");
   g_struct_t_unitdata();
+  ifprintf(fp,"   pragma No_Strict_Aliasing (t_unitdata_ptr);\n");
 
   gcmnt("t_uderr structure");
   g_struct_t_uderr();
+  ifprintf(fp,"   pragma No_Strict_Aliasing (t_uderr_ptr);\n");
 
   gcmnt("t_iovec structure");
   g_struct_t_iovec();
+  ifprintf(fp,"   pragma No_Strict_Aliasing (t_iovec_ptr);\n");
 
   gcmnt("t_kpalive structure");
   g_struct_t_kpalive();

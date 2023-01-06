@@ -367,6 +367,7 @@ private
 
    type Socket_Address_Pointer is access all Socket_Address;
    Null_Socket_Address : constant Socket_Address_Pointer := null;
+   pragma No_Strict_Aliasing (Socket_Address_Pointer);
 
    type Socket_Address_Info is record
       C : aliased POSIX.C.Sockets.struct_addrinfo;

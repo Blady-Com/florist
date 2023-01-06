@@ -56,6 +56,7 @@ package POSIX.XTI.Internet is
 
    type Internet_XTI_Address_Pointer is
      access all Internet_XTI_Address;
+   pragma No_Strict_Aliasing (Internet_XTI_Address_Pointer);
 
    function "+" (Pointer : Internet_XTI_Address_Pointer)
      return XTI_Address_Pointer;
