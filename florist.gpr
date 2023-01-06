@@ -60,12 +60,12 @@ library project Florist is
          when "Debug" =>
             for Default_Switches ("Ada") use ("-g", "-gnatw.eH.YD", "-gnatyg", "-Wall",
                      "-gnata", "-gnatq", "-gnatQ", "-gnatVaep", "-gnato", "-gnatU",
-                     "-fstack-check", "-gnatf", "-gnateA", "-gnateE", "-gnateF") & Adaflags;
+                     "-fstack-check", "-gnatf", "-gnateA", "-gnateE", "-gnateF", "-gnatwn") & Adaflags;
             for Default_Switches ("C") use ("-g")
               & External_As_List ("CFLAGS", " ")
               & External_As_List ("CPPFLAGS", " ");
          when "Production" =>
-            for Default_Switches ("Ada") use ("-O2", "-gnatp", "-gnatU", "-gnatf") & Adaflags;
+            for Default_Switches ("Ada") use ("-O2", "-gnatp", "-gnatU", "-gnatf", "-gnatwn") & Adaflags;
             for Default_Switches ("C") use ("-O2")
               & External_As_List ("CFLAGS", " ")
               & External_As_List ("CPPFLAGS", " ");
