@@ -2749,11 +2749,9 @@ gptrtp (char const   ptrname[],
 {
   ifprintf (fp, "   type %s_ptr is access constant %s;\n",  ptrname, desname);
   ifprintf (fp, "   pragma Convention (C, %s_ptr);\n",      ptrname);
-  ifprintf (fp, "   pragma No_Strict_Aliasing (%s_ptr);\n", ptrname);
 
   ifprintf (fp, "   type %s_var_ptr is access all %s;\n",       ptrname, desname);
   ifprintf (fp, "   pragma Convention (C, %s_var_ptr);\n",      ptrname);
-  ifprintf (fp, "   pragma No_Strict_Aliasing (%s_var_ptr);\n", ptrname);
 }
 
 
@@ -5363,7 +5361,6 @@ create_posix()
   ifprintf (fp, "   type String_List;\n");
   ifprintf (fp, "   --  See package body for comments on String_List.\n");
   ifprintf (fp, "   type POSIX_String_List is access all String_List;\n");
-  ifprintf (fp, "   pragma No_Strict_Aliasing (POSIX_String_List);\n");
   ifprintf (fp, "   Empty_String_List : constant POSIX_String_List := null;\n\n");
 
   ifprintf (fp, "   type Timespec is record\n");
@@ -5449,8 +5446,11 @@ create_c()
   ghdrcmnt ("basic C types");
 
   gsitp ("short",          sizeof (short));
-  gsitp ("int",            sizeof (int));
-  gptrtp ("int",                   "int");
+
+  gsitp  ("int",           sizeof (int));
+  gptrtp ("int",                  "int");
+  ifprintf (fp, "   pragma No_Strict_Aliasing (int_ptr);\n");
+
   guitp ("unsigned",       sizeof (unsigned));
   gsitp ("long",           sizeof (long));
   guitp ("unsigned_long",  sizeof (unsigned long));
@@ -5470,6 +5470,7 @@ create_c()
   ifprintf (fp, "   subtype char is POSIX_Character;\n");
 
   gptrtp           ("char", "char");
+  ifprintf (fp, "   pragma No_Strict_Aliasing (char_var_ptr);\n");
   gen_unchckd_conv ("To_Ptr", "Address", "char_ptr");
   gen_renaming     ("function To_char_ptr (Addr : Address) return char_ptr", "To_Ptr");
   gen_unchckd_conv ("To_Address", "char_ptr", "Address");
@@ -7322,6 +7323,8 @@ create_c()
 
   gcmnt ("timeval structure");
   g_struct_timeval();
+  ifprintf (fp, "   pragma No_Strict_Aliasing (timeval_ptr);\n");
+  
   g_struct_timespec();
   g_struct_itimerspec();
   g_struct_tm();
@@ -8056,11 +8059,12 @@ create_c()
   ghdrcmnt ("structures");
   
   /* can't follow alphabetic ordering; e.g.
-    sockaddr needs to come early, to avoid forward references
+     sockaddr needs to come early, to avoid forward references
   */
   gcmnt ("generic socket address");
   g_struct_sockaddr();
   ifprintf (fp, "   pragma No_Strict_Aliasing (sockaddr_ptr);\n");
+  ifprintf (fp, "   pragma No_Strict_Aliasing (sockaddr_var_ptr);\n");
 
   gcmnt ("struct addrinfo...");
   g_struct_addrinfo();
@@ -8102,9 +8106,12 @@ create_c()
   }
   
   g_struct_sockaddr_un();
+  ifprintf (fp, "   pragma No_Strict_Aliasing (sockaddr_un_ptr);\n");
   
   gcmnt ("internet socket address");
   g_struct_sockaddr_in();
+  ifprintf (fp, "   pragma No_Strict_Aliasing (sockaddr_in_ptr);\n");
+  ifprintf (fp, "   pragma No_Strict_Aliasing (sockaddr_in_var_ptr);\n");
   
   gcmnt ("IP Level ip_opts structure");
   g_struct_ip_opts();
@@ -8154,6 +8161,7 @@ create_c()
 
   gcmnt ("t_opthdr structure");
   g_struct_t_opthdr();
+  ifprintf (fp, "   pragma No_Strict_Aliasing (t_opthdr_ptr);\n");
 
   gcmnt ("t_bind structure");
   g_struct_t_bind();
