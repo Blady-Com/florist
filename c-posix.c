@@ -7292,11 +7292,19 @@ create_c()
   g_mqd_t();
   g_pthread_attr_t();
   g_pthread_cond_t();
+
+  /* The 'size is not a multiple of alignment' warning tells us that the compiler is increasing
+     the size of the following types to honour the alignment attribute setting. The warning is
+     informational and should not need any further action and so is suppressed.
+  */
+  ifprintf (fp, "   pragma Warnings (Off, \"size is not a multiple of alignment\");\n");
   g_pthread_condattr_t();
   g_pthread_key_t();
-  g_pthread_mutex_t();
   g_pthread_mutexattr_t();
   g_pthread_once_t();
+  ifprintf (fp, "   pragma Warnings (On,  \"size is not a multiple of alignment\");\n");
+
+  g_pthread_mutex_t();
   g_pthread_t();
   g_sem_t();
   g_sigset_t();
