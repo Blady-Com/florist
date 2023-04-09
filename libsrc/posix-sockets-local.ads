@@ -46,6 +46,8 @@ package POSIX.Sockets.Local is
    Local_Protocol : constant Protocol_Family := PF_LOCAL;
    type Local_Socket_Address is private;
    type Local_Socket_Address_Pointer is access all Local_Socket_Address;
+   pragma No_Strict_Aliasing (Local_Socket_Address_Pointer);
+
    function "+" (Pointer : Local_Socket_Address_Pointer)
                  return POSIX.Sockets.Socket_Address_Pointer;
    function "+" (Pointer : POSIX.Sockets.Socket_Address_Pointer)

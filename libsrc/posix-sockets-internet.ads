@@ -55,6 +55,7 @@ package POSIX.Sockets.Internet is
 
    type Internet_Socket_Address_Pointer is
      access all Internet_Socket_Address;
+   pragma No_Strict_Aliasing (Internet_Socket_Address_Pointer);
 
    function "+" (Pointer : Internet_Socket_Address_Pointer)
      return Socket_Address_Pointer;

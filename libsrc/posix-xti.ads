@@ -589,6 +589,7 @@ private
 
    type XTI_Address_Pointer is access all XTI_Address;
    Null_XTI_Address : constant XTI_Address_Pointer := null;
+   pragma No_Strict_Aliasing (XTI_Address_Pointer);
 
    type Linger_Info is record
       C : aliased POSIX.C.XTI.struct_t_linger :=
