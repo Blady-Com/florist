@@ -1,5 +1,7 @@
 # FLORIST
 
+[![Alire](https://img.shields.io/endpoint?url=https://alire.ada.dev/badges/florist_blady.json)](https://alire.ada.dev/crates/florist_blady.html)
+
 This directory contains the components of FLORIST, an
 implementation of the IEEE Standards 1003.5: 1992, IEEE STD
 1003.5b: 1996, and parts of IEEE STD 1003.5c: 1998, also known as
@@ -24,6 +26,6 @@ $ gnatmake -I/prefix/floristlib main -largs -lflorist
 
 In your own [Alire](https://alire.ada.dev) project, add Florist dependency:
 
-`% alr with florist`
+`% alr with florist_blady`
 
 Then you can import the Ada Florist packages in your programs.
